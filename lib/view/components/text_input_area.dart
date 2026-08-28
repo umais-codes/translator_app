@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
 import 'package:translator_app/view/components/input_area.dart';
 
@@ -23,13 +24,13 @@ class TextInputArea extends StatelessWidget {
                 onPressed: () {
                   provider.pasteText(); // ✅ calls method from ViewModel
                 },
-                icon: const Icon(Icons.paste, color: Colors.white),
+                icon: const Icon(Icons.paste, color: AppColors.textWhite),
                 label: const Text(
                   'Paste Text',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppColors.textWhite),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade300,
+                  backgroundColor: AppColors.primaryLight,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -48,16 +49,22 @@ class TextInputArea extends StatelessWidget {
           Container(
             height: mediaQuery.size.height * 0.1,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: AppColors.inputBackground,
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.border),
             ),
             child: TextField(
               onChanged: (text) => provider.setSourceText(text),
               maxLines: null,
               expands: true,
+              style: const TextStyle(color: AppColors.textPrimary),
               decoration: const InputDecoration(
                 hintText: 'Type your text here...',
+                hintStyle: TextStyle(color: AppColors.textMuted),
                 border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                fillColor: Colors.transparent,
                 contentPadding: EdgeInsets.all(16),
               ),
               onTap: () {
@@ -77,12 +84,16 @@ class TextInputArea extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
+                color: AppColors.lightBlueBackground,
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.border),
               ),
               child: Text(
                 provider.translatedText,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -90,7 +101,9 @@ class TextInputArea extends StatelessWidget {
 
           // Show Loading Indicator
           if (provider.isLoading) ...[
-            const Center(child: CircularProgressIndicator()),
+            const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            ),
           ],
         ],
       ),

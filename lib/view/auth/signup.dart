@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/components/textfield.dart';
 import 'package:translator_app/view/auth/login.dart';
+import 'package:translator_app/viewmodel/auth_viewmodel.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -13,10 +16,11 @@ class _SignupState extends State<Signup> {
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
   final TextEditingController usernamecontroller = TextEditingController();
-  bool isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
+    final authVm = context.watch<AuthViewModel>();
+
     // MediaQuery for responsive design
     final mediaQuery = MediaQuery.of(context);
     final screenHeight = mediaQuery.size.height;
@@ -28,7 +32,7 @@ class _SignupState extends State<Signup> {
     final textSize = screenWidth * 0.04;
 
     return Scaffold(
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: AppColors.authBackground,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -37,37 +41,32 @@ class _SignupState extends State<Signup> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Center(
+                  const Center(
                     child: Text(
                       '''Register
           to New Account''',
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.w600,
-                        color: Color.fromARGB(255, 52, 67, 229),
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
-                  SizedBox(height: 50),
+                  const SizedBox(height: 50),
                   CustomTextField(
                     label: 'UserName',
                     hintText: 'Enter your username',
                     controller: usernamecontroller,
-
                     prefixIcon: Icons.person,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your Username';
                       }
-                      if (!RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      ).hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
                       return null;
                     },
                   ),
                   SizedBox(height: screenHeight * 0.02),
+
                   // Email TextField
                   CustomTextField(
                     label: 'Email',
@@ -95,16 +94,13 @@ class _SignupState extends State<Signup> {
                     label: 'Password',
                     hintText: 'Enter your password',
                     controller: passwordcontroller,
-                    obscureText: !isPasswordVisible,
+                    obscureText: !authVm.isSignupPasswordVisible,
                     prefixIcon: Icons.lock,
-                    suffixIcon:
-                        isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                    suffixIcon: authVm.isSignupPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                     onSuffixTap: () {
-                      setState(() {
-                        isPasswordVisible = !isPasswordVisible;
-                      });
+                      authVm.toggleSignupPasswordVisibility();
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -124,14 +120,14 @@ class _SignupState extends State<Signup> {
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => Login()),
+                          MaterialPageRoute(builder: (context) => const Login()),
                         );
                       },
                       child: Text(
                         "Already have an account? Login",
                         style: TextStyle(
                           fontSize: textSize,
-                          color: Theme.of(context).primaryColor,
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
@@ -141,40 +137,60 @@ class _SignupState extends State<Signup> {
                     width: buttonWidth,
                     height: buttonHeight,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Validate inputs before navigating
-                        if (emailcontroller.text.isNotEmpty &&
-                            passwordcontroller.text.isNotEmpty &&
-                            usernamecontroller.text.isNotEmpty) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => Login()),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please enter Username, email and password ',
-                              ),
-                            ),
-                          );
-                        }
-                      },
+                      onPressed: authVm.isLoading
+                        ? null
+                        : () async {
+                            final success = await authVm.signup(
+                              username: usernamecontroller.text,
+                              email: emailcontroller.text,
+                              password: passwordcontroller.text,
+                            );
+
+                            if (!context.mounted) return;
+
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Login(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: AppColors.error,
+                                  content: Text(
+                                    authVm.errorMessage ??
+                                        'Please enter Username, email and password ',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 40, 51, 176),
+                        backgroundColor: AppColors.primaryDark,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                         elevation: 3,
                       ),
-                      child: Text(
-                        "SignUp",
-                        style: TextStyle(
-                          fontSize: textSize * 1.2,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: authVm.isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.textWhite,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              "SignUp",
+                              style: TextStyle(
+                                fontSize: textSize * 1.2,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textWhite,
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -184,5 +200,13 @@ class _SignupState extends State<Signup> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailcontroller.dispose();
+    passwordcontroller.dispose();
+    usernamecontroller.dispose();
+    super.dispose();
   }
 }

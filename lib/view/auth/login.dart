@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/components/textfield.dart';
 import 'package:translator_app/view/auth/signup.dart';
 import 'package:translator_app/view/homepage.dart';
+import 'package:translator_app/viewmodel/auth_viewmodel.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,10 +16,11 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
-  bool isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
+    final authVm = context.watch<AuthViewModel>();
+
     // MediaQuery for responsive design
     final mediaQuery = MediaQuery.of(context);
     final screenHeight = mediaQuery.size.height;
@@ -29,7 +33,7 @@ class _LoginState extends State<Login> {
     final textSize = screenWidth * 0.04;
 
     return Scaffold(
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: AppColors.authBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -82,16 +86,13 @@ class _LoginState extends State<Login> {
                   label: 'Password',
                   hintText: 'Enter your password',
                   controller: passwordcontroller,
-                  obscureText: !isPasswordVisible,
+                  obscureText: !authVm.isLoginPasswordVisible,
                   prefixIcon: Icons.lock,
-                  suffixIcon:
-                      isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                  suffixIcon: authVm.isLoginPasswordVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off,
                   onSuffixTap: () {
-                    setState(() {
-                      isPasswordVisible = !isPasswordVisible;
-                    });
+                    authVm.toggleLoginPasswordVisibility();
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -104,7 +105,7 @@ class _LoginState extends State<Login> {
                   },
                 ),
 
-                SizedBox(height: 7),
+                const SizedBox(height: 7),
 
                 // Sign up link
                 Align(
@@ -113,57 +114,79 @@ class _LoginState extends State<Login> {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => Signup()),
+                        MaterialPageRoute(builder: (context) => const Signup()),
                       );
                     },
                     child: Text(
                       "Don't have an account? Sign up",
                       style: TextStyle(
                         fontSize: textSize,
-                        color: Theme.of(context).primaryColor,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Login Button
                 SizedBox(
                   width: buttonWidth,
                   height: buttonHeight,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Validate inputs before navigating
-                      if (emailcontroller.text.isNotEmpty &&
-                          passwordcontroller.text.isNotEmpty) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => Homepage()),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Please enter email and password'),
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: authVm.isLoading
+                        ? null
+                        : () async {
+                            final success = await authVm.login(
+                              email: emailcontroller.text,
+                              password: passwordcontroller.text,
+                            );
+
+                            if (!context.mounted) return;
+
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Homepage(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: AppColors.error,
+                                  content: Text(
+                                    authVm.errorMessage ??
+                                        'Please enter email and password',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 40, 51, 176),
+                      backgroundColor: AppColors.primaryDark,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                       elevation: 3,
                     ),
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        fontSize: textSize * 1.2,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: authVm.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: AppColors.textWhite,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            "Login",
+                            style: TextStyle(
+                              fontSize: textSize * 1.2,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textWhite,
+                            ),
+                          ),
                   ),
                 ),
 

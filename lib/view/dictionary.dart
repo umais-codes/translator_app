@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'package:translator_app/view/more_fun.dart';
+import 'package:provider/provider.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/view/components/custom_app_bar.dart';
+import 'package:translator_app/viewmodel/dictionary_viewmodel.dart';
 
 class DictionaryScreen extends StatefulWidget {
   const DictionaryScreen({super.key});
@@ -13,225 +13,167 @@ class DictionaryScreen extends StatefulWidget {
 
 class _DictionaryScreenState extends State<DictionaryScreen> {
   final TextEditingController _searchController = TextEditingController();
-  String? _word;
-  String? _definition;
-  String? _partOfSpeech;
-  String? _example;
-  String? _phonetics;
-  List<String>? _synonyms;
-  List<String>? _antonyms;
-  String? _errorMessage;
-  bool _isLoading = false;
 
-  Future<void> _searchWord(String word) async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-      _definition = null;
-      _partOfSpeech = null;
-      _example = null;
-      _phonetics = null;
-      _synonyms = null;
-      _antonyms = null;
-    });
-
-    try {
-      final response = await http.get(
-        Uri.parse(
-          'https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}',
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        if (data.isNotEmpty &&
-            data[0]['meanings'] != null &&
-            data[0]['meanings'][0]['definitions'] != null &&
-            data[0]['meanings'][0]['definitions'][0]['definition'] != null) {
-          setState(() {
-            _word = data[0]['word'];
-            _definition =
-                data[0]['meanings'][0]['definitions'][0]['definition'];
-            _partOfSpeech = data[0]['meanings'][0]['partOfSpeech'];
-            _example =
-                data[0]['meanings'][0]['definitions'][0]['example'] ??
-                'No example available.';
-            _phonetics =
-                data[0]['phonetics'] != null &&
-                        data[0]['phonetics'].isNotEmpty &&
-                        data[0]['phonetics'][0]['text'] != null
-                    ? data[0]['phonetics'][0]['text']
-                    : 'Not available';
-            _synonyms =
-                data[0]['meanings'][0]['definitions'][0]['synonyms']
-                    ?.cast<String>() ??
-                [];
-            _antonyms =
-                data[0]['meanings'][0]['definitions'][0]['antonyms']
-                    ?.cast<String>() ??
-                [];
-            _isLoading = false;
-          });
-        } else {
-          setState(() {
-            _errorMessage =
-                'Unexpected response format. Please try another word.';
-            _isLoading = false;
-          });
-        }
-      } else {
-        setState(() {
-          _errorMessage = 'Word not found. Please try another word.';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'An error occurred. Please try again later.';
-        _isLoading = false;
-      });
-    }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<DictionaryViewModel>();
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final horizontalPadding = screenWidth * 0.05;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Dictionary',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MoreFunScreen()),
-            );
-          },
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
+      appBar: const CustomAppBar(
+        title: 'Dictionary',
+        showBackButton: true,
       ),
-      body: Column(
-        children: [
-          // Search Field
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Search Field
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+                vertical: screenHeight * 0.02,
               ),
-              child: TextField(
-                controller: _searchController,
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    _searchWord(value.trim());
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Search for a word',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 15,
-                  ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.blueAccent),
-                    onPressed: () {
-                      if (_searchController.text.isNotEmpty) {
-                        _searchWord(_searchController.text.trim());
-                      }
-                    },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.shadow,
+                      spreadRadius: 2,
+                      blurRadius: 6,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      vm.searchWord(value.trim());
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Search for a word',
+                    labelStyle: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: screenWidth * 0.038,
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    fillColor: Colors.transparent,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.05,
+                      vertical: screenHeight * 0.018,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        Icons.search,
+                        color: AppColors.primary,
+                        size: screenWidth * 0.06,
+                      ),
+                      onPressed: () {
+                        if (_searchController.text.isNotEmpty) {
+                          vm.searchWord(_searchController.text.trim());
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
 
-          // Main Content Area
-          Expanded(
-            child: Center(
-              child:
-                  _isLoading
+            // Main Content Area
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: vm.isLoading
                       ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 10),
-                          Text(
-                            'Searching...',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                          ),
-                        ],
-                      )
-                      : _errorMessage != null
-                      ? Text(
-                        _errorMessage!,
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      )
-                      : _definition != null
-                      ? _buildWordDetails()
-                      : const SizedBox(),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                            SizedBox(height: screenHeight * 0.015),
+                            Text(
+                              'Searching...',
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.04,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        )
+                      : vm.errorMessage != null
+                          ? Text(
+                              vm.errorMessage!,
+                              style: TextStyle(
+                                color: AppColors.error,
+                                fontSize: screenWidth * 0.04,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            )
+                          : vm.definition != null
+                              ? _buildWordDetails(vm, screenWidth, screenHeight)
+                              : const SizedBox(),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   // Reusable Widget: Word Details
-  Widget _buildWordDetails() {
+  Widget _buildWordDetails(
+    DictionaryViewModel vm,
+    double screenWidth,
+    double screenHeight,
+  ) {
     return SizedBox(
       width: double.infinity,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(screenWidth * 0.05),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.2),
+              color: AppColors.shadow,
               spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
+              blurRadius: 8,
+              offset: Offset(0, 3),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('Word:', _word),
-            _buildDetailRow('Phonetics:', _phonetics, isItalic: true),
-            _buildDetailRow('Part of Speech:', _partOfSpeech),
-            _buildDetailRow('Definition:', _definition),
-            if (_example != null && _example!.isNotEmpty)
-              _buildExampleSection(),
-            if (_synonyms != null && _synonyms!.isNotEmpty)
-              _buildListSection('Synonyms:', _synonyms!),
-            if (_antonyms != null && _antonyms!.isNotEmpty)
-              _buildListSection('Antonyms:', _antonyms!),
+            _buildDetailRow('Word:', vm.word, screenWidth),
+            _buildDetailRow('Phonetics:', vm.phonetics, screenWidth, isItalic: true),
+            _buildDetailRow('Part of Speech:', vm.partOfSpeech, screenWidth),
+            _buildDetailRow('Definition:', vm.definition, screenWidth),
+            if (vm.example != null && vm.example!.isNotEmpty)
+              _buildExampleSection(vm.example!, screenWidth, screenHeight),
+            if (vm.synonyms != null && vm.synonyms!.isNotEmpty)
+              _buildListSection('Synonyms:', vm.synonyms!, screenWidth),
+            if (vm.antonyms != null && vm.antonyms!.isNotEmpty)
+              _buildListSection('Antonyms:', vm.antonyms!, screenWidth),
           ],
         ),
       ),
@@ -239,25 +181,31 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   // Reusable Widget: Detail Row
-  Widget _buildDetailRow(String label, String? value, {bool isItalic = false}) {
+  Widget _buildDetailRow(
+    String label,
+    String? value,
+    double screenWidth, {
+    bool isItalic = false,
+  }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: screenWidth * 0.04),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: screenWidth * 0.042,
               fontWeight: FontWeight.bold,
-              color: Colors.blueAccent,
+              color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 4),
           Text(
             value ?? 'Not available',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: screenWidth * 0.038,
+              color: AppColors.textPrimary,
               fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
             ),
           ),
@@ -267,62 +215,86 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   // Reusable Widget: Example Section
-  Widget _buildExampleSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Example:',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.blueAccent,
+  Widget _buildExampleSection(
+    String example,
+    double screenWidth,
+    double screenHeight,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: screenWidth * 0.04),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Example:',
+            style: TextStyle(
+              fontSize: screenWidth * 0.042,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
           ),
-        ),
-        const SizedBox(height: 5),
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.blue[50],
-            borderRadius: BorderRadius.circular(8),
+          const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(screenWidth * 0.03),
+            decoration: BoxDecoration(
+              color: AppColors.lightBlueBackground,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              example,
+              style: TextStyle(
+                fontSize: screenWidth * 0.038,
+                color: AppColors.textPrimary,
+              ),
+            ),
           ),
-          child: Text(
-            _example!,
-            style: const TextStyle(fontSize: 16, color: Colors.black87),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   // Reusable Widget: List Section (for Synonyms and Antonyms)
-  Widget _buildListSection(String label, List<String> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.blueAccent,
+  Widget _buildListSection(
+    String label,
+    List<String> items,
+    double screenWidth,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: screenWidth * 0.03),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: screenWidth * 0.042,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
           ),
-        ),
-        const SizedBox(height: 5),
-        Wrap(
-          spacing: 8.0,
-          runSpacing: 4.0,
-          children:
-              items
-                  .map(
-                    (item) => Chip(
-                      label: Text(item),
-                      backgroundColor: Colors.blue[50],
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: screenWidth * 0.02,
+            runSpacing: screenWidth * 0.015,
+            children: items
+                .map(
+                  (item) => Chip(
+                    label: Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.034,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  )
-                  .toList(),
-        ),
-      ],
+                    backgroundColor: AppColors.lightBlueBackground,
+                    side: const BorderSide(color: AppColors.border),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
     );
   }
 }

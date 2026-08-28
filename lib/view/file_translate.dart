@@ -1,244 +1,251 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/view/components/custom_app_bar.dart';
+import 'package:translator_app/viewmodel/file_translate_viewmodel.dart';
 
-class FileTranslationScreen extends StatefulWidget {
+class FileTranslationScreen extends StatelessWidget {
   const FileTranslationScreen({super.key});
 
   @override
-  State<FileTranslationScreen> createState() => _FileTranslationScreenState();
-}
-
-class _FileTranslationScreenState extends State<FileTranslationScreen> {
-  bool _isLoading = false;
-  String? _selectedFileName;
-  String? _fileContent;
-  String? _translatedContent;
-  String? _errorMessage;
-
-  // Default languages
-  String _fromLanguage = 'en'; // English
-  String _toLanguage = 'es'; // Spanish
-
-  // MyMemory Translation API
-  Future<String> _translateText(
-    String text,
-    String fromLang,
-    String toLang,
-  ) async {
-    try {
-      final encodedText = Uri.encodeComponent(text);
-      final url =
-          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=$fromLang|$toLang';
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['responseData']['translatedText'] ?? 'Translation failed.';
-      } else {
-        throw Exception('Failed to fetch translation.');
-      }
-    } catch (e) {
-      return 'Error: ${e.toString()}';
-    }
-  }
-
-  Future<void> _selectFile() async {
-    setState(() {
-      _errorMessage = null;
-      _isLoading = true;
-    });
-
-    try {
-      final file = await FilePicker.pickFile(
-        type: FileType.custom,
-        allowedExtensions: ['txt', 'json', 'csv'],
-      );
-
-      if (file != null) {
-        _selectedFileName = file.name;
-
-        if (file.path != null) {
-          final fileContent = await File(file.path!).readAsString();
-          setState(() {
-            _fileContent = fileContent;
-          });
-        } else {
-          final bytes = await file.readAsBytes();
-          setState(() {
-            _fileContent = utf8.decode(bytes);
-          });
-        }
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error selecting file: ${e.toString()}';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _translateFile() async {
-    if (_fileContent == null || _fileContent!.isEmpty) {
-      setState(() {
-        _errorMessage = 'No file content to translate.';
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _translatedContent = null;
-      _errorMessage = null;
-    });
-
-    try {
-      final translatedText = await _translateText(
-        _fileContent!,
-        _fromLanguage,
-        _toLanguage,
-      );
-      setState(() {
-        _translatedContent = translatedText;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Translation error: ${e.toString()}';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final vm = context.watch<FileTranslateViewModel>();
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final horizontalPadding = screenWidth * 0.05;
+    final buttonHeight = screenHeight * 0.055;
+    final buttonWidth = screenWidth * 0.85;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('File Translator'),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
+      appBar: const CustomAppBar(
+        title: 'File Translator',
+        showBackButton: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // File Picker Section
-            ElevatedButton.icon(
-              onPressed: _isLoading ? null : _selectFile,
-              icon: const Icon(Icons.upload_file),
-              label: const Text('Select File'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-              ),
-            ),
-            if (_selectedFileName != null) ...[
-              const SizedBox(height: 10),
-              Text(
-                'Selected File: $_selectedFileName',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-
-            const SizedBox(height: 20),
-
-            // Language Selection
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownButton<String>(
-                  value: _fromLanguage,
-                  items: _getLanguageDropdownItems(),
-                  onChanged: (value) {
-                    setState(() {
-                      _fromLanguage = value!;
-                    });
-                  },
-                ),
-                const Icon(Icons.swap_horiz),
-                DropdownButton<String>(
-                  value: _toLanguage,
-                  items: _getLanguageDropdownItems(),
-                  onChanged: (value) {
-                    setState(() {
-                      _toLanguage = value!;
-                    });
-                  },
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // Translate Button
-            ElevatedButton.icon(
-              onPressed:
-                  _isLoading || _fileContent == null ? null : _translateFile,
-              icon: const Icon(Icons.translate),
-              label: const Text('Translate'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Loading Indicator
-            if (_isLoading) const Center(child: CircularProgressIndicator()),
-
-            // Error Message
-            if (_errorMessage != null)
-              Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
-
-            // Translated Content
-            if (_translatedContent != null)
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: screenHeight * 0.02,
+          ),
+          child: Column(
+            children: [
+              // File Picker Section
+              SizedBox(
+                width: buttonWidth,
+                height: buttonHeight,
+                child: ElevatedButton.icon(
+                  onPressed: vm.isLoading ? null : vm.selectFile,
+                  icon: const Icon(Icons.upload_file),
+                  label: Text(
+                    'Select File',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: Text(
-                      _translatedContent!,
-                      style: const TextStyle(fontSize: 16),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.textWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                 ),
               ),
-          ],
+
+              if (vm.selectedFileName != null) ...[
+                SizedBox(height: screenHeight * 0.015),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.03,
+                    vertical: screenHeight * 0.008,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.lightBlueBackground,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.description, size: 18, color: AppColors.primary),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          vm.selectedFileName!,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth * 0.036,
+                            color: AppColors.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              SizedBox(height: screenHeight * 0.02),
+
+              // Language Selection
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.04,
+                  vertical: screenHeight * 0.006,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.shadow,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    DropdownButton<String>(
+                      value: vm.fromLanguage,
+                      underline: const SizedBox(),
+                      items: _getLanguageDropdownItems(screenWidth),
+                      onChanged: (value) {
+                        if (value != null) {
+                          vm.setFromLanguage(value);
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.swap_horiz,
+                        color: AppColors.primary,
+                        size: screenWidth * 0.065,
+                      ),
+                      onPressed: vm.swapLanguages,
+                    ),
+                    DropdownButton<String>(
+                      value: vm.toLanguage,
+                      underline: const SizedBox(),
+                      items: _getLanguageDropdownItems(screenWidth),
+                      onChanged: (value) {
+                        if (value != null) {
+                          vm.setToLanguage(value);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: screenHeight * 0.02),
+
+              // Translate Button
+              SizedBox(
+                width: buttonWidth,
+                height: buttonHeight,
+                child: ElevatedButton.icon(
+                  onPressed: vm.isLoading || vm.fileContent == null
+                      ? null
+                      : vm.translateFile,
+                  icon: const Icon(Icons.translate),
+                  label: Text(
+                    'Translate',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.success,
+                    foregroundColor: AppColors.textWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: screenHeight * 0.02),
+
+              // Loading Indicator
+              if (vm.isLoading)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+                  child: const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  ),
+                ),
+
+              // Error Message
+              if (vm.errorMessage != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+                  child: Text(
+                    vm.errorMessage!,
+                    style: TextStyle(
+                      color: AppColors.error,
+                      fontSize: screenWidth * 0.038,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+
+              // Translated Content
+              if (vm.translatedContent != null)
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(screenWidth * 0.04),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: AppColors.border),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: AppColors.shadow,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        vm.translatedContent!,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.04,
+                          color: AppColors.textPrimary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  List<DropdownMenuItem<String>> _getLanguageDropdownItems() {
-    const languages = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'zh': 'Chinese',
-      'ar': 'Arabic',
-      'hi': 'Hindi',
-      'ja': 'Japanese',
-      'ru': 'Russian',
-      'ko': 'Korean',
-    };
-
-    return languages.entries
+  List<DropdownMenuItem<String>> _getLanguageDropdownItems(double screenWidth) {
+    return FileTranslateViewModel.supportedLanguages.entries
         .map(
-          (entry) =>
-              DropdownMenuItem(value: entry.key, child: Text(entry.value)),
+          (entry) => DropdownMenuItem(
+            value: entry.key,
+            child: Text(
+              entry.value,
+              style: TextStyle(
+                fontSize: screenWidth * 0.038,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
         )
         .toList();
   }

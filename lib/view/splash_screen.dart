@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/auth/login.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,10 +15,10 @@ class SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    Timer(Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Login()),
+        MaterialPageRoute(builder: (context) => const Login()),
       );
     });
   }
@@ -31,12 +32,12 @@ class SplashScreenState extends State<SplashScreen> {
           // Background Image
           Image.asset("assets/images/splash_screen.png", fit: BoxFit.cover),
 
-          Positioned(
+          const Positioned(
             bottom: 50,
             left: 0,
             right: 0,
             child: Center(
-              child: CircularProgressIndicator(color: Colors.white),
+              child: CircularProgressIndicator(color: AppColors.textWhite),
             ),
           ),
         ],

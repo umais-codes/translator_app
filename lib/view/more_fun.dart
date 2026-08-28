@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/dictionary.dart';
 import 'package:translator_app/view/file_translate.dart';
-
-import 'settings.dart';
+import 'package:translator_app/view/settings.dart';
 
 class MoreFunScreen extends StatelessWidget {
   const MoreFunScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final horizontalPadding = screenWidth * 0.05;
+
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('More Fun'),
+      appBar: CustomAppBar(
+        title: 'More Fun',
+        showBackButton: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: Icon(
+              Icons.settings,
+              color: AppColors.textWhite,
+              size: screenWidth * 0.06,
+            ),
             onPressed: () {
-              // Navigate to Settings screen or perform action
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Settings()),
@@ -31,39 +35,49 @@ class MoreFunScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _buildButton(
-            context,
-            color: Colors.lightBlue[100]!,
-            title: 'File translate',
-            subtitle: 'Ask anything from AI experts',
-            onTap: () {
-              // Navigate to File Translate screen or perform action
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FileTranslationScreen(),
-                ),
-              );
-            },
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: screenHeight * 0.02,
           ),
-          SizedBox(height: 12),
-          _buildButton(
-            context,
-            color: Colors.lightGreen[100]!,
-            title: 'Dictionary',
-            subtitle: 'Ask anything from AI experts',
-            onTap: () {
-              // Navigate to Dictionary screen or perform action
-              Navigator.push(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildButton(
                 context,
-                MaterialPageRoute(builder: (context) => DictionaryScreen()),
-              );
-            },
+                color: AppColors.lightBlueCard,
+                icon: Icons.description,
+                title: 'File translate',
+                subtitle: 'Ask anything from AI experts',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FileTranslationScreen(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: screenHeight * 0.02),
+              _buildButton(
+                context,
+                color: AppColors.lightGreenBackground,
+                icon: Icons.book,
+                title: 'Dictionary',
+                subtitle: 'Ask anything from AI experts',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DictionaryScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -71,28 +85,41 @@ class MoreFunScreen extends StatelessWidget {
   Widget _buildButton(
     BuildContext context, {
     required Color color,
+    required IconData icon,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+
     return GestureDetector(
       onTap: onTap,
       child: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.98,
-          height: 100,
+          width: double.infinity,
+          height: screenHeight * 0.12,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 6,
+                offset: Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(screenWidth * 0.04),
                 child: Icon(
-                  title == 'File translate' ? Icons.description : Icons.book,
-                  size: 40,
+                  icon,
+                  size: screenWidth * 0.1,
+                  color: AppColors.primary,
                 ),
               ),
               Expanded(
@@ -103,21 +130,29 @@ class MoreFunScreen extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: screenWidth * 0.048,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    SizedBox(height: screenHeight * 0.005),
                     Text(
                       subtitle,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.036,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Icon(Icons.chevron_right),
+                padding: EdgeInsets.all(screenWidth * 0.04),
+                child: Icon(
+                  Icons.chevron_right,
+                  size: screenWidth * 0.06,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),

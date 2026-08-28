@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/data/models/translation_provider.dart';
+import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/language_selector.dart';
 
 class TranslationScreen extends StatelessWidget {
@@ -9,93 +11,150 @@ class TranslationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<TranslationProvider>(context);
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final horizontalPadding = screenWidth * 0.05;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: const BackButton(),
-        title: const Text("Translate"),
+      appBar: CustomAppBar(
+        title: "Translate",
+        showBackButton: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.swap_horiz),
+            icon: Icon(
+              Icons.swap_horiz,
+              color: AppColors.textWhite,
+              size: screenWidth * 0.065,
+            ),
             onPressed: () => provider.swapLanguages(),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const LanguageSelector(),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Text(provider.sourceLanguage.name),
-                const SizedBox(width: 8),
-                IconButton(icon: const Icon(Icons.volume_up), onPressed: () {}),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: "Enter Text",
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.paste),
-                  label: const Text("Paste Text"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[200],
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-                const Spacer(),
-                CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Colors.blue,
-                  child: IconButton(
-                    icon: const Icon(Icons.mic, color: Colors.white),
-                    onPressed: () {
-                      // TODO: Implement voice input
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: screenHeight * 0.02,
+          ),
+          child: Column(
+            children: [
+              const LanguageSelector(),
+              SizedBox(height: screenHeight * 0.02),
+              Row(
                 children: [
-                  Image.asset(
-                    'assets/flags/${provider.sourceLanguage.flagAsset}.png',
-                    height: 20,
+                  Text(
+                    provider.sourceLanguage.name,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.042,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                  const SizedBox(width: 6),
-                  Text(provider.sourceLanguage.name),
-                  const SizedBox(width: 10),
-                  const Icon(Icons.compare_arrows),
-                  const SizedBox(width: 10),
-                  Image.asset(
-                    'assets/flags/${provider.targetLanguage.flagAsset}.png',
-                    height: 20,
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(
+                      Icons.volume_up,
+                      color: AppColors.primary,
+                      size: screenWidth * 0.055,
+                    ),
+                    onPressed: () {},
                   ),
-                  const SizedBox(width: 6),
-                  Text(provider.targetLanguage.name),
                 ],
               ),
-            ),
-          ],
+              SizedBox(height: screenHeight * 0.01),
+              TextField(
+                decoration: const InputDecoration(
+                  hintText: "Enter Text",
+                ),
+                onChanged: (value) {},
+              ),
+              SizedBox(height: screenHeight * 0.015),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.paste),
+                    label: Text(
+                      "Paste Text",
+                      style: TextStyle(fontSize: screenWidth * 0.038),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryLight,
+                      foregroundColor: AppColors.textWhite,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.04,
+                        vertical: screenHeight * 0.012,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  CircleAvatar(
+                    radius: screenWidth * 0.06,
+                    backgroundColor: AppColors.primary,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.mic,
+                        color: AppColors.textWhite,
+                        size: screenWidth * 0.06,
+                      ),
+                      onPressed: () {
+                        // Voice input hook
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: screenHeight * 0.015,
+                  horizontal: screenWidth * 0.04,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.inputBackground,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/flags/${provider.sourceLanguage.flagAsset}.png',
+                      height: screenWidth * 0.05,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      provider.sourceLanguage.name,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: screenWidth * 0.038,
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.025),
+                    Icon(
+                      Icons.compare_arrows,
+                      color: AppColors.primary,
+                      size: screenWidth * 0.05,
+                    ),
+                    SizedBox(width: screenWidth * 0.025),
+                    Image.asset(
+                      'assets/flags/${provider.targetLanguage.flagAsset}.png',
+                      height: screenWidth * 0.05,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      provider.targetLanguage.name,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: screenWidth * 0.038,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

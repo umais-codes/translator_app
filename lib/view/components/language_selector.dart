@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/data/models/translation_provider.dart';
 
 class LanguageSelector extends StatelessWidget {
@@ -26,7 +27,8 @@ class LanguageSelector extends StatelessWidget {
                   horizontal: 16,
                 ),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
+                  color: AppColors.surface,
+                  border: Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Row(
@@ -38,9 +40,15 @@ class LanguageSelector extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      provider.sourceLanguage.name,
-                      style: const TextStyle(fontSize: 16),
+                    Expanded(
+                      child: Text(
+                        provider.sourceLanguage.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -50,7 +58,7 @@ class LanguageSelector extends StatelessWidget {
 
           // Swap button
           IconButton(
-            icon: const Icon(Icons.swap_horiz),
+            icon: const Icon(Icons.swap_horiz, color: AppColors.primary),
             onPressed: provider.swapLanguages,
           ),
 
@@ -66,7 +74,8 @@ class LanguageSelector extends StatelessWidget {
                   horizontal: 16,
                 ),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
+                  color: AppColors.surface,
+                  border: Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Row(
@@ -78,9 +87,15 @@ class LanguageSelector extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      provider.targetLanguage.name,
-                      style: const TextStyle(fontSize: 16),
+                    Expanded(
+                      child: Text(
+                        provider.targetLanguage.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -97,6 +112,7 @@ class LanguageSelector extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -112,6 +128,7 @@ class LanguageSelector extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -127,7 +144,10 @@ class LanguageSelector extends StatelessWidget {
                           'assets/flags/${language.flagAsset}.png',
                         ),
                       ),
-                      title: Text(language.name),
+                      title: Text(
+                        language.name,
+                        style: const TextStyle(color: AppColors.textPrimary),
+                      ),
                       onTap: () {
                         if (isSource) {
                           provider.setSourceLanguage(language);

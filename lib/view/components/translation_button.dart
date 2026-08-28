@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:translator_app/apptheme/app_theme.dart';
 
 class MicrophoneButton extends StatelessWidget {
   const MicrophoneButton({super.key});
@@ -8,22 +9,21 @@ class MicrophoneButton extends StatelessWidget {
     return Container(
       width: 70,
       height: 70,
-      decoration: BoxDecoration(
-        color: Colors.blue,
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withValues(alpha: 0.3),
+            color: AppColors.shadowPrimary,
             spreadRadius: 2,
             blurRadius: 8,
-            offset: const Offset(0, 3),
+            offset: Offset(0, 3),
           ),
         ],
       ),
       child: IconButton(
-        icon: const Icon(Icons.mic, color: Colors.white, size: 32),
+        icon: const Icon(Icons.mic, color: AppColors.textWhite, size: 32),
         onPressed: () {
-          // Would implement speech-to-text functionality
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Voice recognition activated')),
           );
