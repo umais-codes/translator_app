@@ -52,13 +52,12 @@ class _FileTranslationScreenState extends State<FileTranslationScreen> {
     });
 
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final file = await FilePicker.pickFile(
         type: FileType.custom,
         allowedExtensions: ['txt', 'json', 'csv'],
       );
 
-      if (result != null) {
-        final file = result.files.first;
+      if (file != null) {
         _selectedFileName = file.name;
 
         if (file.path != null) {
@@ -66,12 +65,11 @@ class _FileTranslationScreenState extends State<FileTranslationScreen> {
           setState(() {
             _fileContent = fileContent;
           });
-        } else if (file.bytes != null) {
-          setState(() {
-            _fileContent = utf8.decode(file.bytes!);
-          });
         } else {
-          throw Exception('Could not read file content.');
+          final bytes = await file.readAsBytes();
+          setState(() {
+            _fileContent = utf8.decode(bytes);
+          });
         }
       }
     } catch (e) {

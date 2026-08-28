@@ -49,8 +49,6 @@ class TranslationProvider extends ChangeNotifier {
   late LanguageModel sourceLanguage = languages.first;
   late LanguageModel targetLanguage = languages[1];
 
-  get setSourceText => null;
-
   void setSourceLanguage(LanguageModel lang) {
     sourceLanguage = lang;
     notifyListeners();

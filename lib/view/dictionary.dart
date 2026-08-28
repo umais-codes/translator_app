@@ -8,7 +8,7 @@ class DictionaryScreen extends StatefulWidget {
   const DictionaryScreen({super.key});
 
   @override
-  _DictionaryScreenState createState() => _DictionaryScreenState();
+  State<DictionaryScreen> createState() => _DictionaryScreenState();
 }
 
 class _DictionaryScreenState extends State<DictionaryScreen> {

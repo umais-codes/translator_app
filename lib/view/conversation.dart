@@ -29,8 +29,8 @@ class _ConversationState extends State<Conversation> {
 
   Future<void> _startListening() async {
     bool available = await _speech.initialize(
-      onStatus: (status) => print('Status: $status'),
-      onError: (error) => print('Error: $error'),
+      onStatus: (status) => debugPrint('Status: $status'),
+      onError: (error) => debugPrint('Error: $error'),
     );
     if (available) {
       setState(() {
