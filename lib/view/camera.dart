@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
-import 'package:translator_app/data/models/translation_repository.dart';
+import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/custom_button.dart';
 import 'package:translator_app/view/components/language_selector.dart';
 import 'package:translator_app/viewmodel/camera_viewmodel.dart';
@@ -17,24 +17,26 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
-  late CameraViewModel _viewModel;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _viewModel = CameraViewModel(TranslationRepository());
-    _viewModel.initializeCamera();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<CameraViewModel>().initializeCamera();
+      }
+    });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    final vm = context.read<CameraViewModel>();
     if (state == AppLifecycleState.inactive) {
-      _viewModel.cameraController?.dispose();
+      vm.cameraController?.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      if (_viewModel.state == CameraState.cameraReady ||
-          _viewModel.state == CameraState.initial) {
-        _viewModel.initializeCamera();
+      if (vm.state == CameraState.cameraReady ||
+          vm.state == CameraState.initial) {
+        vm.initializeCamera();
       }
     }
   }
@@ -42,60 +44,77 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _viewModel.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<CameraViewModel>.value(
-      value: _viewModel,
-      child: Consumer<CameraViewModel>(
-        builder: (context, vm, _) {
-          final mediaQuery = MediaQuery.of(context);
-          final screenWidth = mediaQuery.size.width;
-          final screenHeight = mediaQuery.size.height;
+    final vm = context.watch<CameraViewModel>();
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
 
-          return Scaffold(
-            backgroundColor: AppColors.textPrimary,
-            body: SafeArea(
-              child: Stack(
-                children: [
-                  // 1. Base Layer: Camera Preview or Result Screen
-                  if (_shouldShowResultView(vm.state))
-                    _buildResultView(context, vm, screenWidth, screenHeight)
-                  else if (vm.state == CameraState.permissionDenied)
-                    _buildPermissionDeniedView(context, vm, screenWidth, screenHeight)
-                  else if (vm.state == CameraState.error && vm.capturedImagePath == null)
-                    _buildErrorView(context, vm, screenWidth, screenHeight)
-                  else
-                    _buildCameraPreview(context, vm, screenWidth, screenHeight),
+    // Non-camera states use standard app theme scaffold and CustomAppBar
+    if (_shouldShowResultView(vm.state, vm)) {
+      return Scaffold(
+        backgroundColor: AppColors.scaffoldBackground,
+        appBar: const CustomAppBar(
+          title: 'Camera Translation',
+          showBackButton: true,
+        ),
+        body: _buildResultView(context, vm, screenWidth, screenHeight),
+      );
+    } else if (vm.state == CameraState.permissionDenied) {
+      return Scaffold(
+        backgroundColor: AppColors.scaffoldBackground,
+        appBar: const CustomAppBar(
+          title: 'Camera Permission',
+          showBackButton: true,
+        ),
+        body: _buildPermissionDeniedView(context, vm, screenWidth, screenHeight),
+      );
+    } else if (vm.state == CameraState.error && vm.capturedImagePath == null) {
+      return Scaffold(
+        backgroundColor: AppColors.scaffoldBackground,
+        appBar: const CustomAppBar(
+          title: 'Camera Scanner',
+          showBackButton: true,
+        ),
+        body: _buildErrorView(context, vm, screenWidth, screenHeight),
+      );
+    }
 
-                  // 2. Top Navigation Bar (Always available)
-                  _buildTopBar(context, vm, screenWidth, screenHeight),
+    // Live camera preview state with floating top bar and HUD overlay
+    return Scaffold(
+      backgroundColor: AppColors.textPrimary,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Base Layer: Camera Preview
+            _buildCameraPreview(context, vm, screenWidth, screenHeight),
 
-                  // 3. Busy Overlay (Capturing / Recognizing)
-                  if (vm.state == CameraState.capturing ||
-                      vm.state == CameraState.recognizing)
-                    _buildProcessingOverlay(vm, screenWidth, screenHeight),
-                ],
-              ),
-            ),
-          );
-        },
+            // Top Navigation Bar (Floating in live camera mode)
+            _buildLiveCameraTopBar(context, vm, screenWidth, screenHeight),
+
+            // Busy Overlay (Capturing / Recognizing)
+            if (vm.state == CameraState.capturing ||
+                vm.state == CameraState.recognizing)
+              _buildProcessingOverlay(vm, screenWidth, screenHeight),
+          ],
+        ),
       ),
     );
   }
 
-  bool _shouldShowResultView(CameraState state) {
+  bool _shouldShowResultView(CameraState state, CameraViewModel vm) {
     return state == CameraState.ocrCompleted ||
         state == CameraState.translating ||
         state == CameraState.translated ||
-        (state == CameraState.error && _viewModel.capturedImagePath != null);
+        (state == CameraState.error && vm.capturedImagePath != null);
   }
 
-  // --- TOP BAR ---
-  Widget _buildTopBar(
+  // --- FLOATING TOP BAR FOR LIVE CAMERA ---
+  Widget _buildLiveCameraTopBar(
     BuildContext context,
     CameraViewModel vm,
     double screenWidth,
@@ -104,7 +123,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     final iconButtonSize = screenWidth * 0.11;
 
     return Positioned(
-      top: screenHeight * 0.012,
+      top: screenHeight * 0.015,
       left: screenWidth * 0.04,
       right: screenWidth * 0.04,
       child: Row(
@@ -115,7 +134,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             width: iconButtonSize,
             height: iconButtonSize,
             decoration: BoxDecoration(
-              color: AppColors.textPrimary.withValues(alpha: 0.55),
+              color: AppColors.textPrimary.withValues(alpha: 0.65),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -128,48 +147,49 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             ),
           ),
 
-          // Center Screen Title
-          Text(
-            'Camera Translator',
-            style: GoogleFonts.outfit(
-              color: AppColors.textWhite,
-              fontSize: (screenWidth * 0.045).clamp(16.0, 20.0),
-              fontWeight: FontWeight.w600,
-              shadows: [
-                Shadow(
-                  color: AppColors.textPrimary.withValues(alpha: 0.6),
-                  blurRadius: 8,
-                ),
-              ],
+          // Center Screen Title Pill
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.04,
+              vertical: screenHeight * 0.008,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.textPrimary.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(screenWidth * 0.04),
+            ),
+            child: Text(
+              'Camera Translator',
+              style: GoogleFonts.outfit(
+                color: AppColors.textWhite,
+                fontSize: (screenWidth * 0.042).clamp(15.0, 18.0),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
 
-          // Flash Button (Only in camera mode)
-          if (!_shouldShowResultView(vm.state))
-            Container(
-              width: iconButtonSize,
-              height: iconButtonSize,
-              decoration: BoxDecoration(
-                color: AppColors.textPrimary.withValues(alpha: 0.55),
-                shape: BoxShape.circle,
+          // Flash Button
+          Container(
+            width: iconButtonSize,
+            height: iconButtonSize,
+            decoration: BoxDecoration(
+              color: AppColors.textPrimary.withValues(alpha: 0.65),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: Icon(
+                vm.flashMode == FlashMode.torch
+                    ? Icons.flash_on_rounded
+                    : vm.flashMode == FlashMode.auto
+                        ? Icons.flash_auto_rounded
+                        : Icons.flash_off_rounded,
+                size: screenWidth * 0.05,
+                color: vm.flashMode != FlashMode.off
+                    ? AppColors.warning
+                    : AppColors.textWhite,
               ),
-              child: IconButton(
-                icon: Icon(
-                  vm.flashMode == FlashMode.torch
-                      ? Icons.flash_on_rounded
-                      : vm.flashMode == FlashMode.auto
-                          ? Icons.flash_auto_rounded
-                          : Icons.flash_off_rounded,
-                  size: screenWidth * 0.05,
-                  color: vm.flashMode != FlashMode.off
-                      ? AppColors.warning
-                      : AppColors.textWhite,
-                ),
-                onPressed: vm.toggleFlash,
-              ),
-            )
-          else
-            SizedBox(width: iconButtonSize),
+              onPressed: vm.toggleFlash,
+            ),
+          ),
         ],
       ),
     );
@@ -366,212 +386,208 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     double screenWidth,
     double screenHeight,
   ) {
-    return Container(
-      color: AppColors.scaffoldBackground,
-      margin: EdgeInsets.only(top: screenHeight * 0.07),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.045,
-          vertical: screenHeight * 0.02,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Thumbnail preview + Retake row
-            if (vm.capturedImagePath != null)
-              Container(
-                padding: EdgeInsets.all(screenWidth * 0.03),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.025),
-                      child: Image.file(
-                        File(vm.capturedImagePath!),
-                        width: screenWidth * 0.14,
-                        height: screenWidth * 0.14,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(width: screenWidth * 0.035),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Image Scanned',
-                            style: GoogleFonts.outfit(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                              fontSize: (screenWidth * 0.038).clamp(14.0, 16.0),
-                            ),
-                          ),
-                          Text(
-                            'OCR text recognition active',
-                            style: GoogleFonts.outfit(
-                              color: AppColors.textSecondary,
-                              fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextButton.icon(
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                      ),
-                      icon: Icon(Icons.refresh_rounded, size: screenWidth * 0.045),
-                      label: Text(
-                        'Retake',
-                        style: GoogleFonts.outfit(
-                          fontSize: (screenWidth * 0.035).clamp(12.0, 14.0),
-                        ),
-                      ),
-                      onPressed: vm.retake,
-                    ),
-                  ],
-                ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.045,
+        vertical: screenHeight * 0.02,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Thumbnail preview + Retake row
+          if (vm.capturedImagePath != null)
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.03),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                border: Border.all(color: AppColors.border),
               ),
-
-            SizedBox(height: screenHeight * 0.018),
-
-            // Language Selector Card
-            LanguageSelectorCard(
-              sourceLanguage: vm.sourceLanguage,
-              targetLanguage: vm.targetLanguage,
-              onSourceChanged: vm.setSourceLanguage,
-              onTargetChanged: vm.setTargetLanguage,
-              onSwap: vm.swapLanguages,
-            ),
-
-            SizedBox(height: screenHeight * 0.018),
-
-            // Detected OCR Text Card
-            _buildSectionCard(
-              title: 'DETECTED TEXT (${vm.sourceLanguage.name.toUpperCase()})',
-              content: vm.detectedText,
-              icon: Icons.document_scanner_rounded,
-              screenWidth: screenWidth,
-              trailing: vm.detectedText.isNotEmpty
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.copy_rounded,
-                        size: screenWidth * 0.048,
-                        color: AppColors.primary,
-                      ),
-                      tooltip: 'Copy Detected Text',
-                      onPressed: () => vm.copyDetectedText(context),
-                    )
-                  : null,
-            ),
-
-            SizedBox(height: screenHeight * 0.018),
-
-            // Translated Result Card
-            if (vm.state == CameraState.translating)
-              Container(
-                padding: EdgeInsets.all(screenWidth * 0.06),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      CircularProgressIndicator(color: AppColors.primary),
-                      SizedBox(height: screenHeight * 0.015),
-                      Text(
-                        'Translating to ${vm.targetLanguage.name}...',
-                        style: GoogleFonts.outfit(
-                          color: AppColors.textSecondary,
-                          fontSize: (screenWidth * 0.036).clamp(13.0, 15.0),
-                        ),
-                      ),
-                    ],
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.025),
+                    child: Image.file(
+                      File(vm.capturedImagePath!),
+                      width: screenWidth * 0.14,
+                      height: screenWidth * 0.14,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              )
-            else if (vm.translatedText.isNotEmpty)
-              _buildSectionCard(
-                title: 'TRANSLATION (${vm.targetLanguage.name.toUpperCase()})',
-                content: vm.translatedText,
-                icon: Icons.translate_rounded,
-                isHighlight: true,
-                screenWidth: screenWidth,
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.volume_up_rounded,
-                        size: screenWidth * 0.052,
-                        color: AppColors.primary,
-                      ),
-                      tooltip: 'Listen',
-                      onPressed: vm.speakTranslation,
+                  SizedBox(width: screenWidth * 0.035),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Image Scanned',
+                          style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                            fontSize: (screenWidth * 0.038).clamp(14.0, 16.0),
+                          ),
+                        ),
+                        Text(
+                          'OCR text recognition active',
+                          style: GoogleFonts.outfit(
+                            color: AppColors.textSecondary,
+                            fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
+                          ),
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.copy_rounded,
-                        size: screenWidth * 0.048,
-                        color: AppColors.primary,
-                      ),
-                      tooltip: 'Copy',
-                      onPressed: () => vm.copyTranslatedText(context),
+                  ),
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
                     ),
-                  ],
-                ),
-              )
-            else if (vm.errorMessage != null)
-              Container(
-                padding: EdgeInsets.all(screenWidth * 0.045),
-                decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                  border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-                ),
+                    icon: Icon(Icons.refresh_rounded, size: screenWidth * 0.045),
+                    label: Text(
+                      'Retake',
+                      style: GoogleFonts.outfit(
+                        fontSize: (screenWidth * 0.035).clamp(12.0, 14.0),
+                      ),
+                    ),
+                    onPressed: vm.retake,
+                  ),
+                ],
+              ),
+            ),
+
+          SizedBox(height: screenHeight * 0.018),
+
+          // Language Selector Card
+          LanguageSelectorCard(
+            sourceLanguage: vm.sourceLanguage,
+            targetLanguage: vm.targetLanguage,
+            onSourceChanged: vm.setSourceLanguage,
+            onTargetChanged: vm.setTargetLanguage,
+            onSwap: vm.swapLanguages,
+          ),
+
+          SizedBox(height: screenHeight * 0.018),
+
+          // Detected OCR Text Card
+          _buildSectionCard(
+            title: 'DETECTED TEXT (${vm.sourceLanguage.name.toUpperCase()})',
+            content: vm.detectedText,
+            icon: Icons.document_scanner_rounded,
+            screenWidth: screenWidth,
+            trailing: vm.detectedText.isNotEmpty
+                ? IconButton(
+                    icon: Icon(
+                      Icons.copy_rounded,
+                      size: screenWidth * 0.048,
+                      color: AppColors.primary,
+                    ),
+                    tooltip: 'Copy Detected Text',
+                    onPressed: () => vm.copyDetectedText(context),
+                  )
+                : null,
+          ),
+
+          SizedBox(height: screenHeight * 0.018),
+
+          // Translated Result Card
+          if (vm.state == CameraState.translating)
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.06),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Center(
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: AppColors.error,
-                      size: screenWidth * 0.07,
-                    ),
-                    SizedBox(height: screenHeight * 0.01),
-                    Text(
-                      vm.errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.outfit(
-                        color: AppColors.error,
-                        fontSize: (screenWidth * 0.034).clamp(12.0, 14.0),
-                      ),
-                    ),
+                    CircularProgressIndicator(color: AppColors.primary),
                     SizedBox(height: screenHeight * 0.015),
-                    CustomButton(
-                      text: 'Retake Photo',
-                      leadingIcon: Icons.camera_alt_rounded,
-                      onPressed: vm.retake,
+                    Text(
+                      'Translating to ${vm.targetLanguage.name}...',
+                      style: GoogleFonts.outfit(
+                        color: AppColors.textSecondary,
+                        fontSize: (screenWidth * 0.036).clamp(13.0, 15.0),
+                      ),
                     ),
                   ],
                 ),
               ),
-
-            SizedBox(height: screenHeight * 0.025),
-
-            // Bottom Scan Again Button
-            CustomButton(
-              text: 'Scan Another Image',
-              variant: ButtonVariant.filled,
-              leadingIcon: Icons.camera_alt_rounded,
-              onPressed: vm.retake,
+            )
+          else if (vm.translatedText.isNotEmpty)
+            _buildSectionCard(
+              title: 'TRANSLATION (${vm.targetLanguage.name.toUpperCase()})',
+              content: vm.translatedText,
+              icon: Icons.translate_rounded,
+              isHighlight: true,
+              screenWidth: screenWidth,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.volume_up_rounded,
+                      size: screenWidth * 0.052,
+                      color: AppColors.primary,
+                    ),
+                    tooltip: 'Listen',
+                    onPressed: vm.speakTranslation,
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.copy_rounded,
+                      size: screenWidth * 0.048,
+                      color: AppColors.primary,
+                    ),
+                    tooltip: 'Copy',
+                    onPressed: () => vm.copyTranslatedText(context),
+                  ),
+                ],
+              ),
+            )
+          else if (vm.errorMessage != null)
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.045),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    color: AppColors.error,
+                    size: screenWidth * 0.07,
+                  ),
+                  SizedBox(height: screenHeight * 0.01),
+                  Text(
+                    vm.errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      color: AppColors.error,
+                      fontSize: (screenWidth * 0.034).clamp(12.0, 14.0),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.015),
+                  CustomButton(
+                    text: 'Retake Photo',
+                    leadingIcon: Icons.camera_alt_rounded,
+                    onPressed: vm.retake,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+
+          SizedBox(height: screenHeight * 0.025),
+
+          // Bottom Scan Again Button
+          CustomButton(
+            text: 'Scan Another Image',
+            variant: ButtonVariant.filled,
+            leadingIcon: Icons.camera_alt_rounded,
+            onPressed: vm.retake,
+          ),
+        ],
       ),
     );
   }
@@ -699,13 +715,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     double screenWidth,
     double screenHeight,
   ) {
-    return Container(
-      color: AppColors.scaffoldBackground,
-      padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.06,
-        vertical: screenHeight * 0.03,
-      ),
-      child: Center(
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.06,
+          vertical: screenHeight * 0.03,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -765,13 +780,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     double screenWidth,
     double screenHeight,
   ) {
-    return Container(
-      color: AppColors.scaffoldBackground,
-      padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.06,
-        vertical: screenHeight * 0.03,
-      ),
-      child: Center(
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.06,
+          vertical: screenHeight * 0.03,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

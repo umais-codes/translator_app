@@ -5,6 +5,7 @@ import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/custom_bottom_nav.dart';
 import 'package:translator_app/view/conversation.dart';
 import 'package:translator_app/view/dictionary.dart';
+import 'package:translator_app/view/history/translation_history_screen.dart';
 import 'package:translator_app/view/home/home_translate_view.dart';
 import 'package:translator_app/view/more_fun.dart';
 import 'package:translator_app/view/settings.dart';
@@ -26,10 +27,27 @@ class MainNavigationScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(
+              Icons.history_rounded,
+              color: AppColors.textWhite,
+              size: screenWidth * 0.06,
+            ),
+            tooltip: 'History & Favorites',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TranslationHistoryScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(
               Icons.settings_outlined,
               color: AppColors.textWhite,
               size: screenWidth * 0.06,
             ),
+            tooltip: 'Settings',
             onPressed: () {
               Navigator.push(
                 context,

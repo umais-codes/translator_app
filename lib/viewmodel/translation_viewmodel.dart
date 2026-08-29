@@ -3,13 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:translator_app/data/models/translation_repository.dart';
+import 'package:translator_app/data/repositories/translation_history_repository.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 
 class TranslationViewModel extends ChangeNotifier {
   final TranslationRepository _repository;
+  final TranslationHistoryRepository _historyRepository;
   final TextEditingController _sourceController = TextEditingController();
 
-  TranslationViewModel(this._repository) {
+  TranslationViewModel(
+    this._repository, {
+    TranslationHistoryRepository? historyRepository,
+  }) : _historyRepository = historyRepository ?? TranslationHistoryRepository() {
     _sourceLanguage = LanguageModel.supportedLanguages[0]; // English
     _targetLanguage = LanguageModel.supportedLanguages[1]; // Spanish
     _initializeTts();
@@ -92,11 +97,22 @@ class TranslationViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _translatedText = await _repository.translate(
+      final result = await _repository.translate(
         _sourceText,
         from: _sourceLanguage.code,
         to: _targetLanguage.code,
       );
+      _translatedText = result;
+
+      // Automatically save successful translation to History
+      if (result.isNotEmpty && !result.startsWith('Error:')) {
+        await _historyRepository.saveTranslation(
+          sourceText: _sourceText,
+          translatedText: result,
+          sourceLanguage: _sourceLanguage,
+          targetLanguage: _targetLanguage,
+        );
+      }
     } catch (e) {
       _translatedText = 'Error: $e';
     } finally {
@@ -106,6 +122,22 @@ class TranslationViewModel extends ChangeNotifier {
   }
 
   void translate() => translateText();
+
+  /// Loads an existing translation from History back into the active screen
+  void loadTranslationForReuse({
+    required String source,
+    required String translated,
+    required LanguageModel sourceLang,
+    required LanguageModel targetLang,
+  }) {
+    _sourceText = source;
+    _sourceController.text = source;
+    _translatedText = translated;
+    _sourceLanguage = sourceLang;
+    _targetLanguage = targetLang;
+    _flutterTts.setLanguage(targetLang.code);
+    notifyListeners();
+  }
 
   void clearText() {
     _sourceText = '';

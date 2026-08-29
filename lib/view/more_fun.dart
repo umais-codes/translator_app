@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/camera.dart';
 import 'package:translator_app/view/file_translate.dart';
+import 'package:translator_app/view/history/translation_history_screen.dart';
 import 'package:translator_app/view/settings.dart';
 import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 
@@ -137,7 +138,27 @@ class MoreFunScreen extends StatelessWidget {
 
           SizedBox(height: screenHeight * 0.016),
 
-          // 4. BOTTOM WIDE CARD: System & Preferences
+          // 4. HISTORY & FAVORITES CARD
+          _buildBottomCard(
+            context,
+            title: 'History & Starred Favorites',
+            subtitle: 'Search, categorize, and review your past translations',
+            icon: Icons.history_rounded,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TranslationHistoryScreen(),
+                ),
+              );
+            },
+          ),
+
+          SizedBox(height: screenHeight * 0.016),
+
+          // 5. BOTTOM WIDE CARD: System & Preferences
           _buildBottomCard(
             context,
             title: 'Settings & Preferences',

@@ -1,9 +1,11 @@
 import 'package:camera/camera.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:translator_app/data/models/translation_repository.dart';
+import 'package:translator_app/data/repositories/translation_history_repository.dart';
 import 'package:translator_app/data/services/ocr_service.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 
@@ -22,14 +24,17 @@ enum CameraState {
 
 class CameraViewModel extends ChangeNotifier {
   final TranslationRepository _translationRepository;
+  final TranslationHistoryRepository _historyRepository;
   final OcrService _ocrService;
   final ImagePicker _imagePicker = ImagePicker();
   final FlutterTts _flutterTts = FlutterTts();
 
   CameraViewModel(
     this._translationRepository, {
+    TranslationHistoryRepository? historyRepository,
     OcrService? ocrService,
-  }) : _ocrService = ocrService ?? OcrService() {
+  })  : _historyRepository = historyRepository ?? TranslationHistoryRepository(),
+        _ocrService = ocrService ?? OcrService() {
     _sourceLanguage = LanguageModel.supportedLanguages[0]; // English
     _targetLanguage = LanguageModel.supportedLanguages[1]; // Spanish
     _initTts();
@@ -83,33 +88,33 @@ class CameraViewModel extends ChangeNotifier {
   Future<void> initializeCamera() async {
     if (_state == CameraState.initializing) return;
 
-    _setState(CameraState.initializing);
+    _setCameraState(CameraState.initializing);
     _errorMessage = null;
 
     try {
       _availableCameras = await availableCameras();
       if (_availableCameras.isEmpty) {
         _errorMessage = 'No camera found on this device.';
-        _setState(CameraState.error);
+        _setCameraState(CameraState.error);
         return;
       }
 
       await _setupCameraController(_availableCameras[_selectedCameraIndex]);
-      _setState(CameraState.cameraReady);
+      _setCameraState(CameraState.cameraReady);
     } on CameraException catch (e) {
       if (e.code == 'CameraAccessDenied' ||
           e.code == 'CameraAccessDeniedWithoutPrompt' ||
           e.code == 'CameraAccessRestricted') {
         _errorMessage =
             'Camera permission was denied. Please enable camera access in system settings.';
-        _setState(CameraState.permissionDenied);
+        _setCameraState(CameraState.permissionDenied);
       } else {
         _errorMessage = 'Failed to initialize camera: ${e.description ?? e.code}';
-        _setState(CameraState.error);
+        _setCameraState(CameraState.error);
       }
     } catch (e) {
       _errorMessage = 'An unexpected error occurred while starting the camera.';
-      _setState(CameraState.error);
+      _setCameraState(CameraState.error);
     }
   }
 
@@ -154,14 +159,14 @@ class CameraViewModel extends ChangeNotifier {
     if (!canSwitchCamera || isBusy) return;
 
     _selectedCameraIndex = (_selectedCameraIndex + 1) % _availableCameras.length;
-    _setState(CameraState.initializing);
+    _setCameraState(CameraState.initializing);
 
     try {
       await _setupCameraController(_availableCameras[_selectedCameraIndex]);
-      _setState(CameraState.cameraReady);
+      _setCameraState(CameraState.cameraReady);
     } catch (e) {
       _errorMessage = 'Failed to switch camera.';
-      _setState(CameraState.error);
+      _setCameraState(CameraState.error);
     }
   }
 
@@ -172,7 +177,7 @@ class CameraViewModel extends ChangeNotifier {
       return;
     }
 
-    _setState(CameraState.capturing);
+    _setCameraState(CameraState.capturing);
     _errorMessage = null;
 
     try {
@@ -181,37 +186,53 @@ class CameraViewModel extends ChangeNotifier {
       await processImageFile(xFile.path);
     } on CameraException catch (e) {
       _errorMessage = 'Failed to capture image: ${e.description ?? e.code}';
-      _setState(CameraState.error);
+      _setCameraState(CameraState.error);
     } catch (e) {
       _errorMessage = 'An error occurred while capturing the photo.';
-      _setState(CameraState.error);
+      _setCameraState(CameraState.error);
     }
   }
 
   Future<void> pickImageFromGallery() async {
     if (isBusy) return;
 
+    String? pickedPath;
+
     try {
       final pickedFile = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 95,
       );
-
-      if (pickedFile == null) {
-        // User cancelled picker
+      if (pickedFile != null) {
+        pickedPath = pickedFile.path;
+      }
+    } catch (_) {
+      // Fallback to FilePicker on platforms where ImagePicker plugin is unavailable (e.g. Windows desktop)
+      try {
+        final file = await FilePicker.pickFile(
+          type: FileType.image,
+        );
+        if (file != null && file.path != null) {
+          pickedPath = file.path;
+        }
+      } catch (e) {
+        _errorMessage = 'Could not access gallery image: ${e.toString()}';
+        _setCameraState(CameraState.error);
         return;
       }
-
-      _capturedImagePath = pickedFile.path;
-      await processImageFile(pickedFile.path);
-    } catch (e) {
-      _errorMessage = 'Could not access gallery image. Please try again.';
-      _setState(CameraState.error);
     }
+
+    if (pickedPath == null) {
+      // User cancelled picker - keep existing state
+      return;
+    }
+
+    _capturedImagePath = pickedPath;
+    await processImageFile(pickedPath);
   }
 
   Future<void> processImageFile(String imagePath) async {
-    _setState(CameraState.recognizing);
+    _setCameraState(CameraState.recognizing);
     _errorMessage = null;
 
     try {
@@ -222,18 +243,18 @@ class CameraViewModel extends ChangeNotifier {
         _translatedText = '';
         _errorMessage =
             'No readable text was found in this image. Please ensure the text is clear, well-lit, and try again.';
-        _setState(CameraState.error);
+        _setCameraState(CameraState.error);
         return;
       }
 
       _detectedText = text;
-      _setState(CameraState.ocrCompleted);
+      _setCameraState(CameraState.ocrCompleted);
 
       // Auto-translate detected text into target language
       await translateDetectedText();
     } catch (e) {
       _errorMessage = 'Failed to recognize text from image. Please try again.';
-      _setState(CameraState.error);
+      _setCameraState(CameraState.error);
     }
   }
 
@@ -242,7 +263,7 @@ class CameraViewModel extends ChangeNotifier {
   Future<void> translateDetectedText() async {
     if (_detectedText.trim().isEmpty) return;
 
-    _setState(CameraState.translating);
+    _setCameraState(CameraState.translating);
     _errorMessage = null;
 
     try {
@@ -253,12 +274,23 @@ class CameraViewModel extends ChangeNotifier {
       );
 
       _translatedText = result;
-      _setState(CameraState.translated);
+      _setCameraState(CameraState.translated);
+
+      // Auto-save successful OCR translation to History
+      if (result.isNotEmpty && !result.startsWith('Error:')) {
+        await _historyRepository.saveTranslation(
+          sourceText: _detectedText,
+          translatedText: result,
+          sourceLanguage: _sourceLanguage,
+          targetLanguage: _targetLanguage,
+          category: 'Camera / OCR',
+        );
+      }
     } catch (e) {
       _translatedText = '';
       _errorMessage =
           'Translation failed. Please check your internet connection or try again.';
-      _setState(CameraState.ocrCompleted);
+      _setCameraState(CameraState.ocrCompleted);
     }
   }
 
@@ -304,7 +336,7 @@ class CameraViewModel extends ChangeNotifier {
     _errorMessage = null;
 
     if (_cameraController != null && _cameraController!.value.isInitialized) {
-      _setState(CameraState.cameraReady);
+      _setCameraState(CameraState.cameraReady);
     } else {
       await initializeCamera();
     }
@@ -344,7 +376,7 @@ class CameraViewModel extends ChangeNotifier {
     await _flutterTts.speak(_translatedText);
   }
 
-  void _setState(CameraState newState) {
+  void _setCameraState(CameraState newState) {
     _state = newState;
     notifyListeners();
   }
