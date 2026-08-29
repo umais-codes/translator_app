@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/ai/ai_tools_screen.dart';
 import 'package:translator_app/view/components/custom_button.dart';
+import 'package:translator_app/view/components/custom_chip.dart';
 import 'package:translator_app/view/components/language_selector.dart';
 import 'package:translator_app/viewmodel/ai_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
@@ -334,22 +335,12 @@ class HomeTranslateView extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  ActionChip(
-                    avatar: Icon(Icons.auto_awesome_rounded, size: 14, color: AppColors.primary),
-                    label: Text(
-                      'AI Rephrase Tone',
-                      style: GoogleFonts.outfit(
-                        fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.08),
-                    side: BorderSide(color: AppColors.primary.withValues(alpha: 0.25)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    onPressed: () {
+                  CustomChip(
+                    icon: Icons.auto_awesome_rounded,
+                    label: 'AI Rephrase Tone',
+                    variant: CustomChipVariant.tonal,
+                    size: CustomChipSize.small,
+                    onTap: () {
                       context.read<AIViewModel>().preloadFromTranslation(
                             sourceText: vm.sourceText,
                             translatedText: vm.translatedText,
@@ -366,22 +357,14 @@ class HomeTranslateView extends StatelessWidget {
                     },
                   ),
                   const SizedBox(width: 8),
-                  ActionChip(
-                    avatar: Icon(Icons.lightbulb_outline_rounded, size: 14, color: AppColors.info),
-                    label: Text(
-                      'Explain Nuance',
-                      style: GoogleFonts.outfit(
-                        fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.info,
-                      ),
-                    ),
-                    backgroundColor: AppColors.info.withValues(alpha: 0.08),
-                    side: BorderSide(color: AppColors.info.withValues(alpha: 0.25)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    onPressed: () {
+                  CustomChip(
+                    icon: Icons.lightbulb_outline_rounded,
+                    label: 'Explain Nuance',
+                    variant: CustomChipVariant.tonal,
+                    size: CustomChipSize.small,
+                    activeColor: AppColors.info,
+                    activeTextColor: AppColors.info,
+                    onTap: () {
                       context.read<AIViewModel>().preloadFromTranslation(
                             sourceText: vm.sourceText,
                             translatedText: vm.translatedText,

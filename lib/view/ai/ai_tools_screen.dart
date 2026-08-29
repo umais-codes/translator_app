@@ -5,6 +5,7 @@ import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/data/models/ai_models.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/custom_button.dart';
+import 'package:translator_app/view/components/custom_chip.dart';
 import 'package:translator_app/viewmodel/ai_viewmodel.dart';
 
 class AIToolsScreen extends StatelessWidget {
@@ -173,69 +174,42 @@ class AIToolsScreen extends StatelessWidget {
           runSpacing: screenHeight * 0.01,
           children: AIToneOption.values.map((tone) {
             final isSelected = vm.selectedTone == tone;
-            return ChoiceChip(
-              label: Text(tone.label),
-              selected: isSelected,
-              selectedColor: AppColors.primary,
-              backgroundColor: AppColors.surface,
-              labelStyle: GoogleFonts.outfit(
-                fontSize: (screenWidth * 0.032).clamp(12.0, 14.0),
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? AppColors.textWhite : AppColors.textPrimary,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                side: BorderSide(
-                  color: isSelected ? AppColors.primary : AppColors.border,
-                ),
-              ),
-              onSelected: (_) => vm.setSelectedTone(tone),
+            return CustomChip(
+              label: tone.label,
+              isSelected: isSelected,
+              onTap: () => vm.setSelectedTone(tone),
             );
           }).toList(),
         ),
 
-        SizedBox(height: screenHeight * 0.018),
+        SizedBox(height: screenHeight * 0.02),
 
-        // Section Title: Length Options
+        // Section: Length Preference
+        Text(
+          'Length Preference',
+          style: GoogleFonts.outfit(
+            fontSize: (screenWidth * 0.038).clamp(14.0, 16.0),
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        SizedBox(height: screenHeight * 0.008),
+
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Length Preference',
-              style: GoogleFonts.outfit(
-                fontSize: (screenWidth * 0.035).clamp(13.0, 15.0),
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+          children: AILengthOption.values.map((len) {
+            final isSelected = vm.selectedLength == len;
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+                child: CustomChip(
+                  label: len.label,
+                  isSelected: isSelected,
+                  variant: CustomChipVariant.filled,
+                  onTap: () => vm.setSelectedLength(len),
+                ),
               ),
-            ),
-            Row(
-              children: AILengthOption.values.map((len) {
-                final isSelected = vm.selectedLength == len;
-                return Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.015),
-                  child: FilterChip(
-                    label: Text(len.label),
-                    selected: isSelected,
-                    selectedColor: AppColors.primary.withValues(alpha: 0.15),
-                    backgroundColor: AppColors.surface,
-                    showCheckmark: false,
-                    labelStyle: GoogleFonts.outfit(
-                      fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
-                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                      side: BorderSide(
-                        color: isSelected ? AppColors.primary : AppColors.border,
-                      ),
-                    ),
-                    onSelected: (_) => vm.setSelectedLength(len),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+            );
+          }).toList(),
         ),
 
         SizedBox(height: screenHeight * 0.022),

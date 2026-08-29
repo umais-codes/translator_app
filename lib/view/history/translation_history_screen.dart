@@ -5,6 +5,7 @@ import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/data/models/translation_history_model.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/custom_button.dart';
+import 'package:translator_app/view/components/custom_chip.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_history_viewmodel.dart';
@@ -190,49 +191,21 @@ class TranslationHistoryScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           if (index == tabs.length) {
             // "+ Category" button
-            return ActionChip(
-              avatar: Icon(Icons.add_rounded, size: 16, color: AppColors.primary),
-              label: Text(
-                'Category',
-                style: GoogleFonts.outfit(
-                  fontSize: screenWidth * 0.032,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              backgroundColor: AppColors.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                side: BorderSide(color: AppColors.border),
-              ),
-              onPressed: () => _showAddCategoryDialog(context, vm, screenWidth),
+            return CustomChip(
+              icon: Icons.add_rounded,
+              label: 'Category',
+              variant: CustomChipVariant.outlined,
+              onTap: () => _showAddCategoryDialog(context, vm, screenWidth),
             );
           }
 
           final tab = tabs[index];
           final isSelected = vm.selectedCategoryFilter == tab;
 
-          return FilterChip(
-            selected: isSelected,
-            label: Text(
-              tab,
-              style: GoogleFonts.outfit(
-                fontSize: screenWidth * 0.034,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? AppColors.textWhite : AppColors.textPrimary,
-              ),
-            ),
-            selectedColor: AppColors.primary,
-            backgroundColor: AppColors.surface,
-            checkmarkColor: AppColors.textWhite,
-            showCheckmark: false,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(screenWidth * 0.04),
-              side: BorderSide(
-                color: isSelected ? AppColors.primary : AppColors.border,
-              ),
-            ),
-            onSelected: (_) => vm.setCategoryFilter(tab),
+          return CustomChip(
+            label: tab,
+            isSelected: isSelected,
+            onTap: () => vm.setCategoryFilter(tab),
           );
         },
       ),
