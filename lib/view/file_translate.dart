@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
+import 'package:translator_app/view/components/custom_button.dart';
+import 'package:translator_app/view/components/language_selector.dart';
 import 'package:translator_app/viewmodel/file_translate_viewmodel.dart';
 
 class FileTranslationScreen extends StatelessWidget {
@@ -13,9 +16,7 @@ class FileTranslationScreen extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.05;
-    final buttonHeight = screenHeight * 0.055;
-    final buttonWidth = screenWidth * 0.85;
+    final horizontalPadding = screenWidth * 0.045;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -23,230 +24,182 @@ class FileTranslationScreen extends StatelessWidget {
         showBackButton: true,
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
+            vertical: screenHeight * 0.015,
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // File Picker Section
-              SizedBox(
-                width: buttonWidth,
-                height: buttonHeight,
-                child: ElevatedButton.icon(
-                  onPressed: vm.isLoading ? null : vm.selectFile,
-                  icon: const Icon(Icons.upload_file),
-                  label: Text(
-                    'Select File',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.bold,
+              // 1. Language Selector Card with Flag Pills
+              LanguageSelectorCard(
+                sourceLanguage: vm.fromLanguage,
+                targetLanguage: vm.toLanguage,
+                onSourceChanged: vm.setFromLanguage,
+                onTargetChanged: vm.setToLanguage,
+                onSwap: vm.swapLanguages,
+              ),
+
+              SizedBox(height: screenHeight * 0.02),
+
+              // 2. Upload Zone Card
+              GestureDetector(
+                onTap: vm.isLoading ? null : vm.selectFile,
+                child: Container(
+                  padding: EdgeInsets.all(screenWidth * 0.06),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: vm.selectedFileName != null
+                          ? AppColors.primary
+                          : AppColors.border,
+                      width: 1.5,
                     ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.shadow,
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textWhite,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightBlueBackground,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          vm.selectedFileName != null
+                              ? Icons.check_circle_rounded
+                              : Icons.cloud_upload_rounded,
+                          size: screenWidth * 0.12,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        vm.selectedFileName ?? 'Tap to Select Document',
+                        style: GoogleFonts.outfit(
+                          fontSize: screenWidth * 0.044,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Supports .txt, .json, and .csv files',
+                        style: GoogleFonts.outfit(
+                          fontSize: screenWidth * 0.034,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-              if (vm.selectedFileName != null) ...[
+              SizedBox(height: screenHeight * 0.02),
+
+              // 3. Translate Button
+              CustomButton(
+                text: 'Translate File',
+                variant: ButtonVariant.filled,
+                height: screenHeight * 0.062,
+                borderRadius: 16,
+                leadingIcon: Icons.translate_rounded,
+                isLoading: vm.isLoading,
+                isDisabled: vm.fileContent == null,
+                onPressed: vm.translateFile,
+                fontSize: screenWidth * 0.044,
+                fontWeight: FontWeight.bold,
+              ),
+
+              if (vm.errorMessage != null) ...[
                 SizedBox(height: screenHeight * 0.015),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.03,
-                    vertical: screenHeight * 0.008,
+                Text(
+                  vm.errorMessage!,
+                  style: GoogleFonts.outfit(
+                    color: AppColors.error,
+                    fontSize: screenWidth * 0.036,
+                    fontWeight: FontWeight.w600,
                   ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+
+              // 4. Translated Output Preview
+              if (vm.translatedContent != null) ...[
+                SizedBox(height: screenHeight * 0.02),
+                Container(
+                  padding: EdgeInsets.all(screenWidth * 0.045),
                   decoration: BoxDecoration(
                     color: AppColors.lightBlueBackground,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: AppColors.border),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.shadow,
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.description, size: 18, color: AppColors.primary),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          vm.selectedFileName!,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: screenWidth * 0.036,
-                            color: AppColors.textPrimary,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                vm.toLanguage.flag,
+                                style: TextStyle(fontSize: screenWidth * 0.048),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Translated Output (${vm.toLanguage.name})',
+                                style: GoogleFonts.outfit(
+                                  fontSize: screenWidth * 0.04,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
                           ),
-                          overflow: TextOverflow.ellipsis,
+                          IconButton(
+                            icon: Icon(Icons.copy_rounded, color: AppColors.primary, size: 20),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Copied translation!')),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        vm.translatedContent!,
+                        style: GoogleFonts.outfit(
+                          fontSize: screenWidth * 0.04,
+                          color: AppColors.textPrimary,
+                          height: 1.4,
                         ),
                       ),
                     ],
                   ),
                 ),
               ],
-
-              SizedBox(height: screenHeight * 0.02),
-
-              // Language Selection
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.04,
-                  vertical: screenHeight * 0.006,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: AppColors.border),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: AppColors.shadow,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    DropdownButton<String>(
-                      value: vm.fromLanguage,
-                      underline: const SizedBox(),
-                      items: _getLanguageDropdownItems(screenWidth),
-                      onChanged: (value) {
-                        if (value != null) {
-                          vm.setFromLanguage(value);
-                        }
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.swap_horiz,
-                        color: AppColors.primary,
-                        size: screenWidth * 0.065,
-                      ),
-                      onPressed: vm.swapLanguages,
-                    ),
-                    DropdownButton<String>(
-                      value: vm.toLanguage,
-                      underline: const SizedBox(),
-                      items: _getLanguageDropdownItems(screenWidth),
-                      onChanged: (value) {
-                        if (value != null) {
-                          vm.setToLanguage(value);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: screenHeight * 0.02),
-
-              // Translate Button
-              SizedBox(
-                width: buttonWidth,
-                height: buttonHeight,
-                child: ElevatedButton.icon(
-                  onPressed: vm.isLoading || vm.fileContent == null
-                      ? null
-                      : vm.translateFile,
-                  icon: const Icon(Icons.translate),
-                  label: Text(
-                    'Translate',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.success,
-                    foregroundColor: AppColors.textWhite,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: screenHeight * 0.02),
-
-              // Loading Indicator
-              if (vm.isLoading)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
-                  child: const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  ),
-                ),
-
-              // Error Message
-              if (vm.errorMessage != null)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
-                  child: Text(
-                    vm.errorMessage!,
-                    style: TextStyle(
-                      color: AppColors.error,
-                      fontSize: screenWidth * 0.038,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-              // Translated Content
-              if (vm.translatedContent != null)
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(screenWidth * 0.04),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: AppColors.border),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: AppColors.shadow,
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: SingleChildScrollView(
-                      child: Text(
-                        vm.translatedContent!,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.04,
-                          color: AppColors.textPrimary,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  List<DropdownMenuItem<String>> _getLanguageDropdownItems(double screenWidth) {
-    return FileTranslateViewModel.supportedLanguages.entries
-        .map(
-          (entry) => DropdownMenuItem(
-            value: entry.key,
-            child: Text(
-              entry.value,
-              style: TextStyle(
-                fontSize: screenWidth * 0.038,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-        )
-        .toList();
   }
 }

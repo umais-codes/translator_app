@@ -9,7 +9,7 @@ class MicrophoneButton extends StatelessWidget {
     return Container(
       width: 70,
       height: 70,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.primary,
         shape: BoxShape.circle,
         boxShadow: [
@@ -17,7 +17,7 @@ class MicrophoneButton extends StatelessWidget {
             color: AppColors.shadowPrimary,
             spreadRadius: 2,
             blurRadius: 8,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),

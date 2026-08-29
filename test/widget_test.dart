@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
+import 'package:translator_app/data/models/translation_provider.dart';
+import 'package:translator_app/data/models/translation_repository.dart';
 import 'package:translator_app/main.dart';
+import 'package:translator_app/viewmodel/auth_viewmodel.dart';
+import 'package:translator_app/viewmodel/conversation_viewmodel.dart';
+import 'package:translator_app/viewmodel/dictionary_viewmodel.dart';
+import 'package:translator_app/viewmodel/file_translate_viewmodel.dart';
+import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
+import 'package:translator_app/viewmodel/settings_viewmodel.dart';
+import 'package:translator_app/viewmodel/translation_viewmodel.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App smoke test initializes MyApp', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => MainNavViewModel()),
+          ChangeNotifierProvider(create: (_) => TranslationProvider()),
+          ChangeNotifierProvider(
+            create: (_) => TranslationViewModel(TranslationRepository()),
+          ),
+          ChangeNotifierProvider(create: (_) => ConversationViewModel()),
+          ChangeNotifierProvider(create: (_) => DictionaryViewModel()),
+          ChangeNotifierProvider(create: (_) => FileTranslateViewModel()),
+          ChangeNotifierProvider(create: (_) => AuthViewModel()),
+          ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+        ],
+        child: const MyApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Allow splash animations and timer (2800ms) to complete
+    await tester.pump(const Duration(milliseconds: 3000));
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(MyApp), findsOneWidget);
   });
 }
+

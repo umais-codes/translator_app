@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:translator_app/view/components/language_selector.dart';
 import 'package:translator_app/view/conversation.dart';
 import 'package:translator_app/view/more_fun.dart';
 
 class BottomActionBar1 extends StatelessWidget {
-  const BottomActionBar1(LanguageSelector languageSelector, {super.key});
+  const BottomActionBar1({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
-
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [

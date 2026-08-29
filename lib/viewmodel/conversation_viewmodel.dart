@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:translator_app/viewmodel/lang_model.dart';
 
 class ConversationViewModel extends ChangeNotifier {
   final stt.SpeechToText _speech = stt.SpeechToText();
@@ -12,45 +13,43 @@ class ConversationViewModel extends ChangeNotifier {
   bool _isTranslating = false;
   String _inputText = '';
   String _translatedText = '';
-  String _inputLanguage = 'en'; // Default input language (English)
-  String _outputLanguage = 'ar'; // Default output language (Arabic)
-
-  static const Map<String, String> supportedLanguages = {
-    'en': 'English',
-    'ar': 'Arabic',
-    'es': 'Spanish',
-    'fr': 'French',
-    'de': 'German',
-    'zh': 'Chinese',
-    'hi': 'Hindi',
-    'ja': 'Japanese',
-    'ru': 'Russian',
-    'ko': 'Korean',
-    'ur': 'Urdu',
-    'pt': 'Portuguese',
-  };
+  LanguageModel _inputLanguage = LanguageModel.fromCode('en');
+  LanguageModel _outputLanguage = LanguageModel.fromCode('ar');
 
   bool get isListening => _isListening;
   bool get isTranslating => _isTranslating;
   String get inputText => _inputText;
   String get translatedText => _translatedText;
-  String get inputLanguage => _inputLanguage;
-  String get outputLanguage => _outputLanguage;
+  LanguageModel get inputLanguage => _inputLanguage;
+  LanguageModel get outputLanguage => _outputLanguage;
 
-  void setInputLanguage(String lang) {
+  void setInputLanguage(LanguageModel lang) {
     _inputLanguage = lang;
     notifyListeners();
+    if (_inputText.isNotEmpty) {
+      translateText(_inputText);
+    }
   }
 
-  void setOutputLanguage(String lang) {
+  void setOutputLanguage(LanguageModel lang) {
     _outputLanguage = lang;
     notifyListeners();
+    if (_inputText.isNotEmpty) {
+      translateText(_inputText);
+    }
   }
 
   void swapLanguages() {
     final temp = _inputLanguage;
     _inputLanguage = _outputLanguage;
     _outputLanguage = temp;
+
+    if (_translatedText.isNotEmpty) {
+      _inputText = _translatedText;
+      _translatedText = '';
+      translateText(_inputText);
+    }
+
     notifyListeners();
   }
 
@@ -64,7 +63,7 @@ class ConversationViewModel extends ChangeNotifier {
         _isListening = true;
         notifyListeners();
         _speech.listen(
-          localeId: _inputLanguage,
+          localeId: _inputLanguage.code,
           onResult: (result) {
             _inputText = result.recognizedWords;
             notifyListeners();
@@ -96,7 +95,7 @@ class ConversationViewModel extends ChangeNotifier {
     try {
       final encodedText = Uri.encodeComponent(text);
       final url =
-          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=$_inputLanguage|$_outputLanguage';
+          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=${_inputLanguage.code}|${_outputLanguage.code}';
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
@@ -114,10 +113,10 @@ class ConversationViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> speak(String text, String language) async {
+  Future<void> speak(String text, String languageCode) async {
     if (text.trim().isEmpty) return;
     try {
-      await _flutterTts.setLanguage(language);
+      await _flutterTts.setLanguage(languageCode);
       await _flutterTts.speak(text);
     } catch (e) {
       debugPrint('TTS Error: $e');

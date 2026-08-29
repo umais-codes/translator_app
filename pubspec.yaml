@@ -43,6 +43,7 @@ flutter:
   assets:
     - assets/images/splash_screen.png
     - assets/images/c.png
+    - assets/images/
 
 
   # fonts:

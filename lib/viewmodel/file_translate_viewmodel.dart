@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:translator_app/viewmodel/lang_model.dart';
 
 class FileTranslateViewModel extends ChangeNotifier {
   bool _isLoading = false;
@@ -11,39 +12,23 @@ class FileTranslateViewModel extends ChangeNotifier {
   String? _translatedContent;
   String? _errorMessage;
 
-  String _fromLanguage = 'en'; // Default: English
-  String _toLanguage = 'es'; // Default: Spanish
-
-  static const Map<String, String> supportedLanguages = {
-    'en': 'English',
-    'es': 'Spanish',
-    'fr': 'French',
-    'de': 'German',
-    'it': 'Italian',
-    'pt': 'Portuguese',
-    'ru': 'Russian',
-    'zh': 'Chinese',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'ar': 'Arabic',
-    'hi': 'Hindi',
-    'ur': 'Urdu',
-  };
+  LanguageModel _fromLanguage = LanguageModel.fromCode('en'); // Default: English
+  LanguageModel _toLanguage = LanguageModel.fromCode('es'); // Default: Spanish
 
   bool get isLoading => _isLoading;
   String? get selectedFileName => _selectedFileName;
   String? get fileContent => _fileContent;
   String? get translatedContent => _translatedContent;
   String? get errorMessage => _errorMessage;
-  String get fromLanguage => _fromLanguage;
-  String get toLanguage => _toLanguage;
+  LanguageModel get fromLanguage => _fromLanguage;
+  LanguageModel get toLanguage => _toLanguage;
 
-  void setFromLanguage(String lang) {
+  void setFromLanguage(LanguageModel lang) {
     _fromLanguage = lang;
     notifyListeners();
   }
 
-  void setToLanguage(String lang) {
+  void setToLanguage(LanguageModel lang) {
     _toLanguage = lang;
     notifyListeners();
   }
@@ -100,7 +85,7 @@ class FileTranslateViewModel extends ChangeNotifier {
     try {
       final encodedText = Uri.encodeComponent(_fileContent!);
       final url =
-          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=$_fromLanguage|$_toLanguage';
+          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=${_fromLanguage.code}|${_toLanguage.code}';
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {

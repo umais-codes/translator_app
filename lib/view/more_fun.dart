@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
-import 'package:translator_app/view/components/custom_app_bar.dart';
-import 'package:translator_app/view/dictionary.dart';
 import 'package:translator_app/view/file_translate.dart';
 import 'package:translator_app/view/settings.dart';
+import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 
 class MoreFunScreen extends StatelessWidget {
   const MoreFunScreen({super.key});
@@ -13,67 +14,255 @@ class MoreFunScreen extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.05;
+    final horizontalPadding = screenWidth * 0.045;
 
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: 'More Fun',
-        showBackButton: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: AppColors.textWhite,
-              size: screenWidth * 0.06,
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: screenHeight * 0.02,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Smart Tools',
+            style: GoogleFonts.outfit(
+              fontSize: (screenWidth * 0.058).clamp(22.0, 26.0),
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.6,
+              color: AppColors.textPrimary,
             ),
-            onPressed: () {
+          ),
+          Text(
+            'AI-powered language suite',
+            style: GoogleFonts.outfit(
+              fontSize: (screenWidth * 0.035).clamp(13.0, 15.0),
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+          SizedBox(height: screenHeight * 0.022),
+
+          // 1. HERO BENTO CARD: Document & File Translation
+          _buildHeroCard(
+            context,
+            title: 'File & Document Translator',
+            subtitle:
+                'Translate large TXT, JSON, and CSV documents in seconds with structure preservation.',
+            icon: Icons.auto_stories_rounded,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FileTranslationScreen(),
+                ),
+              );
+            },
+          ),
+
+          SizedBox(height: screenHeight * 0.016),
+
+          // 2. TWO-COLUMN BENTO GRID: Dictionary & Voice Conversation
+          Row(
+            children: [
+              // Left Bento Tile: Dictionary
+              Expanded(
+                child: _buildBentoTile(
+                  context,
+                  title: 'Dictionary & Thesaurus',
+                  subtitle: 'Explore 100k+ word meanings & phonetics',
+                  icon: Icons.menu_book_rounded,
+                  badge: 'VOCABULARY',
+                  gradientColors: [
+                    AppColors.success,
+                    Color.lerp(AppColors.success, AppColors.textWhite, 0.25) ??
+                        AppColors.success,
+                  ],
+                  screenWidth: screenWidth,
+                  screenHeight: screenHeight,
+                  onTap: () {
+                    context.read<MainNavViewModel>().setIndex(2);
+                  },
+                ),
+              ),
+              SizedBox(width: screenWidth * 0.03),
+
+              // Right Bento Tile: Voice Conversation
+              Expanded(
+                child: _buildBentoTile(
+                  context,
+                  title: 'Voice Conversation',
+                  subtitle: 'Real-time two-way dialogue translation',
+                  icon: Icons.record_voice_over_rounded,
+                  badge: 'TWO-WAY LIVE',
+                  gradientColors: [
+                    AppColors.warning,
+                    Color.lerp(AppColors.warning, AppColors.textWhite, 0.25) ??
+                        AppColors.warning,
+                  ],
+                  screenWidth: screenWidth,
+                  screenHeight: screenHeight,
+                  onTap: () {
+                    context.read<MainNavViewModel>().setIndex(1);
+                  },
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: screenHeight * 0.016),
+
+          // 3. BOTTOM WIDE CARD: System & Preferences
+          _buildBottomCard(
+            context,
+            title: 'Settings & Preferences',
+            subtitle: 'Color themes, speech speeds, and offline caching',
+            icon: Icons.tune_rounded,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Settings()),
               );
             },
           ),
+
+          SizedBox(height: screenHeight * 0.02),
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _buildButton(
-                context,
-                color: AppColors.lightBlueCard,
-                icon: Icons.description,
-                title: 'File translate',
-                subtitle: 'Ask anything from AI experts',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FileTranslationScreen(),
-                    ),
-                  );
-                },
+    );
+  }
+
+  // --- 1. HERO BENTO CARD ---
+  Widget _buildHeroCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required double screenWidth,
+    required double screenHeight,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primary, AppColors.primaryDark],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.28),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
               ),
-              SizedBox(height: screenHeight * 0.02),
-              _buildButton(
-                context,
-                color: AppColors.lightGreenBackground,
-                icon: Icons.book,
-                title: 'Dictionary',
-                subtitle: 'Ask anything from AI experts',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DictionaryScreen(),
+            ],
+          ),
+          padding: EdgeInsets.all(screenWidth * 0.05),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.textWhite.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'AI DOCUMENT ENGINE',
+                      style: GoogleFonts.outfit(
+                        fontSize: (screenWidth * 0.026).clamp(10.0, 11.5),
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.8,
+                        color: AppColors.textWhite,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: AppColors.textWhite.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        color: AppColors.textWhite,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: screenHeight * 0.016),
+
+              Text(
+                title,
+                style: GoogleFonts.outfit(
+                  fontSize: (screenWidth * 0.046).clamp(17.0, 21.0),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textWhite,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.005),
+              Text(
+                subtitle,
+                style: GoogleFonts.outfit(
+                  fontSize: (screenWidth * 0.032).clamp(12.0, 13.5),
+                  color: AppColors.textWhite.withValues(alpha: 0.9),
+                  height: 1.35,
+                ),
+              ),
+
+              SizedBox(height: screenHeight * 0.016),
+
+              // File Types Pill Badges
+              Row(
+                children: ['TXT', 'JSON', 'CSV'].map((format) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.textWhite.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: AppColors.textWhite.withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: Text(
+                      format,
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textWhite,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   );
-                },
+                }).toList(),
               ),
             ],
           ),
@@ -82,77 +271,200 @@ class MoreFunScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(
+  // --- 2. MEDIUM BENTO GRID TILE ---
+  Widget _buildBentoTile(
     BuildContext context, {
-    required Color color,
-    required IconData icon,
     required String title,
     required String subtitle,
+    required IconData icon,
+    required String badge,
+    required List<Color> gradientColors,
+    required double screenWidth,
+    required double screenHeight,
     required VoidCallback onTap,
   }) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Center(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
         child: Container(
-          width: double.infinity,
-          height: screenHeight * 0.12,
+          height: (screenHeight * 0.21).clamp(170.0, 200.0),
+          padding: EdgeInsets.all(screenWidth * 0.04),
           decoration: BoxDecoration(
-            color: color,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.border),
             boxShadow: const [
               BoxShadow(
                 color: AppColors.shadow,
-                blurRadius: 6,
-                offset: Offset(0, 3),
+                blurRadius: 10,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Icon Badge with ambient glow
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: screenWidth * 0.115,
+                    height: screenWidth * 0.115,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: gradientColors,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(13),
+                      boxShadow: [
+                        BoxShadow(
+                          color: gradientColors.last.withValues(alpha: 0.28),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Icon(
+                        icon,
+                        color: AppColors.textWhite,
+                        size: screenWidth * 0.058,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_outward_rounded,
+                    size: 17,
+                    color: AppColors.textMuted,
+                  ),
+                ],
+              ),
+
+              // Title and Subtitle
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      fontSize: (screenWidth * 0.037).clamp(14.0, 16.0),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      fontSize: (screenWidth * 0.029).clamp(11.0, 12.0),
+                      color: AppColors.textSecondary,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- 3. BOTTOM WIDE CARD ---
+  Widget _buildBottomCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required double screenWidth,
+    required double screenHeight,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: EdgeInsets.all(screenWidth * 0.042),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 10,
+                offset: Offset(0, 2),
               ),
             ],
           ),
           child: Row(
             children: [
-              Padding(
-                padding: EdgeInsets.all(screenWidth * 0.04),
-                child: Icon(
-                  icon,
-                  size: screenWidth * 0.1,
-                  color: AppColors.primary,
+              Container(
+                width: screenWidth * 0.12,
+                height: screenWidth * 0.12,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primaryDark, AppColors.primaryAccent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryAccent.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: AppColors.textWhite,
+                    size: screenWidth * 0.06,
+                  ),
                 ),
               ),
+              SizedBox(width: screenWidth * 0.035),
               Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.048,
+                      style: GoogleFonts.outfit(
+                        fontSize: (screenWidth * 0.039).clamp(15.0, 16.5),
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    SizedBox(height: screenHeight * 0.005),
+                    const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.036,
+                      style: GoogleFonts.outfit(
+                        fontSize: (screenWidth * 0.031).clamp(11.5, 13.0),
                         color: AppColors.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(screenWidth * 0.04),
-                child: Icon(
-                  Icons.chevron_right,
-                  size: screenWidth * 0.06,
-                  color: AppColors.textSecondary,
-                ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textMuted,
+                size: screenWidth * 0.055,
               ),
             ],
           ),

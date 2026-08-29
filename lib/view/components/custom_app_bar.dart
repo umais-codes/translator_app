@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -8,7 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBackTap;
   final List<Widget>? actions;
   final bool centerTitle;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Color foregroundColor;
   final double elevation;
   final PreferredSizeWidget? bottom;
@@ -22,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBackTap,
     this.actions,
     this.centerTitle = true,
-    this.backgroundColor = AppColors.primary,
+    this.backgroundColor,
     this.foregroundColor = AppColors.textWhite,
     this.elevation = 0,
     this.bottom,
@@ -42,7 +43,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: elevation,
       centerTitle: centerTitle,
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? AppColors.primary,
       foregroundColor: foregroundColor,
       automaticallyImplyLeading: false,
       leading: showBackButton && Navigator.canPop(context)
@@ -55,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: titleWidget ??
           Text(
             title,
-            style: TextStyle(
+            style: GoogleFonts.outfit(
               fontSize: titleFontSize,
               fontWeight: FontWeight.bold,
               color: foregroundColor,

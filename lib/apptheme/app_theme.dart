@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_colors.dart';
 
 export 'app_colors.dart';
@@ -7,23 +8,29 @@ class AppTheme {
   // Private constructor to prevent instantiation
   AppTheme._();
 
-  static ThemeData get lightTheme {
+  static ThemeData getTheme({Color? primaryColor}) {
+    final effectivePrimary = primaryColor ?? AppColors.primary;
+    final baseTextTheme = ThemeData.light().textTheme;
+    final outfitTextTheme = GoogleFonts.outfitTextTheme(baseTextTheme);
+
     return ThemeData(
       useMaterial3: true,
+      fontFamily: GoogleFonts.outfit().fontFamily,
+      textTheme: outfitTextTheme,
       scaffoldBackgroundColor: AppColors.scaffoldBackground,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        primary: AppColors.primary,
+        seedColor: effectivePrimary,
+        primary: effectivePrimary,
         secondary: AppColors.primaryAccent,
         surface: AppColors.surface,
         error: AppColors.error,
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.primary,
+      appBarTheme: AppBarTheme(
+        backgroundColor: effectivePrimary,
         foregroundColor: AppColors.textWhite,
         centerTitle: true,
         elevation: 0,
-        titleTextStyle: TextStyle(
+        titleTextStyle: GoogleFonts.outfit(
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: AppColors.textWhite,
@@ -31,8 +38,11 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: effectivePrimary,
           foregroundColor: AppColors.textWhite,
+          textStyle: GoogleFonts.outfit(
+            fontWeight: FontWeight.bold,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -41,12 +51,21 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primary,
+          foregroundColor: effectivePrimary,
+          textStyle: GoogleFonts.outfit(
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
+        hintStyle: GoogleFonts.outfit(
+          color: AppColors.textMuted,
+        ),
+        labelStyle: GoogleFonts.outfit(
+          color: AppColors.textSecondary,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 14,
           horizontal: 16,
@@ -61,7 +80,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: effectivePrimary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -70,4 +89,6 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get lightTheme => getTheme();
 }

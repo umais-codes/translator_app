@@ -101,7 +101,7 @@ class TextInputArea extends StatelessWidget {
 
           // Show Loading Indicator
           if (provider.isLoading) ...[
-            const Center(
+            Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
           ],

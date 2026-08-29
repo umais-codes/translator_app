@@ -39,7 +39,13 @@ class TranslationScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              const LanguageSelector(),
+              LanguageSelectorCard(
+                sourceLanguage: provider.sourceLanguage,
+                targetLanguage: provider.targetLanguage,
+                onSourceChanged: provider.setSourceLanguage,
+                onTargetChanged: provider.setTargetLanguage,
+                onSwap: provider.swapLanguages,
+              ),
               SizedBox(height: screenHeight * 0.02),
               Row(
                 children: [
@@ -119,9 +125,9 @@ class TranslationScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/flags/${provider.sourceLanguage.flagAsset}.png',
-                      height: screenWidth * 0.05,
+                    Text(
+                      provider.sourceLanguage.flag,
+                      style: TextStyle(fontSize: screenWidth * 0.05),
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -138,9 +144,9 @@ class TranslationScreen extends StatelessWidget {
                       size: screenWidth * 0.05,
                     ),
                     SizedBox(width: screenWidth * 0.025),
-                    Image.asset(
-                      'assets/flags/${provider.targetLanguage.flagAsset}.png',
-                      height: screenWidth * 0.05,
+                    Text(
+                      provider.targetLanguage.flag,
+                      style: TextStyle(fontSize: screenWidth * 0.05),
                     ),
                     const SizedBox(width: 6),
                     Text(
