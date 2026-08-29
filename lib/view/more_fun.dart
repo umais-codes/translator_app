@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/view/camera.dart';
 import 'package:translator_app/view/file_translate.dart';
 import 'package:translator_app/view/settings.dart';
 import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
@@ -45,12 +46,32 @@ class MoreFunScreen extends StatelessWidget {
 
           SizedBox(height: screenHeight * 0.022),
 
-          // 1. HERO BENTO CARD: Document & File Translation
+          // 1. HERO BENTO CARD: Camera & OCR Live Translator
           _buildHeroCard(
             context,
-            title: 'File & Document Translator',
+            title: 'Camera & OCR Translator',
             subtitle:
-                'Translate large TXT, JSON, and CSV documents in seconds with structure preservation.',
+                'Scan printed text from signs, menus, and documents with instant optical recognition.',
+            icon: Icons.camera_alt_rounded,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CameraScreen(),
+                ),
+              );
+            },
+          ),
+
+          SizedBox(height: screenHeight * 0.016),
+
+          // 2. DOCUMENT TRANSLATOR WIDE CARD
+          _buildBottomCard(
+            context,
+            title: 'File & Document Translator',
+            subtitle: 'Translate TXT, JSON, and CSV documents in seconds',
             icon: Icons.auto_stories_rounded,
             screenWidth: screenWidth,
             screenHeight: screenHeight,
@@ -66,7 +87,7 @@ class MoreFunScreen extends StatelessWidget {
 
           SizedBox(height: screenHeight * 0.016),
 
-          // 2. TWO-COLUMN BENTO GRID: Dictionary & Voice Conversation
+          // 3. TWO-COLUMN BENTO GRID: Dictionary & Voice Conversation
           Row(
             children: [
               // Left Bento Tile: Dictionary
@@ -116,7 +137,7 @@ class MoreFunScreen extends StatelessWidget {
 
           SizedBox(height: screenHeight * 0.016),
 
-          // 3. BOTTOM WIDE CARD: System & Preferences
+          // 4. BOTTOM WIDE CARD: System & Preferences
           _buildBottomCard(
             context,
             title: 'Settings & Preferences',
