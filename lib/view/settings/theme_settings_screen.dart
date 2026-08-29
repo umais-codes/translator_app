@@ -62,12 +62,14 @@ class ThemeSettingsScreen extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.01),
 
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.surface,
+            Material(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(20),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.border),
+                side: const BorderSide(color: AppColors.border),
               ),
+              clipBehavior: Clip.antiAlias,
               child: Column(
                 children: [
                   _buildThemeRadioTile(
@@ -111,12 +113,14 @@ class ThemeSettingsScreen extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.01),
 
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.surface,
+            Material(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(20),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.border),
+                side: const BorderSide(color: AppColors.border),
               ),
+              clipBehavior: Clip.antiAlias,
               child: Column(
                 children: _palettes.map((p) {
                   final isSelected = vm.selectedPalette == p['name'];
