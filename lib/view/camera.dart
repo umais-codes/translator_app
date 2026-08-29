@@ -30,20 +30,20 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!mounted) return;
     final vm = context.read<CameraViewModel>();
-    if (state == AppLifecycleState.inactive) {
-      vm.cameraController?.dispose();
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      vm.pauseCamera();
     } else if (state == AppLifecycleState.resumed) {
-      if (vm.state == CameraState.cameraReady ||
-          vm.state == CameraState.initial) {
-        vm.initializeCamera();
-      }
+      vm.resumeCamera();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // Safely pause camera when leaving the screen
+    context.read<CameraViewModel>().pauseCamera();
     super.dispose();
   }
 
@@ -202,7 +202,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     double screenWidth,
     double screenHeight,
   ) {
-    if (!vm.isCameraInitialized) {
+    final controller = vm.cameraController;
+    if (!vm.isCameraInitialized ||
+        controller == null ||
+        !controller.value.isInitialized ||
+        controller.value.previewSize == null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -221,7 +225,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       );
     }
 
-    final controller = vm.cameraController!;
     final previewSize = controller.value.previewSize!;
     final previewAspectRatio = previewSize.height / previewSize.width;
 

@@ -118,11 +118,34 @@ class CameraViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> pauseCamera() async {
+    final controller = _cameraController;
+    if (controller != null) {
+      _cameraController = null;
+      notifyListeners();
+      try {
+        await controller.dispose();
+      } catch (_) {
+        // Ignore errors during dispose
+      }
+    }
+  }
+
+  Future<void> resumeCamera() async {
+    if (_state == CameraState.cameraReady ||
+        _state == CameraState.initial ||
+        _state == CameraState.initializing) {
+      await initializeCamera();
+    }
+  }
+
   Future<void> _setupCameraController(CameraDescription description) async {
     final oldController = _cameraController;
     if (oldController != null) {
       _cameraController = null;
-      await oldController.dispose();
+      try {
+        await oldController.dispose();
+      } catch (_) {}
     }
 
     final newController = CameraController(
