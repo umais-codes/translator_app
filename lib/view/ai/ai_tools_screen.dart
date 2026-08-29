@@ -6,7 +6,6 @@ import 'package:translator_app/data/models/ai_models.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/custom_button.dart';
 import 'package:translator_app/viewmodel/ai_viewmodel.dart';
-import 'package:translator_app/viewmodel/lang_model.dart';
 
 class AIToolsScreen extends StatelessWidget {
   const AIToolsScreen({super.key});

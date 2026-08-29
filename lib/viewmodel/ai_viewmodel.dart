@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
 import 'package:translator_app/data/models/ai_models.dart';
 import 'package:translator_app/data/repositories/ai_repository.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';

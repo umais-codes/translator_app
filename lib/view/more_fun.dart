@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/view/ai/ai_tools_screen.dart';
 import 'package:translator_app/view/camera.dart';
 import 'package:translator_app/view/file_translate.dart';
 import 'package:translator_app/view/history/translation_history_screen.dart';
@@ -68,7 +69,27 @@ class MoreFunScreen extends StatelessWidget {
 
           SizedBox(height: screenHeight * 0.016),
 
-          // 2. DOCUMENT TRANSLATOR WIDE CARD
+          // 2. AI LANGUAGE STUDIO CARD
+          _buildBottomCard(
+            context,
+            title: 'AI Language Intelligence',
+            subtitle: 'Tone rephraser, grammar explainer & cultural nuance analysis',
+            icon: Icons.auto_awesome_rounded,
+            screenWidth: screenWidth,
+            screenHeight: screenHeight,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AIToolsScreen(),
+                ),
+              );
+            },
+          ),
+
+          SizedBox(height: screenHeight * 0.016),
+
+          // 3. DOCUMENT TRANSLATOR WIDE CARD
           _buildBottomCard(
             context,
             title: 'File & Document Translator',

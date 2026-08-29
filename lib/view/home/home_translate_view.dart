@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/view/ai/ai_tools_screen.dart';
 import 'package:translator_app/view/components/custom_button.dart';
 import 'package:translator_app/view/components/language_selector.dart';
+import 'package:translator_app/viewmodel/ai_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
 
 class HomeTranslateView extends StatelessWidget {
@@ -321,6 +323,84 @@ class HomeTranslateView extends StatelessWidget {
               height: 1.4,
             ),
           ),
+
+          if (vm.translatedText.isNotEmpty && !vm.translatedText.startsWith('Error:')) ...[
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            const SizedBox(height: 8),
+
+            // AI Action Chips Row
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ActionChip(
+                    avatar: Icon(Icons.auto_awesome_rounded, size: 14, color: AppColors.primary),
+                    label: Text(
+                      'AI Rephrase Tone',
+                      style: GoogleFonts.outfit(
+                        fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.08),
+                    side: BorderSide(color: AppColors.primary.withValues(alpha: 0.25)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    onPressed: () {
+                      context.read<AIViewModel>().preloadFromTranslation(
+                            sourceText: vm.sourceText,
+                            translatedText: vm.translatedText,
+                            sourceLang: vm.sourceLanguage,
+                            targetLang: vm.targetLanguage,
+                            initialTab: 0,
+                          );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AIToolsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  ActionChip(
+                    avatar: Icon(Icons.lightbulb_outline_rounded, size: 14, color: AppColors.info),
+                    label: Text(
+                      'Explain Nuance',
+                      style: GoogleFonts.outfit(
+                        fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.info,
+                      ),
+                    ),
+                    backgroundColor: AppColors.info.withValues(alpha: 0.08),
+                    side: BorderSide(color: AppColors.info.withValues(alpha: 0.25)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    onPressed: () {
+                      context.read<AIViewModel>().preloadFromTranslation(
+                            sourceText: vm.sourceText,
+                            translatedText: vm.translatedText,
+                            sourceLang: vm.sourceLanguage,
+                            targetLang: vm.targetLanguage,
+                            initialTab: 2,
+                          );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AIToolsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
