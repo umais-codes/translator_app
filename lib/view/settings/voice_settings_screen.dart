@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -11,10 +12,8 @@ class VoiceSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -25,40 +24,40 @@ class VoiceSettingsScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
+            vertical: (812 * 0.02).h,
           ),
           children: [
             // Status Card
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                     color: AppColors.shadow,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+                    blurRadius: 8.r,
+                    offset: Offset(0, 2.h),
                   ),
                 ],
               ),
               child: Row(
                 children: [
                   Container(
-                    width: screenWidth * 0.13,
-                    height: screenWidth * 0.13,
+                    width: (375 * 0.13).w,
+                    height: (375 * 0.13).w,
                     decoration: BoxDecoration(
                       color: AppColors.lightBlueBackground,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
                     child: Icon(
                       Icons.mic_rounded,
                       color: AppColors.primary,
-                      size: screenWidth * 0.07,
+                      size: (375 * 0.07).w,
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,16 +65,16 @@ class VoiceSettingsScreen extends StatelessWidget {
                         Text(
                           'Speech Input Engine',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.042,
+                            fontSize: (375 * 0.042).sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2.h),
                         Text(
-                          'Hardware Microphone Active',
+                          'Hardware speech recognizer',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.032,
+                            fontSize: (375 * 0.032).sp,
                             color: AppColors.success,
                             fontWeight: FontWeight.w600,
                           ),
@@ -87,24 +86,24 @@ class VoiceSettingsScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
 
             // Section: Options
             Text(
               'Recognition Preferences',
               style: GoogleFonts.outfit(
-                fontSize: screenWidth * 0.04,
+                fontSize: (375 * 0.04).sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: (812 * 0.01).h),
 
             Material(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 side: const BorderSide(color: AppColors.border),
               ),
               clipBehavior: Clip.antiAlias,
@@ -117,76 +116,32 @@ class VoiceSettingsScreen extends StatelessWidget {
                     title: Text(
                       'Prefer On-Device Recognition',
                       style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.038,
+                        fontSize: (375 * 0.038).sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
                     ),
                     subtitle: Text(
-                      'Processes voice input locally without uploading audio',
+                      'Uses the device speech pack when one is installed. Turn this off if listening fails.',
                       style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.03,
+                        fontSize: (375 * 0.03).sp,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     onChanged: vm.toggleOfflineRecognition,
                   ),
-                  const Divider(height: 1, color: AppColors.borderLight),
-                  SwitchListTile(
-                    value: vm.autoPunctuation,
-                    activeThumbColor: AppColors.primary,
-                    activeTrackColor: AppColors.lightBlueBackground,
-                    title: Text(
-                      'Auto Punctuation',
-                      style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.038,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Automatically insert periods, commas, and question marks',
-                      style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.03,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    onChanged: vm.toggleAutoPunctuation,
-                  ),
-                  const Divider(height: 1, color: AppColors.borderLight),
-                  SwitchListTile(
-                    value: vm.soundFeedback,
-                    activeThumbColor: AppColors.primary,
-                    activeTrackColor: AppColors.lightBlueBackground,
-                    title: Text(
-                      'Audio & Haptic Feedback',
-                      style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.038,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Vibrate when starting and finishing speech listening',
-                      style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.03,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    onChanged: vm.toggleSoundFeedback,
-                  ),
                 ],
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
 
             // Tip / Guide Card
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.04),
+              padding: EdgeInsets.all((375 * 0.04).w),
               decoration: BoxDecoration(
                 color: AppColors.lightBlueBackground,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(color: AppColors.primaryLight.withValues(alpha: 0.4)),
               ),
               child: Row(
@@ -195,16 +150,16 @@ class VoiceSettingsScreen extends StatelessWidget {
                   Icon(
                     Icons.info_outline_rounded,
                     color: AppColors.primary,
-                    size: screenWidth * 0.055,
+                    size: (375 * 0.055).w,
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
                       'For optimal voice accuracy without internet, ensure you have downloaded offline speech recognition packs in your device’s system language settings.',
                       style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.032,
+                        fontSize: (375 * 0.032).sp,
                         color: AppColors.textPrimary,
-                        height: 1.4,
+                        height: 1.4.h,
                       ),
                     ),
                   ),

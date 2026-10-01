@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 
@@ -23,6 +24,7 @@ class CustomChip extends StatelessWidget {
   final CustomChipSize size;
   final Color? activeColor;
   final Color? activeTextColor;
+  final bool isExpanded;
 
   const CustomChip({
     super.key,
@@ -35,24 +37,24 @@ class CustomChip extends StatelessWidget {
     this.size = CustomChipSize.medium,
     this.activeColor,
     this.activeTextColor,
+    this.isExpanded = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
 
     final primary = activeColor ?? AppColors.primary;
     final onPrimary = activeTextColor ?? AppColors.textWhite;
 
     final isSmall = size == CustomChipSize.small;
     final fontSize = isSmall
-        ? (screenWidth * 0.03).clamp(11.0, 13.0)
-        : (screenWidth * 0.035).clamp(13.0, 15.0);
+        ? (375 * 0.03).sp
+        : (375 * 0.034).w;
 
-    final iconSize = isSmall ? screenWidth * 0.038 : screenWidth * 0.045;
+    final iconSize = isSmall ? (375 * 0.038).w : (375 * 0.045).w;
     final verticalPadding = isSmall ? 6.0 : 8.0;
-    final horizontalPadding = isSmall ? screenWidth * 0.03 : screenWidth * 0.04;
-    final borderRadius = BorderRadius.circular(screenWidth * 0.04);
+    final horizontalPadding = isSmall ? (375 * 0.03).w : (375 * 0.04).w;
+    final borderRadius = BorderRadius.circular((375 * 0.04).r);
 
     Color backgroundColor;
     Color textColor;
@@ -61,35 +63,36 @@ class CustomChip extends StatelessWidget {
     if (isSelected) {
       backgroundColor = primary;
       textColor = onPrimary;
-      border = Border.all(color: primary, width: 1.2);
+      border = Border.all(color: primary, width: 1.2.w);
     } else {
       switch (variant) {
         case CustomChipVariant.filled:
           backgroundColor = AppColors.surface;
           textColor = AppColors.textPrimary;
-          border = Border.all(color: AppColors.border, width: 1.0);
+          border = Border.all(color: AppColors.border, width: 1.0.w);
           break;
         case CustomChipVariant.outlined:
-          backgroundColor = Colors.transparent;
+          backgroundColor = AppColors.transparent;
           textColor = AppColors.textSecondary;
-          border = Border.all(color: AppColors.border, width: 1.0);
+          border = Border.all(color: AppColors.border, width: 1.0.w);
           break;
         case CustomChipVariant.tonal:
           backgroundColor = primary.withValues(alpha: 0.08);
           textColor = primary;
-          border = Border.all(color: primary.withValues(alpha: 0.25), width: 1.0);
+          border = Border.all(color: primary.withValues(alpha: 0.25), width: 1.0.w);
           break;
       }
     }
 
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: borderRadius,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeInOut,
+          alignment: isExpanded ? Alignment.center : null,
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
             vertical: verticalPadding,
@@ -102,14 +105,16 @@ class CustomChip extends StatelessWidget {
                 ? [
                     BoxShadow(
                       color: primary.withValues(alpha: 0.22),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
+                      blurRadius: 6.r,
+                      offset: Offset(0, 2.h),
                     ),
                   ]
                 : null,
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (icon != null) ...[
                 Icon(
@@ -117,10 +122,11 @@ class CustomChip extends StatelessWidget {
                   size: iconSize,
                   color: textColor,
                 ),
-                SizedBox(width: screenWidth * 0.015),
+                SizedBox(width: (375 * 0.015).w),
               ],
               Text(
                 label,
+                textAlign: TextAlign.center,
                 style: GoogleFonts.outfit(
                   fontSize: fontSize,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -128,14 +134,14 @@ class CustomChip extends StatelessWidget {
                 ),
               ),
               if (badge != null) ...[
-                SizedBox(width: screenWidth * 0.015),
+                SizedBox(width: (375 * 0.015).w),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? onPrimary.withValues(alpha: 0.25)
                         : primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Text(
                     badge!,

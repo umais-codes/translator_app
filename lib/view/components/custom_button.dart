@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 
@@ -49,18 +50,15 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
 
     // Responsive scaling based on MediaQuery
-    final effectiveHeight = height ?? (screenHeight * 0.062).clamp(48.0, 60.0);
-    final effectiveFontSize = fontSize ?? (screenWidth * 0.039).clamp(14.0, 17.0);
-    final effectiveBorderRadius = borderRadius ?? (screenWidth * 0.038).clamp(12.0, 18.0);
-    final effectiveIconSize = (screenWidth * 0.05).clamp(18.0, 24.0);
+    final effectiveHeight = height ?? (812 * 0.062).h;
+    final effectiveFontSize = fontSize ?? (375 * 0.039).sp;
+    final effectiveBorderRadius = borderRadius ?? (375 * 0.038).r;
+    final effectiveIconSize = (375 * 0.05).w;
     final effectivePadding = padding ??
         EdgeInsets.symmetric(
-          horizontal: (screenWidth * 0.04).clamp(12.0, 20.0),
+          horizontal: (375 * 0.04).w,
         );
 
     final effectiveDisabled = isDisabled || isLoading || onPressed == null;
@@ -75,11 +73,11 @@ class CustomButton extends StatelessWidget {
         fg = textColor ?? AppColors.textWhite;
         break;
       case ButtonVariant.outlined:
-        bg = backgroundColor ?? Colors.transparent;
+        bg = backgroundColor ?? AppColors.transparent;
         fg = textColor ?? (effectiveDisabled ? AppColors.textMuted : AppColors.primary);
         borderSide = BorderSide(
           color: borderColor ?? (effectiveDisabled ? AppColors.border : AppColors.primary),
-          width: 1.5,
+          width: 1.5.w,
         );
         break;
       case ButtonVariant.soft:
@@ -91,7 +89,7 @@ class CustomButton extends StatelessWidget {
         bg = backgroundColor ??
             (effectiveDisabled ? AppColors.inputBackground : AppColors.surface);
         fg = textColor ?? (effectiveDisabled ? AppColors.textMuted : AppColors.textPrimary);
-        borderSide = const BorderSide(color: AppColors.border, width: 1);
+        borderSide = BorderSide(color: AppColors.border, width: 1.w);
         break;
     }
 
@@ -105,14 +103,14 @@ class CustomButton extends StatelessWidget {
             width: effectiveIconSize,
             height: effectiveIconSize,
             child: CircularProgressIndicator(
-              strokeWidth: 2.2,
+              strokeWidth: 2.2.w,
               valueColor: AlwaysStoppedAnimation<Color>(fg),
             ),
           ),
-          SizedBox(width: screenWidth * 0.025),
+          SizedBox(width: (375 * 0.025).w),
         ] else if (leadingIcon != null) ...[
           Icon(leadingIcon, size: effectiveIconSize, color: fg),
-          SizedBox(width: screenWidth * 0.02),
+          SizedBox(width: (375 * 0.02).w),
         ],
         Flexible(
           child: Text(
@@ -123,12 +121,12 @@ class CustomButton extends StatelessWidget {
               fontSize: effectiveFontSize,
               fontWeight: fontWeight,
               color: fg,
-              letterSpacing: 0.2,
+              letterSpacing: 0.2.sp,
             ),
           ),
         ),
         if (!isLoading && trailingIcon != null) ...[
-          SizedBox(width: screenWidth * 0.02),
+          SizedBox(width: (375 * 0.02).w),
           Icon(trailingIcon, size: effectiveIconSize, color: fg),
         ],
       ],

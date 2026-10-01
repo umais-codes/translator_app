@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -32,7 +33,7 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
     {
       'q': 'Which file formats can I translate?',
       'a':
-          'The File Translator supports plain text (.txt), structured JSON (.json), and CSV spreadsheet (.csv) files up to 5MB.',
+          'The File Translator supports plain text (.txt), JSON (.json), and CSV (.csv) files up to 100 KB. Longer text is split into short sections, up to 8,000 characters.',
     },
     {
       'q': 'How do I hear pronunciation of words?',
@@ -51,10 +52,8 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -65,26 +64,26 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
+            vertical: (812 * 0.02).h,
           ),
           children: [
             // FAQ Header
             Text(
               'Frequently Asked Questions',
               style: GoogleFonts.outfit(
-                fontSize: screenWidth * 0.04,
+                fontSize: (375 * 0.04).sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: (812 * 0.01).h),
 
             ..._faqs.map(
               (faq) => Container(
-                margin: EdgeInsets.only(bottom: screenHeight * 0.012),
+                margin: EdgeInsets.only(bottom: (812 * 0.012).h),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(16.r),
                   border: Border.all(color: AppColors.border),
                 ),
                 child: ExpansionTile(
@@ -93,19 +92,19 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
                   title: Text(
                     faq['q']!,
                     style: GoogleFonts.outfit(
-                      fontSize: screenWidth * 0.036,
+                      fontSize: (375 * 0.036).sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  childrenPadding: EdgeInsets.all(screenWidth * 0.04),
+                  childrenPadding: EdgeInsets.all((375 * 0.04).w),
                   children: [
                     Text(
                       faq['a']!,
                       style: GoogleFonts.outfit(
-                        fontSize: screenWidth * 0.033,
+                        fontSize: (375 * 0.033).sp,
                         color: AppColors.textSecondary,
-                        height: 1.4,
+                        height: 1.4.h,
                       ),
                     ),
                   ],
@@ -113,24 +112,24 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
 
             // Feedback Form Header
             Text(
               'Send Us Feedback or Report an Issue',
               style: GoogleFonts.outfit(
-                fontSize: screenWidth * 0.04,
+                fontSize: (375 * 0.04).sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: (812 * 0.01).h),
 
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
               ),
               child: Column(
@@ -143,7 +142,7 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email_outlined,
                   ),
-                  SizedBox(height: screenHeight * 0.015),
+                  SizedBox(height: (812 * 0.015).h),
                   CustomTextField(
                     label: 'Message',
                     hintText: 'How can we improve Translator App?',
@@ -151,11 +150,11 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
                     maxLines: 4,
                     minLines: 3,
                   ),
-                  SizedBox(height: screenHeight * 0.02),
+                  SizedBox(height: (812 * 0.02).h),
                   CustomButton(
                     text: 'Submit Feedback',
                     variant: ButtonVariant.filled,
-                    height: screenHeight * 0.055,
+                    height: (812 * 0.055).h,
                     leadingIcon: Icons.send_rounded,
                     isLoading: vm.isSubmittingFeedback,
                     onPressed: () async {
@@ -169,18 +168,18 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
                         return;
                       }
 
-                      final success = await vm.submitFeedback(
+                      await vm.submitFeedback(
                         email: _emailController.text.trim(),
                         message: _feedbackController.text.trim(),
                       );
 
-                      if (context.mounted && success) {
-                        _feedbackController.clear();
-                        _emailController.clear();
+                      if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            backgroundColor: AppColors.success,
-                            content: Text('Thank you! Your feedback has been submitted.'),
+                            backgroundColor: AppColors.warning,
+                            content: Text(
+                              'Feedback is not sent in this build. A delivery service is not connected yet.',
+                            ),
                           ),
                         );
                       }

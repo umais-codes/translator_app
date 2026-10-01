@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
@@ -8,10 +9,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -22,40 +21,40 @@ class PrivacyPolicyScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
+            vertical: (812 * 0.02).h,
           ),
           children: [
             // Top Badge Card
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                     color: AppColors.shadow,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+                    blurRadius: 8.r,
+                    offset: Offset(0, 2.h),
                   ),
                 ],
               ),
               child: Row(
                 children: [
                   Container(
-                    width: screenWidth * 0.13,
-                    height: screenWidth * 0.13,
+                    width: (375 * 0.13).w,
+                    height: (375 * 0.13).w,
                     decoration: BoxDecoration(
                       color: AppColors.lightBlueBackground,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
                     child: Icon(
                       Icons.shield_outlined,
                       color: AppColors.primary,
-                      size: screenWidth * 0.07,
+                      size: (375 * 0.07).w,
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,16 +62,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
                         Text(
                           'Your Privacy Matters',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.042,
+                            fontSize: (375 * 0.042).sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2.h),
                         Text(
                           'Last Updated: August 2026',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.032,
+                            fontSize: (375 * 0.032).sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -83,46 +82,36 @@ class PrivacyPolicyScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
 
             _buildSection(
               title: '1. Information We Collect',
               content:
-                  'We collect only the minimal data required to deliver real-time translations, speech-to-text recognition, and text-to-speech features. Text entered for translation is cached locally on your device and sent to translation providers only to generate the output.',
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
+                  'Text you type, speak, or scan is sent to a translation provider so the app can return a translation. Cached phrases stay on this device. There is no on-device translation model.',
             ),
 
             _buildSection(
               title: '2. On-Device & Offline Processing',
               content:
-                  'Translator App is designed to prioritize on-device processing. Cached phrases, dictionary queries, and offline model operations never leave your physical device and do not require remote server logging.',
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
+                  'Phrases translated while online are saved on this device and can be shown again without a network. Camera text recognition runs on the device for Latin, Chinese, Hindi, Japanese, and Korean. Arabic, Urdu, Persian, Bengali, Thai, and Cyrillic are not read by the on-device scanner.',
             ),
 
             _buildSection(
               title: '3. Speech & Audio Data',
               content:
                   'Audio recordings from your microphone are converted to text locally via system voice APIs. We do not store or transmit raw audio files to external servers.',
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
             ),
 
             _buildSection(
               title: '4. Third-Party Services',
               content:
-                  'When online, translations are routed through public translation APIs (e.g. MyMemory / Google Translator). These requests contain only the text snippet and language codes needed for translation.',
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
+                  'When online, translation text is sent to MyMemory. If that request fails, a second public translation client is tried. Dictionary lookups are sent to dictionaryapi.dev. AI rephrasing and nuance explanations are sent to a model service only when an API key is configured for the build. Grammar can fall back to a basic on-device spelling check, which is labeled in the app.',
             ),
 
             _buildSection(
               title: '5. Data Security & Storage',
               content:
                   'All saved histories are stored in your device’s sandbox memory. You can clear your local database and translation history at any time from the app settings.',
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
             ),
           ],
         ),
@@ -133,15 +122,13 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget _buildSection({
     required String title,
     required String content,
-    required double screenWidth,
-    required double screenHeight,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: screenHeight * 0.015),
-      padding: EdgeInsets.all(screenWidth * 0.045),
+      margin: EdgeInsets.only(bottom: (812 * 0.015).h),
+      padding: EdgeInsets.all((375 * 0.045).w),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(18.r),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -150,18 +137,18 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Text(
             title,
             style: GoogleFonts.outfit(
-              fontSize: screenWidth * 0.038,
+              fontSize: (375 * 0.038).sp,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
           ),
-          SizedBox(height: screenHeight * 0.008),
+          SizedBox(height: (812 * 0.008).h),
           Text(
             content,
             style: GoogleFonts.outfit(
-              fontSize: screenWidth * 0.033,
+              fontSize: (375 * 0.033).sp,
               color: AppColors.textSecondary,
-              height: 1.45,
+              height: 1.45.h,
             ),
           ),
         ],

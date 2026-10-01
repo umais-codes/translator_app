@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'package:translator_app/data/models/dictionary_model.dart';
+import 'package:translator_app/data/services/speech_preferences.dart';
 
 class DictionaryViewModel extends ChangeNotifier {
   DictionaryEntry? _entry;
@@ -96,7 +97,7 @@ class DictionaryViewModel extends ChangeNotifier {
   Future<void> speakWord() async {
     if (_entry != null && _entry!.word.isNotEmpty) {
       try {
-        await _flutterTts.setLanguage('en-US');
+        await SpeechPreferences.apply(_flutterTts, languageCode: 'en-US');
         await _flutterTts.speak(_entry!.word);
       } catch (e) {
         debugPrint('TTS Error: $e');

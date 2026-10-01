@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/camera.dart';
@@ -10,14 +11,11 @@ class BottomActionBar1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
 
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: screenHeight * 0.018,
-        horizontal: screenWidth * 0.04,
+        vertical: (812 * 0.018).h,
+        horizontal: (375 * 0.04).w,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -27,7 +25,6 @@ class BottomActionBar1 extends StatelessWidget {
             icon: Icons.group_rounded,
             label: 'Conversation',
             isActive: false,
-            screenWidth: screenWidth,
             onTap: () {
               Navigator.push(
                 context,
@@ -40,7 +37,6 @@ class BottomActionBar1 extends StatelessWidget {
             icon: Icons.camera_alt_rounded,
             label: 'Camera',
             isActive: false,
-            screenWidth: screenWidth,
             onTap: () {
               Navigator.push(
                 context,
@@ -53,7 +49,6 @@ class BottomActionBar1 extends StatelessWidget {
             icon: Icons.apps_rounded,
             label: 'More Fun',
             isActive: true,
-            screenWidth: screenWidth,
             onTap: () {
               Navigator.push(
                 context,
@@ -71,14 +66,13 @@ class BottomActionBar1 extends StatelessWidget {
     required IconData icon,
     required String label,
     required bool isActive,
-    required double screenWidth,
     required VoidCallback onTap,
   }) {
-    final buttonSize = screenWidth * 0.16;
+    final buttonSize = (375 * 0.16).w;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(screenWidth * 0.08),
+      borderRadius: BorderRadius.circular((375 * 0.08).r),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -92,8 +86,8 @@ class BottomActionBar1 extends StatelessWidget {
                   ? [
                       BoxShadow(
                         color: AppColors.shadowPrimary,
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        blurRadius: 10.r,
+                        offset: Offset(0, 4.h),
                       ),
                     ]
                   : null,
@@ -101,15 +95,15 @@ class BottomActionBar1 extends StatelessWidget {
             child: Icon(
               icon,
               color: isActive ? AppColors.textWhite : AppColors.textSecondary,
-              size: screenWidth * 0.07,
+              size: (375 * 0.07).w,
             ),
           ),
-          SizedBox(height: screenWidth * 0.02),
+          SizedBox(height: (375 * 0.02).w),
           Text(
             label,
             style: GoogleFonts.outfit(
               color: isActive ? AppColors.primary : AppColors.textSecondary,
-              fontSize: (screenWidth * 0.032).clamp(11.0, 13.0),
+              fontSize: (375 * 0.032).sp,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
             ),
           ),

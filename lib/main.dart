@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
-import 'package:translator_app/data/models/translation_provider.dart';
 import 'package:translator_app/data/models/translation_repository.dart';
 import 'package:translator_app/data/repositories/ai_repository.dart';
 import 'package:translator_app/data/repositories/translation_history_repository.dart';
 import 'package:translator_app/view/splash_screen.dart';
 import 'package:translator_app/viewmodel/ai_viewmodel.dart';
-import 'package:translator_app/viewmodel/auth_viewmodel.dart';
 import 'package:translator_app/viewmodel/camera_viewmodel.dart';
 import 'package:translator_app/viewmodel/conversation_viewmodel.dart';
 import 'package:translator_app/viewmodel/dictionary_viewmodel.dart';
@@ -28,7 +27,6 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MainNavViewModel()),
-        ChangeNotifierProvider(create: (_) => TranslationProvider()),
         ChangeNotifierProvider(
           create: (_) => TranslationViewModel(
             translationRepository,
@@ -47,10 +45,17 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => AIViewModel(aiRepository),
         ),
-        ChangeNotifierProvider(create: (_) => ConversationViewModel()),
+        ChangeNotifierProvider(
+          create: (_) => ConversationViewModel(
+            repository: translationRepository,
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => DictionaryViewModel()),
-        ChangeNotifierProvider(create: (_) => FileTranslateViewModel()),
-        ChangeNotifierProvider(create: (_) => AuthViewModel()),
+        ChangeNotifierProvider(
+          create: (_) => FileTranslateViewModel(
+            repository: translationRepository,
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => SettingsViewModel()),
       ],
       child: const MyApp(),
@@ -65,11 +70,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final settingsVm = context.watch<SettingsViewModel>();
 
-    return MaterialApp(
-      title: 'Translator App',
-      theme: AppTheme.getTheme(primaryColor: settingsVm.primaryColor),
-      debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Translator App',
+          theme: AppTheme.getTheme(primaryColor: settingsVm.primaryColor),
+          debugShowCheckedModeBanner: false,
+          home: child,
+        );
+      },
+      child: const SplashScreen(),
     );
   }
 }

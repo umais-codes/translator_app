@@ -2,10 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:translator_app/core/translation_limits.dart';
+import 'package:translator_app/data/models/translation_repository.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 
 class FileTranslateViewModel extends ChangeNotifier {
+  final TranslationRepository _repository;
+
+  FileTranslateViewModel({TranslationRepository? repository})
+    : _repository = repository ?? TranslationRepository();
   bool _isLoading = false;
   String? _selectedFileName;
   String? _fileContent;
@@ -53,13 +58,17 @@ class FileTranslateViewModel extends ChangeNotifier {
 
       if (file != null) {
         _selectedFileName = file.name;
-
-        if (file.path != null) {
-          _fileContent = await File(file.path!).readAsString();
-        } else {
-          final bytes = await file.readAsBytes();
-          _fileContent = utf8.decode(bytes);
+        final bytes = file.path != null
+            ? await File(file.path!).readAsBytes()
+            : await file.readAsBytes();
+        if (bytes.length > TranslationLimits.maxFileBytes) {
+          _fileContent = null;
+          _translatedContent = null;
+          _errorMessage =
+              'That file is larger than 100 KB. Choose a shorter text file.';
+          return;
         }
+        _fileContent = utf8.decode(bytes);
         _translatedContent = null;
       }
     } catch (e) {
@@ -83,20 +92,13 @@ class FileTranslateViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final encodedText = Uri.encodeComponent(_fileContent!);
-      final url =
-          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=${_fromLanguage.code}|${_toLanguage.code}';
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _translatedContent =
-            data['responseData']?['translatedText'] ?? 'Translation failed.';
-      } else {
-        _errorMessage = 'Failed to fetch translation from server.';
-      }
+      _translatedContent = await _repository.translate(
+        _fileContent!,
+        from: _fromLanguage.code,
+        to: _toLanguage.code,
+      );
     } catch (e) {
-      _errorMessage = 'Error: ${e.toString()}';
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _isLoading = false;
       notifyListeners();

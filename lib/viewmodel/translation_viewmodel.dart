@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:translator_app/data/models/translation_repository.dart';
 import 'package:translator_app/data/repositories/translation_history_repository.dart';
+import 'package:translator_app/data/services/speech_preferences.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 
 class TranslationViewModel extends ChangeNotifier {
@@ -166,22 +167,26 @@ class TranslationViewModel extends ChangeNotifier {
 
   Future<void> speakSourceText() async {
     if (_sourceText.isNotEmpty) {
-      await _flutterTts.setLanguage(_sourceLanguage.code);
+      await SpeechPreferences.apply(
+        _flutterTts,
+        languageCode: _sourceLanguage.code,
+      );
       await _flutterTts.speak(_sourceText);
     }
   }
 
   Future<void> speakTranslatedText() async {
     if (_translatedText.isNotEmpty) {
-      await _flutterTts.setLanguage(_targetLanguage.code);
+      await SpeechPreferences.apply(
+        _flutterTts,
+        languageCode: _targetLanguage.code,
+      );
       await _flutterTts.speak(_translatedText);
     }
   }
 
   Future<void> _initializeTts() async {
-    await _flutterTts.setSpeechRate(0.5);
-    await _flutterTts.setVolume(1.0);
-    await _flutterTts.setPitch(1.0);
+    await SpeechPreferences.apply(_flutterTts);
   }
 
   Future<void> _initializeSpeech() async {
@@ -206,6 +211,7 @@ class TranslationViewModel extends ChangeNotifier {
           _isListening = true;
           notifyListeners();
 
+          final speech = await SpeechPreferences.load();
           _speech.listen(
             onResult: (result) {
               _sourceText = result.recognizedWords;
@@ -217,7 +223,13 @@ class TranslationViewModel extends ChangeNotifier {
                 translateText();
               }
             },
-            localeId: _sourceLanguage.code,
+            
+            listenOptions: stt.SpeechListenOptions(
+              localeId: _sourceLanguage.code,
+              onDevice: speech.onDevice,
+              listenMode: stt.ListenMode.dictation,
+              partialResults: true,
+            ),
           );
         } else {
           debugPrint('Speech recognition not available on this device');

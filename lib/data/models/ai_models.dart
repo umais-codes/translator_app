@@ -100,6 +100,7 @@ class AIGrammarResponse {
   final String explanation;
   final String grammarRule;
   final List<String> examples;
+  final bool isBasicCheck;
 
   const AIGrammarResponse({
     required this.originalText,
@@ -108,6 +109,7 @@ class AIGrammarResponse {
     required this.explanation,
     required this.grammarRule,
     this.examples = const [],
+    this.isBasicCheck = false,
   });
 
   factory AIGrammarResponse.fromMap(Map<String, dynamic> map, String original) {

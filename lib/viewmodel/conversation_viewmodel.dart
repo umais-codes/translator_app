@@ -1,13 +1,17 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:translator_app/data/models/translation_repository.dart';
+import 'package:translator_app/data/services/speech_preferences.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 
 class ConversationViewModel extends ChangeNotifier {
+  final TranslationRepository _repository;
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
+
+  ConversationViewModel({TranslationRepository? repository})
+    : _repository = repository ?? TranslationRepository();
 
   bool _isListening = false;
   bool _isTranslating = false;
@@ -62,8 +66,14 @@ class ConversationViewModel extends ChangeNotifier {
       if (available) {
         _isListening = true;
         notifyListeners();
+        final speech = await SpeechPreferences.load();
         _speech.listen(
-          localeId: _inputLanguage.code,
+          listenOptions: stt.SpeechListenOptions(
+            localeId: _inputLanguage.code,
+            onDevice: speech.onDevice,
+            listenMode: stt.ListenMode.dictation,
+            partialResults: true,
+          ),
           onResult: (result) {
             _inputText = result.recognizedWords;
             notifyListeners();
@@ -93,20 +103,13 @@ class ConversationViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final encodedText = Uri.encodeComponent(text);
-      final url =
-          'https://api.mymemory.translated.net/get?q=$encodedText&langpair=${_inputLanguage.code}|${_outputLanguage.code}';
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _translatedText =
-            data['responseData']?['translatedText'] ?? 'Translation failed.';
-      } else {
-        _translatedText = 'Translation failed. Please try again.';
-      }
+      _translatedText = await _repository.translate(
+        text,
+        from: _inputLanguage.code,
+        to: _outputLanguage.code,
+      );
     } catch (e) {
-      _translatedText = 'Error: ${e.toString()}';
+      _translatedText = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _isTranslating = false;
       notifyListeners();
@@ -116,7 +119,7 @@ class ConversationViewModel extends ChangeNotifier {
   Future<void> speak(String text, String languageCode) async {
     if (text.trim().isEmpty) return;
     try {
-      await _flutterTts.setLanguage(languageCode);
+      await SpeechPreferences.apply(_flutterTts, languageCode: languageCode);
       await _flutterTts.speak(text);
     } catch (e) {
       debugPrint('TTS Error: $e');

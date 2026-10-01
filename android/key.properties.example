@@ -1,0 +1,4 @@
+storePassword=translatorApp123
+keyPassword=translatorApp123
+keyAlias=upload
+storeFile=upload-keystore.jks

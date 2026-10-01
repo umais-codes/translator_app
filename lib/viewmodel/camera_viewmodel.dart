@@ -4,10 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:translator_app/core/ocr_language_support.dart';
+import 'package:translator_app/core/translation_limits.dart';
 import 'package:translator_app/data/models/translation_repository.dart';
 import 'package:translator_app/data/repositories/translation_history_repository.dart';
 import 'package:translator_app/data/services/ocr_service.dart';
+import 'package:translator_app/data/services/scan_image_preparer.dart';
+import 'package:translator_app/data/services/speech_preferences.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
+import 'package:app_settings/app_settings.dart';
 
 enum CameraState {
   initial,
@@ -28,6 +33,9 @@ class CameraViewModel extends ChangeNotifier {
   final OcrService _ocrService;
   final ImagePicker _imagePicker = ImagePicker();
   final FlutterTts _flutterTts = FlutterTts();
+  final ScanImagePreparer _imagePreparer = ScanImagePreparer();
+  int _cameraGeneration = 0;
+  ScanFrameInput? _lastFrame;
 
   CameraViewModel(
     this._translationRepository, {
@@ -78,75 +86,90 @@ class CameraViewModel extends ChangeNotifier {
       _state == CameraState.translating;
 
   void _initTts() {
-    _flutterTts.setLanguage(_targetLanguage.code);
-    _flutterTts.setSpeechRate(0.5);
-    _flutterTts.setPitch(1.0);
+    SpeechPreferences.apply(_flutterTts, languageCode: _targetLanguage.code);
   }
+
+  Future<void> openSystemSettings() => AppSettings.openAppSettings();
 
   // --- Camera Lifecycle ---
 
   Future<void> initializeCamera() async {
-    if (_state == CameraState.initializing) return;
-
+    final generation = ++_cameraGeneration;
     _setCameraState(CameraState.initializing);
     _errorMessage = null;
 
     try {
-      _availableCameras = await availableCameras();
-      if (_availableCameras.isEmpty) {
+      final cameras = await availableCameras();
+      if (generation != _cameraGeneration) return;
+      if (cameras.isEmpty) {
         _errorMessage = 'No camera found on this device.';
         _setCameraState(CameraState.error);
         return;
       }
 
-      await _setupCameraController(_availableCameras[_selectedCameraIndex]);
+      _availableCameras = cameras;
+      if (_selectedCameraIndex >= cameras.length) {
+        _selectedCameraIndex = 0;
+      }
+      await _setupCameraController(cameras[_selectedCameraIndex], generation);
+      if (generation != _cameraGeneration) return;
       _setCameraState(CameraState.cameraReady);
     } on CameraException catch (e) {
+      if (generation != _cameraGeneration) return;
       if (e.code == 'CameraAccessDenied' ||
           e.code == 'CameraAccessDeniedWithoutPrompt' ||
           e.code == 'CameraAccessRestricted') {
         _errorMessage =
-            'Camera permission was denied. Please enable camera access in system settings.';
+            'Camera permission was denied. Enable camera access in system settings, or choose a photo from the gallery.';
         _setCameraState(CameraState.permissionDenied);
       } else {
         _errorMessage = 'Failed to initialize camera: ${e.description ?? e.code}';
         _setCameraState(CameraState.error);
       }
     } catch (e) {
+      if (generation != _cameraGeneration) return;
       _errorMessage = 'An unexpected error occurred while starting the camera.';
       _setCameraState(CameraState.error);
     }
   }
 
-  Future<void> pauseCamera() async {
+  Future<void> pauseCamera() => releaseCamera();
+
+  Future<void> releaseCamera() async {
+    _cameraGeneration++;
     final controller = _cameraController;
+    _cameraController = null;
+    if (_state == CameraState.initializing ||
+        _state == CameraState.cameraReady ||
+        _state == CameraState.capturing) {
+      _state = CameraState.initial;
+    }
+    notifyListeners();
     if (controller != null) {
-      _cameraController = null;
-      notifyListeners();
       try {
         await controller.dispose();
-      } catch (_) {
-        // Ignore errors during dispose
-      }
+      } catch (_) {}
     }
   }
 
   Future<void> resumeCamera() async {
-    if (_state == CameraState.cameraReady ||
-        _state == CameraState.initial ||
-        _state == CameraState.initializing) {
+    if (_state == CameraState.initial || _state == CameraState.initializing) {
       await initializeCamera();
     }
   }
 
-  Future<void> _setupCameraController(CameraDescription description) async {
+  Future<void> _setupCameraController(
+    CameraDescription description,
+    int generation,
+  ) async {
     final oldController = _cameraController;
+    _cameraController = null;
     if (oldController != null) {
-      _cameraController = null;
       try {
         await oldController.dispose();
       } catch (_) {}
     }
+    if (generation != _cameraGeneration) return;
 
     final newController = CameraController(
       description,
@@ -155,14 +178,25 @@ class CameraViewModel extends ChangeNotifier {
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
+    try {
+      await newController.initialize();
+      await newController.setFlashMode(_flashMode);
+    } catch (e) {
+      await newController.dispose();
+      rethrow;
+    }
+
+    if (generation != _cameraGeneration) {
+      await newController.dispose();
+      return;
+    }
     _cameraController = newController;
-    await newController.initialize();
-    await newController.setFlashMode(_flashMode);
   }
 
   Future<void> toggleFlash() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized) return;
 
+    final previous = _flashMode;
     try {
       if (_flashMode == FlashMode.off) {
         _flashMode = FlashMode.torch;
@@ -174,20 +208,27 @@ class CameraViewModel extends ChangeNotifier {
       await _cameraController!.setFlashMode(_flashMode);
       notifyListeners();
     } catch (_) {
-      // Ignore flash mode change errors on unsupported hardware
+      _flashMode = previous;
+      notifyListeners();
     }
   }
 
   Future<void> switchCamera() async {
     if (!canSwitchCamera || isBusy) return;
 
+    final generation = ++_cameraGeneration;
     _selectedCameraIndex = (_selectedCameraIndex + 1) % _availableCameras.length;
     _setCameraState(CameraState.initializing);
 
     try {
-      await _setupCameraController(_availableCameras[_selectedCameraIndex]);
+      await _setupCameraController(
+        _availableCameras[_selectedCameraIndex],
+        generation,
+      );
+      if (generation != _cameraGeneration) return;
       _setCameraState(CameraState.cameraReady);
     } catch (e) {
+      if (generation != _cameraGeneration) return;
       _errorMessage = 'Failed to switch camera.';
       _setCameraState(CameraState.error);
     }
@@ -195,7 +236,7 @@ class CameraViewModel extends ChangeNotifier {
 
   // --- Capture & OCR Flow ---
 
-  Future<void> captureImage() async {
+  Future<void> captureImage({required Size viewSize}) async {
     if (_cameraController == null || !_cameraController!.value.isInitialized || isBusy) {
       return;
     }
@@ -205,8 +246,15 @@ class CameraViewModel extends ChangeNotifier {
 
     try {
       final xFile = await _cameraController!.takePicture();
+      final preview = _cameraController!.value.previewSize;
       _capturedImagePath = xFile.path;
-      await processImageFile(xFile.path);
+      _lastFrame = ScanFrameInput(
+        viewWidth: viewSize.width,
+        viewHeight: viewSize.height,
+        previewWidth: preview?.width ?? viewSize.width,
+        previewHeight: preview?.height ?? viewSize.height,
+      );
+      await processImageFile(xFile.path, frame: _lastFrame);
     } on CameraException catch (e) {
       _errorMessage = 'Failed to capture image: ${e.description ?? e.code}';
       _setCameraState(CameraState.error);
@@ -251,15 +299,36 @@ class CameraViewModel extends ChangeNotifier {
     }
 
     _capturedImagePath = pickedPath;
+    _lastFrame = null;
     await processImageFile(pickedPath);
   }
 
-  Future<void> processImageFile(String imagePath) async {
+  Future<void> processImageFile(
+    String imagePath, {
+    ScanFrameInput? frame,
+  }) async {
+    final support = OcrLanguageSupport.forCode(_sourceLanguage.code);
+    if (!support.isSupported) {
+      _capturedImagePath = imagePath;
+      _detectedText = '';
+      _translatedText = '';
+      _errorMessage = support.unavailableMessage;
+      _setCameraState(CameraState.error);
+      return;
+    }
+
     _setCameraState(CameraState.recognizing);
     _errorMessage = null;
 
     try {
-      final text = await _ocrService.recognizeTextFromPath(imagePath);
+      final preparedPath = await _imagePreparer.prepareForOcr(
+        sourcePath: imagePath,
+        frame: frame,
+      );
+      final text = await _ocrService.recognizeTextFromPath(
+        preparedPath,
+        script: support.kind,
+      );
 
       if (text.trim().isEmpty) {
         _detectedText = '';
@@ -301,9 +370,11 @@ class CameraViewModel extends ChangeNotifier {
 
       // Auto-save successful OCR translation to History
       if (result.isNotEmpty && !result.startsWith('Error:')) {
+        final source = _limitHistoryText(_detectedText);
+        final translated = _limitHistoryText(result);
         await _historyRepository.saveTranslation(
-          sourceText: _detectedText,
-          translatedText: result,
+          sourceText: source,
+          translatedText: translated,
           sourceLanguage: _sourceLanguage,
           targetLanguage: _targetLanguage,
           category: 'Camera / OCR',
@@ -324,13 +395,15 @@ class CameraViewModel extends ChangeNotifier {
 
     if (_detectedText.isNotEmpty) {
       translateDetectedText();
+    } else if (_capturedImagePath != null) {
+      processImageFile(_capturedImagePath!, frame: _lastFrame);
     }
   }
 
   void setTargetLanguage(LanguageModel lang) {
     if (_targetLanguage.code == lang.code) return;
     _targetLanguage = lang;
-    _flutterTts.setLanguage(lang.code);
+    SpeechPreferences.apply(_flutterTts, languageCode: lang.code);
     notifyListeners();
 
     if (_detectedText.isNotEmpty) {
@@ -342,18 +415,27 @@ class CameraViewModel extends ChangeNotifier {
     final temp = _sourceLanguage;
     _sourceLanguage = _targetLanguage;
     _targetLanguage = temp;
-    _flutterTts.setLanguage(_targetLanguage.code);
+    SpeechPreferences.apply(_flutterTts, languageCode: _targetLanguage.code);
     notifyListeners();
 
     if (_detectedText.isNotEmpty) {
       translateDetectedText();
+    } else if (_capturedImagePath != null) {
+      processImageFile(_capturedImagePath!, frame: _lastFrame);
     }
+  }
+
+  String _limitHistoryText(String value) {
+    final clean = value.trim();
+    if (clean.length <= TranslationLimits.maxHistoryTextCharacters) return clean;
+    return '${clean.substring(0, TranslationLimits.maxHistoryTextCharacters)}…';
   }
 
   // --- Actions ---
 
   Future<void> retake() async {
     _capturedImagePath = null;
+    _lastFrame = null;
     _detectedText = '';
     _translatedText = '';
     _errorMessage = null;
@@ -396,6 +478,10 @@ class CameraViewModel extends ChangeNotifier {
   Future<void> speakTranslation() async {
     if (_translatedText.isEmpty) return;
     await _flutterTts.stop();
+    await SpeechPreferences.apply(
+      _flutterTts,
+      languageCode: _targetLanguage.code,
+    );
     await _flutterTts.speak(_translatedText);
   }
 

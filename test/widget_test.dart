@@ -1,12 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:translator_app/data/models/translation_provider.dart';
 import 'package:translator_app/data/models/translation_repository.dart';
 import 'package:translator_app/data/repositories/ai_repository.dart';
+import 'package:translator_app/data/repositories/history_store.dart';
 import 'package:translator_app/data/repositories/translation_history_repository.dart';
 import 'package:translator_app/main.dart';
 import 'package:translator_app/viewmodel/ai_viewmodel.dart';
-import 'package:translator_app/viewmodel/auth_viewmodel.dart';
 import 'package:translator_app/viewmodel/camera_viewmodel.dart';
 import 'package:translator_app/viewmodel/conversation_viewmodel.dart';
 import 'package:translator_app/viewmodel/dictionary_viewmodel.dart';
@@ -18,7 +17,7 @@ import 'package:translator_app/viewmodel/translation_viewmodel.dart';
 
 void main() {
   testWidgets('App smoke test initializes MyApp', (WidgetTester tester) async {
-    final historyRepo = TranslationHistoryRepository();
+    final historyRepo = TranslationHistoryRepository(store: MemoryHistoryStore());
     final translationRepo = TranslationRepository();
     final aiRepo = AIRepository();
 
@@ -26,7 +25,6 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => MainNavViewModel()),
-          ChangeNotifierProvider(create: (_) => TranslationProvider()),
           ChangeNotifierProvider(
             create: (_) => TranslationViewModel(
               translationRepo,
@@ -45,10 +43,13 @@ void main() {
           ChangeNotifierProvider(
             create: (_) => AIViewModel(aiRepo),
           ),
-          ChangeNotifierProvider(create: (_) => ConversationViewModel()),
+          ChangeNotifierProvider(
+            create: (_) => ConversationViewModel(repository: translationRepo),
+          ),
           ChangeNotifierProvider(create: (_) => DictionaryViewModel()),
-          ChangeNotifierProvider(create: (_) => FileTranslateViewModel()),
-          ChangeNotifierProvider(create: (_) => AuthViewModel()),
+          ChangeNotifierProvider(
+            create: (_) => FileTranslateViewModel(repository: translationRepo),
+          ),
           ChangeNotifierProvider(create: (_) => SettingsViewModel()),
         ],
         child: const MyApp(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -14,10 +15,8 @@ class TtsSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -28,29 +27,29 @@ class TtsSettingsScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
+            vertical: (812 * 0.02).h,
           ),
           children: [
             // Preview & Test Card
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                     color: AppColors.shadow,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+                    blurRadius: 8.r,
+                    offset: Offset(0, 2.h),
                   ),
                 ],
               ),
               child: Column(
                 children: [
                   Container(
-                    width: screenWidth * 0.16,
-                    height: screenWidth * 0.16,
+                    width: (375 * 0.16).w,
+                    height: (375 * 0.16).w,
                     decoration: BoxDecoration(
                       color: AppColors.lightBlueBackground,
                       shape: BoxShape.circle,
@@ -58,32 +57,32 @@ class TtsSettingsScreen extends StatelessWidget {
                     child: Icon(
                       Icons.volume_up_rounded,
                       color: AppColors.primary,
-                      size: screenWidth * 0.08,
+                      size: (375 * 0.08).w,
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.015),
+                  SizedBox(height: (812 * 0.015).h),
                   Text(
                     'Speech Synthesis Preview',
                     style: GoogleFonts.outfit(
-                      fontSize: screenWidth * 0.044,
+                      fontSize: (375 * 0.044).sp,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.005),
+                  SizedBox(height: (812 * 0.005).h),
                   Text(
                     'Test how translated text will be pronounced aloud',
                     style: GoogleFonts.outfit(
-                      fontSize: screenWidth * 0.033,
+                      fontSize: (375 * 0.033).sp,
                       color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: screenHeight * 0.02),
+                  SizedBox(height: (812 * 0.02).h),
                   CustomButton(
                     text: vm.isPlayingSpeech ? 'Playing Sample...' : 'Test Voice Output',
                     variant: ButtonVariant.filled,
-                    height: screenHeight * 0.055,
+                    height: (812 * 0.055).h,
                     leadingIcon: vm.isPlayingSpeech ? Icons.graphic_eq_rounded : Icons.play_arrow_rounded,
                     isLoading: vm.isPlayingSpeech,
                     onPressed: vm.testSpeech,
@@ -92,31 +91,31 @@ class TtsSettingsScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
 
             // Speed Presets
             Text(
               'Speech Speed Presets',
               style: GoogleFonts.outfit(
-                fontSize: screenWidth * 0.04,
+                fontSize: (375 * 0.04).sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: (812 * 0.01).h),
             Row(
               children: _speedPresets.map((speed) {
                 final isSelected = (vm.speechRate - speed).abs() < 0.05;
                 return Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    padding: EdgeInsets.symmetric(horizontal: 3.w),
                     child: GestureDetector(
                       onTap: () => vm.setSpeechRate(speed),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(vertical: 10.h),
                         decoration: BoxDecoration(
                           color: isSelected ? AppColors.primary : AppColors.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
                             color: isSelected ? AppColors.primary : AppColors.border,
                           ),
@@ -125,7 +124,7 @@ class TtsSettingsScreen extends StatelessWidget {
                           child: Text(
                             '${speed * 2}x',
                             style: GoogleFonts.outfit(
-                              fontSize: screenWidth * 0.034,
+                              fontSize: (375 * 0.034).sp,
                               fontWeight: FontWeight.bold,
                               color: isSelected ? AppColors.textWhite : AppColors.textPrimary,
                             ),
@@ -138,14 +137,14 @@ class TtsSettingsScreen extends StatelessWidget {
               }).toList(),
             ),
 
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
 
             // Fine-tune Sliders
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
               ),
               child: Column(
@@ -158,7 +157,7 @@ class TtsSettingsScreen extends StatelessWidget {
                       Text(
                         'Speech Rate',
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.038,
+                          fontSize: (375 * 0.038).sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),
@@ -166,7 +165,7 @@ class TtsSettingsScreen extends StatelessWidget {
                       Text(
                         '${(vm.speechRate * 2).toStringAsFixed(2)}x',
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.035,
+                          fontSize: (375 * 0.035).sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                         ),
@@ -182,7 +181,7 @@ class TtsSettingsScreen extends StatelessWidget {
                     onChanged: vm.setSpeechRate,
                   ),
 
-                  const Divider(height: 24, color: AppColors.borderLight),
+                  Divider(height: 24.h, color: AppColors.borderLight),
 
                   // Voice Pitch Slider
                   Row(
@@ -191,7 +190,7 @@ class TtsSettingsScreen extends StatelessWidget {
                       Text(
                         'Voice Pitch',
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.038,
+                          fontSize: (375 * 0.038).sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),
@@ -199,7 +198,7 @@ class TtsSettingsScreen extends StatelessWidget {
                       Text(
                         vm.pitch.toStringAsFixed(1),
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.035,
+                          fontSize: (375 * 0.035).sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
@@ -10,10 +11,9 @@ class TextInputArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<TranslationViewModel>(context);
-    final mediaQuery = MediaQuery.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,25 +32,25 @@ class TextInputArea extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryLight,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
 
           // Text Input Field
           Container(
-            height: mediaQuery.size.height * 0.1,
+            height: (812 * 0.1).h,
             decoration: BoxDecoration(
               color: AppColors.inputBackground,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.r),
               border: Border.all(color: AppColors.border),
             ),
             child: TextField(
@@ -58,14 +58,14 @@ class TextInputArea extends StatelessWidget {
               maxLines: null,
               expands: true,
               style: const TextStyle(color: AppColors.textPrimary),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Type your text here...',
                 hintStyle: TextStyle(color: AppColors.textMuted),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                fillColor: Colors.transparent,
-                contentPadding: EdgeInsets.all(16),
+                fillColor: AppColors.transparent,
+                contentPadding: EdgeInsets.all(16.r),
               ),
               onTap: () {
                 Navigator.push(
@@ -76,27 +76,27 @@ class TextInputArea extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
 
           // Show Translated Text
           if (provider.translatedText.isNotEmpty) ...[
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
                 color: AppColors.lightBlueBackground,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(color: AppColors.border),
               ),
               child: Text(
                 provider.translatedText,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: 16.sp,
                   color: AppColors.textPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
           ],
 
           // Show Loading Indicator

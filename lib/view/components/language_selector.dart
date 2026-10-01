@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/components/language_picker_modal.dart';
@@ -24,24 +25,21 @@ class LanguageSelectorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.025,
-        vertical: screenHeight * 0.008,
+        horizontal: (375 * 0.025).w,
+        vertical: (812 * 0.008).h,
       ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(22.r),
         border: Border.all(color: AppColors.border),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 10,
-            offset: Offset(0, 3),
+            blurRadius: 10.r,
+            offset: Offset(0, 3.h),
           ),
         ],
       ),
@@ -53,8 +51,6 @@ class LanguageSelectorCard extends StatelessWidget {
               context: context,
               language: sourceLanguage,
               isSource: true,
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
             ),
           ),
 
@@ -62,8 +58,8 @@ class LanguageSelectorCard extends StatelessWidget {
           GestureDetector(
             onTap: onSwap,
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              padding: const EdgeInsets.all(8),
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
+              padding: EdgeInsets.all(8.r),
               decoration: BoxDecoration(
                 color: AppColors.lightBlueBackground,
                 shape: BoxShape.circle,
@@ -71,7 +67,7 @@ class LanguageSelectorCard extends StatelessWidget {
               child: Icon(
                 Icons.swap_horiz_rounded,
                 color: AppColors.primary,
-                size: screenWidth * 0.055,
+                size: (375 * 0.055).w,
               ),
             ),
           ),
@@ -82,8 +78,6 @@ class LanguageSelectorCard extends StatelessWidget {
               context: context,
               language: targetLanguage,
               isSource: false,
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
             ),
           ),
         ],
@@ -95,11 +89,9 @@ class LanguageSelectorCard extends StatelessWidget {
     required BuildContext context,
     required LanguageModel language,
     required bool isSource,
-    required double screenWidth,
-    required double screenHeight,
   }) {
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16.r),
       onTap: () {
         LanguagePickerModal.show(
           context,
@@ -111,20 +103,20 @@ class LanguageSelectorCard extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.025,
-          vertical: screenHeight * 0.01,
+          horizontal: (375 * 0.025).w,
+          vertical: (812 * 0.01).h,
         ),
         decoration: BoxDecoration(
           color: AppColors.inputBackground,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           border: Border.all(color: AppColors.borderLight),
         ),
         child: Row(
           children: [
             // Flag Avatar Circle
             Container(
-              width: screenWidth * 0.075,
-              height: screenWidth * 0.075,
+              width: (375 * 0.075).w,
+              height: (375 * 0.075).w,
               decoration: const BoxDecoration(
                 color: AppColors.surface,
                 shape: BoxShape.circle,
@@ -132,18 +124,18 @@ class LanguageSelectorCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   language.flag,
-                  style: TextStyle(fontSize: screenWidth * 0.042),
+                  style: TextStyle(fontSize: (375 * 0.042).sp),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8.w),
 
             // Language Name
             Expanded(
               child: Text(
                 language.name,
                 style: GoogleFonts.outfit(
-                  fontSize: screenWidth * 0.036,
+                  fontSize: (375 * 0.036).sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
@@ -155,7 +147,7 @@ class LanguageSelectorCard extends StatelessWidget {
             Icon(
               Icons.keyboard_arrow_down_rounded,
               color: AppColors.textSecondary,
-              size: screenWidth * 0.05,
+              size: (375 * 0.05).w,
             ),
           ],
         ),

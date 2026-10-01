@@ -46,10 +46,14 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>This app needs access to the camera to scan, detect, and translate text from images in real-time.</string>
+	<string>This app uses the camera to photograph text and translate it on device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your photo library to select images for OCR text translation.</string>
+	<string>This app needs access to your photo library to select images for text translation.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs access to the microphone for voice translation.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app converts your speech to text so it can be translated.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

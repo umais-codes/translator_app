@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -61,7 +62,7 @@ class LanguagePickerModal extends StatelessWidget {
     final list = languages ?? LanguageModel.supportedLanguages;
     return showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       isScrollControlled: true,
       builder: (context) => ChangeNotifierProvider(
         create: (_) => LanguagePickerViewModel(list),
@@ -78,42 +79,40 @@ class LanguagePickerModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<LanguagePickerViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
+
     final filteredLanguages = vm.filteredLanguages;
 
     return Container(
-      height: screenHeight * 0.75,
-      decoration: const BoxDecoration(
+      height: (812 * 0.75).h,
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 20,
-            offset: Offset(0, -5),
+            blurRadius: 20.r,
+            offset: Offset(0, -5.h),
           ),
         ],
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.05,
-        vertical: screenHeight * 0.015,
+        horizontal: (375 * 0.05).w,
+        vertical: (812 * 0.015).h,
       ),
       child: Column(
         children: [
           // Drag handle
           Center(
             child: Container(
-              width: 44,
-              height: 5,
+              width: 44.w,
+              height: 5.h,
               decoration: BoxDecoration(
                 color: AppColors.border,
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(3.r),
               ),
             ),
           ),
-          SizedBox(height: screenHeight * 0.02),
+          SizedBox(height: (812 * 0.02).h),
 
           // Header
           Row(
@@ -122,7 +121,7 @@ class LanguagePickerModal extends StatelessWidget {
               Text(
                 title,
                 style: GoogleFonts.outfit(
-                  fontSize: screenWidth * 0.048,
+                  fontSize: (375 * 0.048).sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
@@ -133,43 +132,43 @@ class LanguagePickerModal extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: screenHeight * 0.012),
+          SizedBox(height: (812 * 0.012).h),
 
           // Search Field with Clear Button
           Container(
             decoration: BoxDecoration(
               color: AppColors.inputBackground,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.r),
               border: Border.all(color: AppColors.border),
             ),
             child: TextField(
               onChanged: vm.filter,
               style: GoogleFonts.outfit(
                 color: AppColors.textPrimary,
-                fontSize: screenWidth * 0.04,
+                fontSize: (375 * 0.04).sp,
               ),
               decoration: InputDecoration(
                 hintText: 'Search by language or country...',
                 hintStyle: GoogleFonts.outfit(
                   color: AppColors.textMuted,
-                  fontSize: screenWidth * 0.038,
+                  fontSize: (375 * 0.038).sp,
                 ),
                 prefixIcon: Icon(Icons.search_rounded, color: AppColors.primary),
                 suffixIcon: vm.searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 18, color: AppColors.textSecondary),
+                        icon: Icon(Icons.clear_rounded, size: 18.w, color: AppColors.textSecondary),
                         onPressed: vm.clearSearch,
                       )
                     : null,
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                fillColor: Colors.transparent,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                fillColor: AppColors.transparent,
+                contentPadding: EdgeInsets.symmetric(vertical: 14.h),
               ),
             ),
           ),
-          SizedBox(height: screenHeight * 0.015),
+          SizedBox(height: (812 * 0.015).h),
 
           // Languages Count
           Align(
@@ -177,20 +176,20 @@ class LanguagePickerModal extends StatelessWidget {
             child: Text(
               '${filteredLanguages.length} Languages available',
               style: GoogleFonts.outfit(
-                fontSize: screenWidth * 0.032,
+                fontSize: (375 * 0.032).sp,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
               ),
             ),
           ),
-          SizedBox(height: screenHeight * 0.01),
+          SizedBox(height: (812 * 0.01).h),
 
           // Language List
           Expanded(
             child: ListView.separated(
               itemCount: filteredLanguages.length,
-              separatorBuilder: (context, index) => const Divider(
-                height: 1,
+              separatorBuilder: (context, index) => Divider(
+                height: 1.h,
                 color: AppColors.borderLight,
               ),
               itemBuilder: (context, index) {
@@ -202,22 +201,22 @@ class LanguagePickerModal extends StatelessWidget {
                     onSelected(lang);
                     Navigator.pop(context);
                   },
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(14.r),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.025,
-                      vertical: screenHeight * 0.014,
+                      horizontal: (375 * 0.025).w,
+                      vertical: (812 * 0.014).h,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.lightBlueBackground : Colors.transparent,
-                      borderRadius: BorderRadius.circular(14),
+                      color: isSelected ? AppColors.lightBlueBackground : AppColors.transparent,
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
                     child: Row(
                       children: [
                         // Flag Avatar Circle
                         Container(
-                          width: screenWidth * 0.1,
-                          height: screenWidth * 0.1,
+                          width: (375 * 0.1).w,
+                          height: (375 * 0.1).w,
                           decoration: BoxDecoration(
                             color: isSelected ? AppColors.surface : AppColors.inputBackground,
                             shape: BoxShape.circle,
@@ -228,11 +227,11 @@ class LanguagePickerModal extends StatelessWidget {
                           child: Center(
                             child: Text(
                               lang.flag,
-                              style: TextStyle(fontSize: screenWidth * 0.05),
+                              style: TextStyle(fontSize: (375 * 0.05).sp),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 14),
+                        SizedBox(width: 14.w),
 
                         // Language Name & Native Name
                         Expanded(
@@ -242,16 +241,16 @@ class LanguagePickerModal extends StatelessWidget {
                               Text(
                                 lang.name,
                                 style: GoogleFonts.outfit(
-                                  fontSize: screenWidth * 0.04,
+                                  fontSize: (375 * 0.04).sp,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                   color: isSelected ? AppColors.primary : AppColors.textPrimary,
                                 ),
                               ),
-                              const SizedBox(height: 2),
+                              SizedBox(height: 2.h),
                               Text(
                                 lang.nativeName,
                                 style: GoogleFonts.outfit(
-                                  fontSize: screenWidth * 0.032,
+                                  fontSize: (375 * 0.032).sp,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
@@ -262,14 +261,14 @@ class LanguagePickerModal extends StatelessWidget {
                         // Selection Checkmark
                         if (isSelected)
                           Container(
-                            padding: const EdgeInsets.all(4),
+                            padding: EdgeInsets.all(4.r),
                             decoration: BoxDecoration(
                               color: AppColors.primary,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.check_rounded,
-                              size: 16,
+                              size: 16.w,
                               color: AppColors.textWhite,
                             ),
                           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 
@@ -14,18 +15,16 @@ class CustomBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
 
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: const [
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 16,
-            offset: Offset(0, -4),
+            blurRadius: 16.r,
+            offset: Offset(0, -4.h),
           ),
         ],
       ),
@@ -33,8 +32,8 @@ class CustomBottomNav extends StatelessWidget {
         top: false,
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.04,
-            vertical: 8,
+            horizontal: (375 * 0.04).w,
+            vertical: 8.h,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -43,25 +42,21 @@ class CustomBottomNav extends StatelessWidget {
                 index: 0,
                 icon: Icons.translate_rounded,
                 label: 'Translate',
-                screenWidth: screenWidth,
               ),
               _buildNavItem(
                 index: 1,
                 icon: Icons.record_voice_over_rounded,
                 label: 'Conversation',
-                screenWidth: screenWidth,
               ),
               _buildNavItem(
                 index: 2,
                 icon: Icons.menu_book_rounded,
                 label: 'Dictionary',
-                screenWidth: screenWidth,
               ),
               _buildNavItem(
                 index: 3,
                 icon: Icons.grid_view_rounded,
                 label: 'Tools',
-                screenWidth: screenWidth,
               ),
             ],
           ),
@@ -74,23 +69,22 @@ class CustomBottomNav extends StatelessWidget {
     required int index,
     required IconData icon,
     required String label,
-    required double screenWidth,
   }) {
     final isSelected = currentIndex == index;
 
     return InkWell(
       onTap: () => onTap(index),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16.r),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
         padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? screenWidth * 0.035 : screenWidth * 0.02,
-          vertical: 8,
+          horizontal: isSelected ? (375 * 0.035).w : (375 * 0.02).w,
+          vertical: 8.h,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.lightBlueBackground : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
+          color: isSelected ? AppColors.lightBlueBackground : AppColors.transparent,
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -98,14 +92,14 @@ class CustomBottomNav extends StatelessWidget {
             Icon(
               icon,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
-              size: screenWidth * 0.06,
+              size: (375 * 0.06).w,
             ),
             if (isSelected) ...[
-              const SizedBox(width: 6),
+              SizedBox(width: 6.w),
               Text(
                 label,
                 style: GoogleFonts.outfit(
-                  fontSize: screenWidth * 0.035,
+                  fontSize: (375 * 0.035).sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),

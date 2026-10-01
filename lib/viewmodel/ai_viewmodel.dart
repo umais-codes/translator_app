@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+import 'package:translator_app/core/config/ai_config.dart';
 import 'package:translator_app/data/models/ai_models.dart';
 import 'package:translator_app/data/repositories/ai_repository.dart';
+import 'package:translator_app/data/services/speech_preferences.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
@@ -68,13 +70,21 @@ class AIViewModel extends ChangeNotifier {
   }
 
   void setSelectedTone(AIToneOption tone) {
+    if (_selectedTone == tone) return;
     _selectedTone = tone;
     notifyListeners();
+    if (_toneResult != null && _toneInputController.text.trim().isNotEmpty) {
+      rephraseTone();
+    }
   }
 
   void setSelectedLength(AILengthOption length) {
+    if (_selectedLength == length) return;
     _selectedLength = length;
     notifyListeners();
+    if (_toneResult != null && _toneInputController.text.trim().isNotEmpty) {
+      rephraseTone();
+    }
   }
 
   void setSelectedLanguage(LanguageModel lang) {
@@ -90,6 +100,24 @@ class AIViewModel extends ChangeNotifier {
   void setNuanceTargetLang(LanguageModel lang) {
     _nuanceTargetLang = lang;
     notifyListeners();
+  }
+
+  void swapNuanceLanguages() {
+    final tempLang = _nuanceSourceLang;
+    _nuanceSourceLang = _nuanceTargetLang;
+    _nuanceTargetLang = tempLang;
+
+    final tempText = _nuanceSourceController.text;
+    _nuanceSourceController.text = _nuanceTargetController.text;
+    _nuanceTargetController.text = tempText;
+
+    if (_nuanceResult != null &&
+        _nuanceSourceController.text.trim().isNotEmpty &&
+        _nuanceTargetController.text.trim().isNotEmpty) {
+      explainNuance();
+    } else {
+      notifyListeners();
+    }
   }
 
   // --- Preload from Translator Screen ---
@@ -111,7 +139,9 @@ class AIViewModel extends ChangeNotifier {
 
     if (initialTab == 0) {
       // Rephrase tone of translated or source text
-      _toneInputController.text = translatedText.isNotEmpty ? translatedText : sourceText;
+      _toneInputController.text = translatedText.isNotEmpty
+          ? translatedText
+          : sourceText;
     } else if (initialTab == 1) {
       _grammarInputController.text = sourceText;
     } else if (initialTab == 2) {
@@ -143,7 +173,11 @@ class AIViewModel extends ChangeNotifier {
         length: _selectedLength,
         language: _selectedLanguage.name,
       );
+    } on AIUnavailableException catch (e) {
+      _toneResult = null;
+      _errorMessage = e.message;
     } catch (e) {
+      _toneResult = null;
       _errorMessage = 'Could not generate rephrased text. Please try again.';
     } finally {
       _isLoading = false;
@@ -168,7 +202,11 @@ class AIViewModel extends ChangeNotifier {
         text: text,
         language: _selectedLanguage.name,
       );
+    } on AIUnavailableException catch (e) {
+      _grammarResult = null;
+      _errorMessage = e.message;
     } catch (e) {
+      _grammarResult = null;
       _errorMessage = 'Could not analyze grammar. Please try again.';
     } finally {
       _isLoading = false;
@@ -181,7 +219,8 @@ class AIViewModel extends ChangeNotifier {
     final target = _nuanceTargetController.text.trim();
 
     if (source.isEmpty || target.isEmpty) {
-      _errorMessage = 'Please enter both original phrase and translated phrase.';
+      _errorMessage =
+          'Please enter both original phrase and translated phrase.';
       notifyListeners();
       return;
     }
@@ -197,7 +236,11 @@ class AIViewModel extends ChangeNotifier {
         sourceLang: _nuanceSourceLang.name,
         targetLang: _nuanceTargetLang.name,
       );
+    } on AIUnavailableException catch (e) {
+      _nuanceResult = null;
+      _errorMessage = e.message;
     } catch (e) {
+      _nuanceResult = null;
       _errorMessage = 'Could not generate nuance insights. Please try again.';
     } finally {
       _isLoading = false;
@@ -209,14 +252,18 @@ class AIViewModel extends ChangeNotifier {
     if (text.trim().isEmpty) return;
     try {
       await _flutterTts.stop();
-      await _flutterTts.setLanguage(langCode);
+      await SpeechPreferences.apply(_flutterTts, languageCode: langCode);
       await _flutterTts.speak(text);
     } catch (_) {
       // Ignore TTS error
     }
   }
 
-  Future<void> copyToClipboard(BuildContext context, String text, String label) async {
+  Future<void> copyToClipboard(
+    BuildContext context,
+    String text,
+    String label,
+  ) async {
     if (text.trim().isEmpty) return;
     await Clipboard.setData(ClipboardData(text: text));
     if (context.mounted) {

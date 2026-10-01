@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -15,15 +16,13 @@ class HomeTranslateView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<TranslationViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
-        vertical: screenHeight * 0.015,
+        vertical: (812 * 0.015).h,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -37,12 +36,12 @@ class HomeTranslateView extends StatelessWidget {
             onSwap: vm.swapLanguages,
           ),
 
-          SizedBox(height: screenHeight * 0.015),
+          SizedBox(height: (812 * 0.015).h),
 
           // 2. Source Translation Input Card
-          _buildTranslationInputCard(context, vm, screenWidth, screenHeight),
+          _buildTranslationInputCard(context, vm),
 
-          SizedBox(height: screenHeight * 0.015),
+          SizedBox(height: (812 * 0.015).h),
 
           // 3. Action Buttons (Translate & Clear)
           Row(
@@ -53,19 +52,19 @@ class HomeTranslateView extends StatelessWidget {
                   child: CustomButton(
                     text: 'Clear',
                     variant: ButtonVariant.outlined,
-                    height: screenHeight * 0.055,
+                    height: (812 * 0.055).h,
                     leadingIcon: Icons.clear_all_rounded,
                     onPressed: vm.clear,
                   ),
                 ),
-                SizedBox(width: screenWidth * 0.03),
+                SizedBox(width: (375 * 0.03).w),
               ],
               Expanded(
                 flex: 2,
                 child: CustomButton(
                   text: vm.isLoading ? 'Translating...' : 'Translate',
                   variant: ButtonVariant.filled,
-                  height: screenHeight * 0.055,
+                  height: (812 * 0.055).h,
                   leadingIcon: Icons.translate_rounded,
                   isLoading: vm.isLoading,
                   onPressed: vm.sourceText.trim().isNotEmpty
@@ -76,11 +75,11 @@ class HomeTranslateView extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: screenHeight * 0.015),
+          SizedBox(height: (812 * 0.015).h),
 
           // 4. Translation Output Card
           if (vm.translatedText.isNotEmpty || vm.isLoading) ...[
-            _buildTranslationOutputCard(context, vm, screenWidth, screenHeight),
+            _buildTranslationOutputCard(context, vm),
           ],
         ],
       ),
@@ -90,23 +89,21 @@ class HomeTranslateView extends StatelessWidget {
   Widget _buildTranslationInputCard(
     BuildContext context,
     TranslationViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: AppColors.border),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            blurRadius: 8.r,
+            offset: Offset(0, 2.h),
           ),
         ],
       ),
-      padding: EdgeInsets.all(screenWidth * 0.045),
+      padding: EdgeInsets.all((375 * 0.045).w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -117,22 +114,22 @@ class HomeTranslateView extends StatelessWidget {
               Text(
                 vm.sourceLanguage.name.toUpperCase(),
                 style: GoogleFonts.outfit(
-                  fontSize: screenWidth * 0.032,
+                  fontSize: (375 * 0.032).sp,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 0.8,
+                  letterSpacing: 0.8.sp,
                   color: AppColors.textSecondary,
                 ),
               ),
               if (vm.sourceText.isNotEmpty)
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textSecondary),
+                  icon: Icon(Icons.close_rounded, size: 18.w, color: AppColors.textSecondary),
                   onPressed: vm.clear,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
 
           // Editable Text Input Area
           TextField(
@@ -141,25 +138,25 @@ class HomeTranslateView extends StatelessWidget {
             maxLines: 5,
             minLines: 3,
             style: GoogleFonts.outfit(
-              fontSize: screenWidth * 0.042,
+              fontSize: (375 * 0.042).sp,
               color: AppColors.textPrimary,
-              height: 1.4,
+              height: 1.4.h,
             ),
             decoration: InputDecoration(
               hintText: 'Enter text to translate...',
               hintStyle: GoogleFonts.outfit(
                 color: AppColors.textMuted,
-                fontSize: screenWidth * 0.04,
+                fontSize: (375 * 0.04).sp,
               ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
-              fillColor: Colors.transparent,
+              fillColor: AppColors.transparent,
               contentPadding: EdgeInsets.zero,
             ),
           ),
 
-          const Divider(height: 24, color: AppColors.borderLight),
+          Divider(height: 24.h, color: AppColors.borderLight),
 
           // Bottom Actions inside Source Card: Paste, Speak, Mic
           Row(
@@ -167,25 +164,25 @@ class HomeTranslateView extends StatelessWidget {
               // Paste Button
               InkWell(
                 onTap: vm.pasteText,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 6.h,
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.inputBackground,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.paste_rounded, size: 16, color: AppColors.primary),
-                      const SizedBox(width: 4),
+                      Icon(Icons.paste_rounded, size: 16.w, color: AppColors.primary),
+                      SizedBox(width: 4.w),
                       Text(
                         'Paste',
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.034,
+                          fontSize: (375 * 0.034).sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primary,
                         ),
@@ -195,7 +192,7 @@ class HomeTranslateView extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 10),
+              SizedBox(width: 10.w),
 
               // Source Audio Playback
               if (vm.sourceText.isNotEmpty)
@@ -211,7 +208,7 @@ class HomeTranslateView extends StatelessWidget {
                 onTap: vm.isListening ? vm.stopListening : vm.startListening,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10.r),
                   decoration: BoxDecoration(
                     color: vm.isListening ? AppColors.micActive : AppColors.primary,
                     shape: BoxShape.circle,
@@ -219,16 +216,16 @@ class HomeTranslateView extends StatelessWidget {
                       BoxShadow(
                         color: (vm.isListening ? AppColors.micActive : AppColors.primary)
                             .withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 2),
+                        blurRadius: 8.r,
+                        spreadRadius: 2.r,
+                        offset: Offset(0, 2.h),
                       ),
                     ],
                   ),
                   child: Icon(
                     vm.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
                     color: AppColors.textWhite,
-                    size: screenWidth * 0.055,
+                    size: (375 * 0.055).w,
                   ),
                 ),
               ),
@@ -242,24 +239,22 @@ class HomeTranslateView extends StatelessWidget {
   Widget _buildTranslationOutputCard(
     BuildContext context,
     TranslationViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
     return Container(
-      margin: EdgeInsets.only(top: screenHeight * 0.01),
+      margin: EdgeInsets.only(top: (812 * 0.01).h),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 1.5),
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 1.5.w),
+        boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 10,
-            offset: Offset(0, 3),
+            blurRadius: 10.r,
+            offset: Offset(0, 3.h),
           ),
         ],
       ),
-      padding: EdgeInsets.all(screenWidth * 0.045),
+      padding: EdgeInsets.all((375 * 0.045).w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -269,20 +264,20 @@ class HomeTranslateView extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 8,
-                    height: 8,
+                    width: 8.w,
+                    height: 8.h,
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6.w),
                   Text(
                     vm.targetLanguage.name.toUpperCase(),
                     style: GoogleFonts.outfit(
-                      fontSize: screenWidth * 0.032,
+                      fontSize: (375 * 0.032).sp,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 0.8,
+                      letterSpacing: 0.8.sp,
                       color: AppColors.primary,
                     ),
                   ),
@@ -291,7 +286,7 @@ class HomeTranslateView extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.copy_rounded, size: 20, color: AppColors.primary),
+                    icon: Icon(Icons.copy_rounded, size: 20.w, color: AppColors.primary),
                     onPressed: () {
                       vm.copyTranslatedText();
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -305,7 +300,7 @@ class HomeTranslateView extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       Icons.volume_up_rounded,
-                      size: 22,
+                      size: 22.w,
                       color: AppColors.primary,
                     ),
                     onPressed: vm.speakTranslatedText,
@@ -314,21 +309,21 @@ class HomeTranslateView extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
           Text(
             vm.translatedText,
             style: GoogleFonts.outfit(
-              fontSize: screenWidth * 0.045,
+              fontSize: (375 * 0.045).sp,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
-              height: 1.4,
+              height: 1.4.h,
             ),
           ),
 
           if (vm.translatedText.isNotEmpty && !vm.translatedText.startsWith('Error:')) ...[
-            const SizedBox(height: 12),
-            const Divider(height: 1),
-            const SizedBox(height: 8),
+            SizedBox(height: 12.h),
+            Divider(height: 1.h),
+            SizedBox(height: 8.h),
 
             // AI Action Chips Row
             SingleChildScrollView(
@@ -356,7 +351,7 @@ class HomeTranslateView extends StatelessWidget {
                       );
                     },
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   CustomChip(
                     icon: Icons.lightbulb_outline_rounded,
                     label: 'Explain Nuance',

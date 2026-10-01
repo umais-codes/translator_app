@@ -1,12 +1,10 @@
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:translator_app/data/models/translation_history_model.dart';
+import 'package:translator_app/data/repositories/history_store.dart';
+import 'package:translator_app/data/repositories/sqlite_history_store.dart';
+import 'package:translator_app/core/translation_limits.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
 
 class TranslationHistoryRepository {
-  static const String _historyKey = 'translation_history_items_v1';
-  static const String _categoriesKey = 'translation_categories_v1';
-
   static const List<String> defaultCategories = [
     'General',
     'Travel',
@@ -16,41 +14,29 @@ class TranslationHistoryRepository {
     'Emergency',
   ];
 
+  final HistoryStore _store;
   final List<TranslationHistoryItem> _cachedHistory = [];
   final List<String> _cachedCategories = [];
   bool _isInitialized = false;
 
+  TranslationHistoryRepository({HistoryStore? store})
+    : _store = store ?? SqliteHistoryStore();
+
   Future<void> _ensureInitialized() async {
     if (_isInitialized) return;
 
-    final prefs = await SharedPreferences.getInstance();
-
-    // Load categories
-    final categoriesJson = prefs.getStringList(_categoriesKey);
-    if (categoriesJson != null && categoriesJson.isNotEmpty) {
-      _cachedCategories.clear();
-      _cachedCategories.addAll(categoriesJson);
-    } else {
-      _cachedCategories.clear();
-      _cachedCategories.addAll(defaultCategories);
-      await prefs.setStringList(_categoriesKey, _cachedCategories);
+    final categories = await _store.loadCategories();
+    _cachedCategories
+      ..clear()
+      ..addAll(categories.isEmpty ? defaultCategories : categories);
+    if (categories.isEmpty) {
+      await _store.saveCategories(_cachedCategories);
     }
 
-    // Load history
-    final historyJson = prefs.getString(_historyKey);
-    if (historyJson != null && historyJson.isNotEmpty) {
-      try {
-        final List<dynamic> list = jsonDecode(historyJson);
-        _cachedHistory.clear();
-        for (final item in list) {
-          if (item is Map<String, dynamic>) {
-            _cachedHistory.add(TranslationHistoryItem.fromMap(item));
-          }
-        }
-      } catch (_) {
-        _cachedHistory.clear();
-      }
-    }
+    final history = await _store.loadHistory();
+    _cachedHistory
+      ..clear()
+      ..addAll(history);
 
     _isInitialized = true;
   }
@@ -81,12 +67,14 @@ class TranslationHistoryRepository {
       return;
     }
 
+    final limitedSource = _limit(cleanSource);
+    final limitedTranslation = _limit(cleanTranslated);
+
     await _ensureInitialized();
 
-    // Deduplication check: if identical source+target+text exists, update its timestamp & place at the top
     final existingIndex = _cachedHistory.indexWhere(
       (item) =>
-          item.sourceText.trim().toLowerCase() == cleanSource.toLowerCase() &&
+          item.sourceText.trim().toLowerCase() == limitedSource.toLowerCase() &&
           item.sourceLanguageCode == sourceLanguage.code &&
           item.targetLanguageCode == targetLanguage.code,
     );
@@ -94,15 +82,15 @@ class TranslationHistoryRepository {
     if (existingIndex != -1) {
       final existingItem = _cachedHistory.removeAt(existingIndex);
       final updatedItem = existingItem.copyWith(
-        translatedText: cleanTranslated,
+        translatedText: limitedTranslation,
         timestamp: DateTime.now(),
       );
       _cachedHistory.insert(0, updatedItem);
     } else {
       final newItem = TranslationHistoryItem(
-        id: '${DateTime.now().millisecondsSinceEpoch}_${cleanSource.hashCode}',
-        sourceText: cleanSource,
-        translatedText: cleanTranslated,
+        id: '${DateTime.now().millisecondsSinceEpoch}_${limitedSource.hashCode}',
+        sourceText: limitedSource,
+        translatedText: limitedTranslation,
         sourceLanguageCode: sourceLanguage.code,
         sourceLanguageName: sourceLanguage.name,
         sourceLanguageFlag: sourceLanguage.flag,
@@ -115,7 +103,19 @@ class TranslationHistoryRepository {
       _cachedHistory.insert(0, newItem);
     }
 
+    if (_cachedHistory.length > TranslationLimits.maxHistoryItems) {
+      _cachedHistory.removeRange(
+        TranslationLimits.maxHistoryItems,
+        _cachedHistory.length,
+      );
+    }
+
     await _persistHistory();
+  }
+
+  String _limit(String value) {
+    if (value.length <= TranslationLimits.maxHistoryTextCharacters) return value;
+    return '${value.substring(0, TranslationLimits.maxHistoryTextCharacters)}…';
   }
 
   Future<void> toggleFavorite(String id) async {
@@ -200,21 +200,10 @@ class TranslationHistoryRepository {
   }
 
   Future<void> _persistHistory() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final list = _cachedHistory.map((item) => item.toMap()).toList();
-      await prefs.setString(_historyKey, jsonEncode(list));
-    } catch (_) {
-      // Ignore cache persistence errors
-    }
+    await _store.saveHistory(_cachedHistory);
   }
 
   Future<void> _persistCategories() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(_categoriesKey, _cachedCategories);
-    } catch (_) {
-      // Ignore cache persistence errors
-    }
+    await _store.saveCategories(_cachedCategories);
   }
 }

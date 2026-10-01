@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -12,10 +13,8 @@ class OfflineSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -26,40 +25,40 @@ class OfflineSettingsScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
+            vertical: (812 * 0.02).h,
           ),
           children: [
             // Status Card
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                     color: AppColors.shadow,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+                    blurRadius: 8.r,
+                    offset: Offset(0, 2.h),
                   ),
                 ],
               ),
               child: Row(
                 children: [
                   Container(
-                    width: screenWidth * 0.13,
-                    height: screenWidth * 0.13,
+                    width: (375 * 0.13).w,
+                    height: (375 * 0.13).w,
                     decoration: BoxDecoration(
                       color: AppColors.lightBlueBackground,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14.r),
                     ),
                     child: Icon(
                       Icons.offline_bolt_rounded,
                       color: AppColors.primary,
-                      size: screenWidth * 0.07,
+                      size: (375 * 0.07).w,
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,16 +66,16 @@ class OfflineSettingsScreen extends StatelessWidget {
                         Text(
                           'Local Offline Cache',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.042,
+                            fontSize: (375 * 0.042).sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2.h),
                         Text(
                           '${vm.cachedPhrasesCount} phrases stored locally',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.032,
+                            fontSize: (375 * 0.032).sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -87,24 +86,24 @@ class OfflineSettingsScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
 
             // How Offline Works Card
             Text(
               'How Offline Mode Operates',
               style: GoogleFonts.outfit(
-                fontSize: screenWidth * 0.04,
+                fontSize: (375 * 0.04).sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: (812 * 0.01).h),
 
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
               ),
               child: Column(
@@ -114,33 +113,30 @@ class OfflineSettingsScreen extends StatelessWidget {
                     icon: Icons.check_circle_outline_rounded,
                     title: 'Persistent Offline Storage',
                     desc: 'Every word or sentence translated while connected is cached locally and available without network.',
-                    screenWidth: screenWidth,
                   ),
-                  const Divider(height: 24, color: AppColors.borderLight),
+                  Divider(height: 24.h, color: AppColors.borderLight),
                   _buildFeatureRow(
                     icon: Icons.speed_rounded,
                     title: 'Zero Latency',
                     desc: 'Repeated queries load instantaneously with zero data usage.',
-                    screenWidth: screenWidth,
                   ),
-                  const Divider(height: 24, color: AppColors.borderLight),
+                  Divider(height: 24.h, color: AppColors.borderLight),
                   _buildFeatureRow(
                     icon: Icons.model_training_rounded,
                     title: 'On-Device ML Ready',
                     desc: 'Compatible with on-device neural translation models for full standalone dictionary translation.',
-                    screenWidth: screenWidth,
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: (812 * 0.03).h),
 
             // Cache Management Button
             CustomButton(
               text: 'Clear Offline Translation Cache',
               variant: ButtonVariant.outlined,
-              height: screenHeight * 0.055,
+              height: (812 * 0.055).h,
               leadingIcon: Icons.delete_outline_rounded,
               borderColor: AppColors.error,
               textColor: AppColors.error,
@@ -169,13 +165,12 @@ class OfflineSettingsScreen extends StatelessWidget {
     required IconData icon,
     required String title,
     required String desc,
-    required double screenWidth,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppColors.primary, size: screenWidth * 0.055),
-        const SizedBox(width: 12),
+        Icon(icon, color: AppColors.primary, size: (375 * 0.055).w),
+        SizedBox(width: 12.w),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,18 +178,18 @@ class OfflineSettingsScreen extends StatelessWidget {
               Text(
                 title,
                 style: GoogleFonts.outfit(
-                  fontSize: screenWidth * 0.036,
+                  fontSize: (375 * 0.036).sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 3),
+              SizedBox(height: 3.h),
               Text(
                 desc,
                 style: GoogleFonts.outfit(
-                  fontSize: screenWidth * 0.031,
+                  fontSize: (375 * 0.031).sp,
                   color: AppColors.textSecondary,
-                  height: 1.35,
+                  height: 1.35.h,
                 ),
               ),
             ],

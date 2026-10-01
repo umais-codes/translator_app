@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -13,10 +14,8 @@ class FileTranslationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<FileTranslateViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -27,7 +26,7 @@ class FileTranslationScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.015,
+            vertical: (812 * 0.015).h,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -41,34 +40,34 @@ class FileTranslationScreen extends StatelessWidget {
                 onSwap: vm.swapLanguages,
               ),
 
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: (812 * 0.02).h),
 
               // 2. Upload Zone Card
               GestureDetector(
                 onTap: vm.isLoading ? null : vm.selectFile,
                 child: Container(
-                  padding: EdgeInsets.all(screenWidth * 0.06),
+                  padding: EdgeInsets.all((375 * 0.06).w),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
                       color: vm.selectedFileName != null
                           ? AppColors.primary
                           : AppColors.border,
-                      width: 1.5,
+                      width: 1.5.w,
                     ),
-                    boxShadow: const [
+                    boxShadow: [
                       BoxShadow(
                         color: AppColors.shadow,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
+                        blurRadius: 8.r,
+                        offset: Offset(0, 2.h),
                       ),
                     ],
                   ),
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.r),
                         decoration: BoxDecoration(
                           color: AppColors.lightBlueBackground,
                           shape: BoxShape.circle,
@@ -77,25 +76,25 @@ class FileTranslationScreen extends StatelessWidget {
                           vm.selectedFileName != null
                               ? Icons.check_circle_rounded
                               : Icons.cloud_upload_rounded,
-                          size: screenWidth * 0.12,
+                          size: (375 * 0.12).w,
                           color: AppColors.primary,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       Text(
                         vm.selectedFileName ?? 'Tap to Select Document',
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.044,
+                          fontSize: (375 * 0.044).sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6.h),
                       Text(
                         'Supports .txt, .json, and .csv files',
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.034,
+                          fontSize: (375 * 0.034).sp,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -104,29 +103,29 @@ class FileTranslationScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: (812 * 0.02).h),
 
               // 3. Translate Button
               CustomButton(
                 text: 'Translate File',
                 variant: ButtonVariant.filled,
-                height: screenHeight * 0.062,
+                height: (812 * 0.062).h,
                 borderRadius: 16,
                 leadingIcon: Icons.translate_rounded,
                 isLoading: vm.isLoading,
                 isDisabled: vm.fileContent == null,
                 onPressed: vm.translateFile,
-                fontSize: screenWidth * 0.044,
+                fontSize: (375 * 0.044).sp,
                 fontWeight: FontWeight.bold,
               ),
 
               if (vm.errorMessage != null) ...[
-                SizedBox(height: screenHeight * 0.015),
+                SizedBox(height: (812 * 0.015).h),
                 Text(
                   vm.errorMessage!,
                   style: GoogleFonts.outfit(
                     color: AppColors.error,
-                    fontSize: screenWidth * 0.036,
+                    fontSize: (375 * 0.036).sp,
                     fontWeight: FontWeight.w600,
                   ),
                   textAlign: TextAlign.center,
@@ -135,18 +134,18 @@ class FileTranslationScreen extends StatelessWidget {
 
               // 4. Translated Output Preview
               if (vm.translatedContent != null) ...[
-                SizedBox(height: screenHeight * 0.02),
+                SizedBox(height: (812 * 0.02).h),
                 Container(
-                  padding: EdgeInsets.all(screenWidth * 0.045),
+                  padding: EdgeInsets.all((375 * 0.045).w),
                   decoration: BoxDecoration(
                     color: AppColors.lightBlueBackground,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(color: AppColors.border),
-                    boxShadow: const [
+                    boxShadow: [
                       BoxShadow(
                         color: AppColors.shadow,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
+                        blurRadius: 8.r,
+                        offset: Offset(0, 2.h),
                       ),
                     ],
                   ),
@@ -160,13 +159,13 @@ class FileTranslationScreen extends StatelessWidget {
                             children: [
                               Text(
                                 vm.toLanguage.flag,
-                                style: TextStyle(fontSize: screenWidth * 0.048),
+                                style: TextStyle(fontSize: (375 * 0.048).sp),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8.w),
                               Text(
                                 'Translated Output (${vm.toLanguage.name})',
                                 style: GoogleFonts.outfit(
-                                  fontSize: screenWidth * 0.04,
+                                  fontSize: (375 * 0.04).sp,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.primary,
                                 ),
@@ -174,7 +173,7 @@ class FileTranslationScreen extends StatelessWidget {
                             ],
                           ),
                           IconButton(
-                            icon: Icon(Icons.copy_rounded, color: AppColors.primary, size: 20),
+                            icon: Icon(Icons.copy_rounded, color: AppColors.primary, size: 20.w),
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Copied translation!')),
@@ -183,13 +182,13 @@ class FileTranslationScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text(
                         vm.translatedContent!,
                         style: GoogleFonts.outfit(
-                          fontSize: screenWidth * 0.04,
+                          fontSize: (375 * 0.04).sp,
                           color: AppColors.textPrimary,
-                          height: 1.4,
+                          height: 1.4.h,
                         ),
                       ),
                     ],

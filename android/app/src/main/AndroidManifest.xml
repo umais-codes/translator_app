@@ -9,7 +9,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <application
-        android:label="translator_app"
+        android:label="Translator"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

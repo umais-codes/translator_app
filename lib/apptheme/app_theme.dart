@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_colors.dart';
 
@@ -10,13 +11,12 @@ class AppTheme {
 
   static ThemeData getTheme({Color? primaryColor}) {
     final effectivePrimary = primaryColor ?? AppColors.primary;
-    final baseTextTheme = ThemeData.light().textTheme;
-    final outfitTextTheme = GoogleFonts.outfitTextTheme(baseTextTheme);
+    final outfitFamily = GoogleFonts.outfit().fontFamily;
 
     return ThemeData(
       useMaterial3: true,
-      fontFamily: GoogleFonts.outfit().fontFamily,
-      textTheme: outfitTextTheme,
+      fontFamily: outfitFamily,
+      textTheme: ThemeData.light().textTheme.apply(fontFamily: outfitFamily),
       scaffoldBackgroundColor: AppColors.scaffoldBackground,
       colorScheme: ColorScheme.fromSeed(
         seedColor: effectivePrimary,
@@ -31,7 +31,7 @@ class AppTheme {
         centerTitle: true,
         elevation: 0,
         titleTextStyle: GoogleFonts.outfit(
-          fontSize: 20,
+          fontSize: 20.sp,
           fontWeight: FontWeight.bold,
           color: AppColors.textWhite,
         ),
@@ -44,9 +44,9 @@ class AppTheme {
             fontWeight: FontWeight.bold,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(15.r),
           ),
-          elevation: 2,
+          elevation: 2.r,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -66,24 +66,24 @@ class AppTheme {
         labelStyle: GoogleFonts.outfit(
           color: AppColors.textSecondary,
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 16,
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 14.h,
+          horizontal: 16.w,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: effectivePrimary, width: 2),
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(color: effectivePrimary, width: 2.w),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.error),
         ),
       ),

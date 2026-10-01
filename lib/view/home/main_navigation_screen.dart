@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
@@ -17,8 +18,6 @@ class MainNavigationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navVm = context.watch<MainNavViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -29,7 +28,7 @@ class MainNavigationScreen extends StatelessWidget {
             icon: Icon(
               Icons.history_rounded,
               color: AppColors.textWhite,
-              size: screenWidth * 0.06,
+              size: (375 * 0.06).w,
             ),
             tooltip: 'History & Favorites',
             onPressed: () {
@@ -45,7 +44,7 @@ class MainNavigationScreen extends StatelessWidget {
             icon: Icon(
               Icons.settings_outlined,
               color: AppColors.textWhite,
-              size: screenWidth * 0.06,
+              size: (375 * 0.06).w,
             ),
             tooltip: 'Settings',
             onPressed: () {

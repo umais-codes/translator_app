@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -11,15 +12,13 @@ class Conversation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ConversationViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
-        vertical: screenHeight * 0.015,
+        vertical: (812 * 0.015).h,
       ),
       child: Column(
         children: [
@@ -32,24 +31,24 @@ class Conversation extends StatelessWidget {
             onSwap: vm.swapLanguages,
           ),
 
-          SizedBox(height: screenHeight * 0.02),
+          SizedBox(height: (812 * 0.02).h),
 
           // 2. Speaker 1 Panel (Input)
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(screenWidth * 0.045),
+            padding: EdgeInsets.all((375 * 0.045).w),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
                 color: vm.isListening ? AppColors.primary : AppColors.border,
                 width: vm.isListening ? 1.5 : 1,
               ),
-              boxShadow: const [
+              boxShadow: [
                 BoxShadow(
                   color: AppColors.shadow,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
+                  blurRadius: 8.r,
+                  offset: Offset(0, 2.h),
                 ),
               ],
             ),
@@ -63,13 +62,13 @@ class Conversation extends StatelessWidget {
                       children: [
                         Text(
                           vm.inputLanguage.flag,
-                          style: TextStyle(fontSize: screenWidth * 0.048),
+                          style: TextStyle(fontSize: (375 * 0.048).sp),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         Text(
                           'You (${vm.inputLanguage.name})',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.038,
+                            fontSize: (375 * 0.038).sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -80,31 +79,31 @@ class Conversation extends StatelessWidget {
                       IconButton(
                         icon: Icon(
                           Icons.volume_up_rounded,
-                          size: 20,
+                          size: 20.w,
                           color: AppColors.primary,
                         ),
                         onPressed: () => vm.speak(vm.inputText, vm.inputLanguage.code),
                       ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Text(
                   vm.inputText.isEmpty
                       ? 'Tap the microphone and start speaking...'
                       : vm.inputText,
                   style: GoogleFonts.outfit(
-                    fontSize: screenWidth * 0.042,
+                    fontSize: (375 * 0.042).sp,
                     color: vm.inputText.isEmpty
                         ? AppColors.textMuted
                         : AppColors.textPrimary,
-                    height: 1.4,
+                    height: 1.4.h,
                   ),
                 ),
               ],
             ),
           ),
 
-          SizedBox(height: screenHeight * 0.02),
+          SizedBox(height: (812 * 0.02).h),
 
           // 3. Center Microphone Button
           Center(
@@ -112,8 +111,8 @@ class Conversation extends StatelessWidget {
               onTap: vm.isListening ? vm.stopListening : vm.startListening,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
-                width: screenWidth * 0.18,
-                height: screenWidth * 0.18,
+                width: (375 * 0.18).w,
+                height: (375 * 0.18).w,
                 decoration: BoxDecoration(
                   color: vm.isListening ? AppColors.micActive : AppColors.primary,
                   shape: BoxShape.circle,
@@ -130,27 +129,27 @@ class Conversation extends StatelessWidget {
                 child: Icon(
                   vm.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
                   color: AppColors.textWhite,
-                  size: screenWidth * 0.08,
+                  size: (375 * 0.08).w,
                 ),
               ),
             ),
           ),
 
-          SizedBox(height: screenHeight * 0.02),
+          SizedBox(height: (812 * 0.02).h),
 
           // 4. Speaker 2 Panel (Output / Translated)
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(screenWidth * 0.045),
+            padding: EdgeInsets.all((375 * 0.045).w),
             decoration: BoxDecoration(
               color: AppColors.lightBlueBackground,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               border: Border.all(color: AppColors.border),
-              boxShadow: const [
+              boxShadow: [
                 BoxShadow(
                   color: AppColors.shadow,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
+                  blurRadius: 8.r,
+                  offset: Offset(0, 2.h),
                 ),
               ],
             ),
@@ -164,13 +163,13 @@ class Conversation extends StatelessWidget {
                       children: [
                         Text(
                           vm.outputLanguage.flag,
-                          style: TextStyle(fontSize: screenWidth * 0.048),
+                          style: TextStyle(fontSize: (375 * 0.048).sp),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         Text(
                           'Partner (${vm.outputLanguage.name})',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.038,
+                            fontSize: (375 * 0.038).sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -181,7 +180,7 @@ class Conversation extends StatelessWidget {
                       IconButton(
                         icon: Icon(
                           Icons.volume_up_rounded,
-                          size: 20,
+                          size: 20.w,
                           color: AppColors.primary,
                         ),
                         onPressed: () =>
@@ -189,7 +188,7 @@ class Conversation extends StatelessWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Text(
                   vm.isTranslating
                       ? 'Translating conversation...'
@@ -197,11 +196,11 @@ class Conversation extends StatelessWidget {
                           ? 'Translation will appear here in real-time...'
                           : vm.translatedText,
                   style: GoogleFonts.outfit(
-                    fontSize: screenWidth * 0.042,
+                    fontSize: (375 * 0.042).sp,
                     color: vm.translatedText.isEmpty
                         ? AppColors.textMuted
                         : AppColors.textPrimary,
-                    height: 1.4,
+                    height: 1.4.h,
                   ),
                 ),
               ],

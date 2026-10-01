@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:translator/translator.dart' as g_translator;
+import 'package:translator_app/core/translation_chunker.dart';
+import 'package:translator_app/core/translation_limits.dart';
 
 class TranslationRepository {
   final Map<String, String> _memoryCache = {};
@@ -18,7 +20,29 @@ class TranslationRepository {
   }) async {
     final cleanText = text.trim();
     if (cleanText.isEmpty) return '';
+    if (cleanText.length > TranslationLimits.maxDocumentCharacters) {
+      throw Exception(
+        'This text is too long to translate in one pass. Shorten it to ${TranslationLimits.maxDocumentCharacters} characters or less.',
+      );
+    }
 
+    final chunks = TranslationChunker.split(cleanText);
+    if (chunks.length == 1) {
+      return _translateChunk(chunks.first, from: from, to: to);
+    }
+
+    final translated = <String>[];
+    for (final chunk in chunks) {
+      translated.add(await _translateChunk(chunk, from: from, to: to));
+    }
+    return translated.join('\n\n');
+  }
+
+  Future<String> _translateChunk(
+    String cleanText, {
+    required String from,
+    required String to,
+  }) async {
     final key = _cacheKey(cleanText, from, to);
 
     // 1. Check in-memory cache first (Instant response)

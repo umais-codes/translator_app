@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 
@@ -52,20 +53,17 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
 
-    final labelFontSize = (screenWidth * 0.036).clamp(13.0, 15.0);
-    final inputFontSize = (screenWidth * 0.038).clamp(14.0, 16.0);
-    final hintFontSize = (screenWidth * 0.036).clamp(13.0, 15.0);
-    final borderRadius = (screenWidth * 0.036).clamp(12.0, 16.0);
-    final iconSize = (screenWidth * 0.05).clamp(18.0, 22.0);
+    final labelFontSize = (375 * 0.036).sp;
+    final inputFontSize = (375 * 0.038).sp;
+    final hintFontSize = (375 * 0.036).sp;
+    final borderRadius = (375 * 0.036).r;
+    final iconSize = (375 * 0.05).w;
 
     final responsivePadding = contentPadding ??
         EdgeInsets.symmetric(
-          vertical: (screenHeight * 0.016).clamp(12.0, 18.0),
-          horizontal: (screenWidth * 0.04).clamp(14.0, 18.0),
+          vertical: (812 * 0.016).h,
+          horizontal: (375 * 0.04).w,
         );
 
     final obscureNotifier = ValueNotifier<bool>(obscureText);
@@ -86,7 +84,7 @@ class CustomTextField extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              SizedBox(height: screenHeight * 0.008),
+              SizedBox(height: (812 * 0.008).h),
             ],
             TextFormField(
               controller: controller,
@@ -132,26 +130,26 @@ class CustomTextField extends StatelessWidget {
                   borderRadius: BorderRadius.circular(borderRadius),
                   borderSide: BorderSide(
                     color: AppColors.primary,
-                    width: 2,
+                    width: 2.w,
                   ),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(borderRadius),
-                  borderSide: const BorderSide(
+                  borderSide: BorderSide(
                     color: AppColors.error,
-                    width: 1.5,
+                    width: 1.5.w,
                   ),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(borderRadius),
-                  borderSide: const BorderSide(
+                  borderSide: BorderSide(
                     color: AppColors.error,
-                    width: 2,
+                    width: 2.w,
                   ),
                 ),
                 errorStyle: GoogleFonts.outfit(
                   color: AppColors.error,
-                  fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
+                  fontSize: (375 * 0.03).sp,
                 ),
               ),
             ),

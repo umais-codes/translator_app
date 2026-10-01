@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
@@ -17,6 +18,8 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
+  CameraViewModel? _cameraViewModel;
+
   @override
   void initState() {
     super.initState();
@@ -29,30 +32,32 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _cameraViewModel = context.read<CameraViewModel>();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!mounted) return;
-    final vm = context.read<CameraViewModel>();
     if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-      vm.pauseCamera();
+      _cameraViewModel?.pauseCamera();
     } else if (state == AppLifecycleState.resumed) {
-      vm.resumeCamera();
+      _cameraViewModel?.resumeCamera();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    // Safely pause camera when leaving the screen
-    context.read<CameraViewModel>().pauseCamera();
+    // Safely pause camera using stored reference
+    _cameraViewModel?.pauseCamera();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<CameraViewModel>();
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
 
     // Non-camera states use standard app theme scaffold and CustomAppBar
     if (_shouldShowResultView(vm.state, vm)) {
@@ -62,7 +67,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           title: 'Camera Translation',
           showBackButton: true,
         ),
-        body: _buildResultView(context, vm, screenWidth, screenHeight),
+        body: _buildResultView(context, vm),
       );
     } else if (vm.state == CameraState.permissionDenied) {
       return Scaffold(
@@ -71,7 +76,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           title: 'Camera Permission',
           showBackButton: true,
         ),
-        body: _buildPermissionDeniedView(context, vm, screenWidth, screenHeight),
+        body: _buildPermissionDeniedView(context, vm),
       );
     } else if (vm.state == CameraState.error && vm.capturedImagePath == null) {
       return Scaffold(
@@ -80,7 +85,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           title: 'Camera Scanner',
           showBackButton: true,
         ),
-        body: _buildErrorView(context, vm, screenWidth, screenHeight),
+        body: _buildErrorView(context, vm),
       );
     }
 
@@ -91,15 +96,15 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         child: Stack(
           children: [
             // Base Layer: Camera Preview
-            _buildCameraPreview(context, vm, screenWidth, screenHeight),
+            _buildCameraPreview(context, vm),
 
             // Top Navigation Bar (Floating in live camera mode)
-            _buildLiveCameraTopBar(context, vm, screenWidth, screenHeight),
+            _buildLiveCameraTopBar(context, vm),
 
             // Busy Overlay (Capturing / Recognizing)
             if (vm.state == CameraState.capturing ||
                 vm.state == CameraState.recognizing)
-              _buildProcessingOverlay(vm, screenWidth, screenHeight),
+              _buildProcessingOverlay(vm),
           ],
         ),
       ),
@@ -117,15 +122,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget _buildLiveCameraTopBar(
     BuildContext context,
     CameraViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
-    final iconButtonSize = screenWidth * 0.11;
+    final iconButtonSize = (375 * 0.11).w;
 
     return Positioned(
-      top: screenHeight * 0.015,
-      left: screenWidth * 0.04,
-      right: screenWidth * 0.04,
+      top: (812 * 0.015).h,
+      left: (375 * 0.04).w,
+      right: (375 * 0.04).w,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -140,7 +143,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             child: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
-                size: screenWidth * 0.048,
+                size: (375 * 0.048).w,
                 color: AppColors.textWhite,
               ),
               onPressed: () => Navigator.of(context).maybePop(),
@@ -150,18 +153,18 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           // Center Screen Title Pill
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.04,
-              vertical: screenHeight * 0.008,
+              horizontal: (375 * 0.04).w,
+              vertical: (812 * 0.008).h,
             ),
             decoration: BoxDecoration(
               color: AppColors.textPrimary.withValues(alpha: 0.65),
-              borderRadius: BorderRadius.circular(screenWidth * 0.04),
+              borderRadius: BorderRadius.circular((375 * 0.04).r),
             ),
             child: Text(
               'Camera Translator',
               style: GoogleFonts.outfit(
                 color: AppColors.textWhite,
-                fontSize: (screenWidth * 0.042).clamp(15.0, 18.0),
+                fontSize: (375 * 0.042).sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -182,7 +185,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                     : vm.flashMode == FlashMode.auto
                         ? Icons.flash_auto_rounded
                         : Icons.flash_off_rounded,
-                size: screenWidth * 0.05,
+                size: (375 * 0.05).w,
                 color: vm.flashMode != FlashMode.off
                     ? AppColors.warning
                     : AppColors.textWhite,
@@ -199,10 +202,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget _buildCameraPreview(
     BuildContext context,
     CameraViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
-    final controller = vm.cameraController;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final viewSize = constraints.biggest;
+        final controller = vm.cameraController;
     if (!vm.isCameraInitialized ||
         controller == null ||
         !controller.value.isInitialized ||
@@ -212,12 +216,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           mainAxisSize: MainAxisSize.min,
           children: [
             CircularProgressIndicator(color: AppColors.primary),
-            SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: (812 * 0.02).h),
             Text(
               'Starting camera...',
               style: GoogleFonts.outfit(
                 color: AppColors.textWhite.withValues(alpha: 0.75),
-                fontSize: screenWidth * 0.038,
+                fontSize: (375 * 0.038).sp,
               ),
             ),
           ],
@@ -242,19 +246,19 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         // Scanning Target Frame
         Center(
           child: Container(
-            width: screenWidth * 0.85,
-            height: screenHeight * 0.45,
+            width: (375 * 0.85).w,
+            height: (812 * 0.45).h,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(screenWidth * 0.06),
+              borderRadius: BorderRadius.circular((375 * 0.06).r),
               border: Border.all(
                 color: AppColors.textWhite.withValues(alpha: 0.85),
-                width: screenWidth * 0.005,
+                width: (375 * 0.005).w,
               ),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.primary.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                  spreadRadius: 2,
+                  blurRadius: 20.r,
+                  spreadRadius: 2.r,
                 ),
               ],
             ),
@@ -262,27 +266,27 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: screenHeight * 0.015),
+                  padding: EdgeInsets.only(top: (812 * 0.015).h),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.032,
-                      vertical: screenHeight * 0.006,
+                      horizontal: (375 * 0.032).w,
+                      vertical: (812 * 0.006).h,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.textPrimary.withValues(alpha: 0.65),
-                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                      borderRadius: BorderRadius.circular((375 * 0.03).r),
                     ),
                     child: Text(
                       'Align text inside box',
                       style: GoogleFonts.outfit(
                         color: AppColors.textWhite,
-                        fontSize: (screenWidth * 0.032).clamp(11.0, 13.0),
+                        fontSize: (375 * 0.032).sp,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.001),
+                SizedBox(height: (812 * 0.001).h),
               ],
             ),
           ),
@@ -290,14 +294,14 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
         // Bottom Controls Bar
         Positioned(
-          bottom: screenHeight * 0.035,
-          left: 0,
-          right: 0,
+          bottom: (812 * 0.035).h,
+          left: 0.w,
+          right: 0.w,
           child: Column(
             children: [
               // Shutter & Gallery Controls
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+                padding: EdgeInsets.symmetric(horizontal: (375 * 0.1).w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -305,25 +309,26 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                     _buildCircularActionButton(
                       icon: Icons.photo_library_rounded,
                       tooltip: 'Select from Gallery',
-                      screenWidth: screenWidth,
                       onTap: vm.pickImageFromGallery,
                     ),
 
                     // Shutter Capture Button
                     GestureDetector(
-                      onTap: vm.isBusy ? null : vm.captureImage,
+                      onTap: vm.isBusy
+                          ? null
+                          : () => vm.captureImage(viewSize: viewSize),
                       child: Container(
-                        width: screenWidth * 0.19,
-                        height: screenWidth * 0.19,
+                        width: (375 * 0.19).w,
+                        height: (375 * 0.19).w,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: AppColors.textWhite,
-                            width: screenWidth * 0.01,
+                            width: (375 * 0.01).w,
                           ),
                           color: AppColors.textWhite.withValues(alpha: 0.2),
                         ),
-                        padding: EdgeInsets.all(screenWidth * 0.012),
+                        padding: EdgeInsets.all((375 * 0.012).w),
                         child: Container(
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
@@ -332,7 +337,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                           child: Icon(
                             Icons.camera_alt_rounded,
                             color: AppColors.primary,
-                            size: screenWidth * 0.08,
+                            size: (375 * 0.08).w,
                           ),
                         ),
                       ),
@@ -343,11 +348,10 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                       _buildCircularActionButton(
                         icon: Icons.flip_camera_ios_rounded,
                         tooltip: 'Switch Camera',
-                        screenWidth: screenWidth,
                         onTap: vm.switchCamera,
                       )
                     else
-                      SizedBox(width: screenWidth * 0.13),
+                      SizedBox(width: (375 * 0.13).w),
                   ],
                 ),
               ),
@@ -356,15 +360,16 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         ),
       ],
     );
+      },
+    );
   }
 
   Widget _buildCircularActionButton({
     required IconData icon,
     required String tooltip,
-    required double screenWidth,
     required VoidCallback onTap,
   }) {
-    final buttonSize = screenWidth * 0.13;
+    final buttonSize = (375 * 0.13).w;
 
     return Container(
       width: buttonSize,
@@ -375,7 +380,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         border: Border.all(color: AppColors.textWhite.withValues(alpha: 0.3)),
       ),
       child: IconButton(
-        icon: Icon(icon, color: AppColors.textWhite, size: screenWidth * 0.06),
+        icon: Icon(icon, color: AppColors.textWhite, size: (375 * 0.06).w),
         tooltip: tooltip,
         onPressed: onTap,
       ),
@@ -386,13 +391,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget _buildResultView(
     BuildContext context,
     CameraViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.045,
-        vertical: screenHeight * 0.02,
+        horizontal: (375 * 0.045).w,
+        vertical: (812 * 0.02).h,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -400,24 +403,24 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           // Thumbnail preview + Retake row
           if (vm.capturedImagePath != null)
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.03),
+              padding: EdgeInsets.all((375 * 0.03).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                borderRadius: BorderRadius.circular((375 * 0.04).r),
                 border: Border.all(color: AppColors.border),
               ),
               child: Row(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.025),
+                    borderRadius: BorderRadius.circular((375 * 0.025).r),
                     child: Image.file(
                       File(vm.capturedImagePath!),
-                      width: screenWidth * 0.14,
-                      height: screenWidth * 0.14,
+                      width: (375 * 0.14).w,
+                      height: (375 * 0.14).w,
                       fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(width: screenWidth * 0.035),
+                  SizedBox(width: (375 * 0.035).w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -427,14 +430,14 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                           style: GoogleFonts.outfit(
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
-                            fontSize: (screenWidth * 0.038).clamp(14.0, 16.0),
+                            fontSize: (375 * 0.038).sp,
                           ),
                         ),
                         Text(
-                          'OCR text recognition active',
+                          'Text read from this photo',
                           style: GoogleFonts.outfit(
                             color: AppColors.textSecondary,
-                            fontSize: (screenWidth * 0.03).clamp(11.0, 13.0),
+                            fontSize: (375 * 0.03).sp,
                           ),
                         ),
                       ],
@@ -444,11 +447,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
                     ),
-                    icon: Icon(Icons.refresh_rounded, size: screenWidth * 0.045),
+                    icon: Icon(Icons.refresh_rounded, size: (375 * 0.045).w),
                     label: Text(
                       'Retake',
                       style: GoogleFonts.outfit(
-                        fontSize: (screenWidth * 0.035).clamp(12.0, 14.0),
+                        fontSize: (375 * 0.035).sp,
                       ),
                     ),
                     onPressed: vm.retake,
@@ -457,7 +460,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               ),
             ),
 
-          SizedBox(height: screenHeight * 0.018),
+          SizedBox(height: (812 * 0.018).h),
 
           // Language Selector Card
           LanguageSelectorCard(
@@ -468,19 +471,18 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             onSwap: vm.swapLanguages,
           ),
 
-          SizedBox(height: screenHeight * 0.018),
+          SizedBox(height: (812 * 0.018).h),
 
           // Detected OCR Text Card
           _buildSectionCard(
-            title: 'DETECTED TEXT (${vm.sourceLanguage.name.toUpperCase()})',
+            title: 'DETECTED TEXT',
             content: vm.detectedText,
             icon: Icons.document_scanner_rounded,
-            screenWidth: screenWidth,
             trailing: vm.detectedText.isNotEmpty
                 ? IconButton(
                     icon: Icon(
                       Icons.copy_rounded,
-                      size: screenWidth * 0.048,
+                      size: (375 * 0.048).w,
                       color: AppColors.primary,
                     ),
                     tooltip: 'Copy Detected Text',
@@ -489,27 +491,27 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 : null,
           ),
 
-          SizedBox(height: screenHeight * 0.018),
+          SizedBox(height: (812 * 0.018).h),
 
           // Translated Result Card
           if (vm.state == CameraState.translating)
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.06),
+              padding: EdgeInsets.all((375 * 0.06).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                borderRadius: BorderRadius.circular((375 * 0.05).r),
                 border: Border.all(color: AppColors.border),
               ),
               child: Center(
                 child: Column(
                   children: [
                     CircularProgressIndicator(color: AppColors.primary),
-                    SizedBox(height: screenHeight * 0.015),
+                    SizedBox(height: (812 * 0.015).h),
                     Text(
                       'Translating to ${vm.targetLanguage.name}...',
                       style: GoogleFonts.outfit(
                         color: AppColors.textSecondary,
-                        fontSize: (screenWidth * 0.036).clamp(13.0, 15.0),
+                        fontSize: (375 * 0.036).sp,
                       ),
                     ),
                   ],
@@ -522,14 +524,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               content: vm.translatedText,
               icon: Icons.translate_rounded,
               isHighlight: true,
-              screenWidth: screenWidth,
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
                     icon: Icon(
                       Icons.volume_up_rounded,
-                      size: screenWidth * 0.052,
+                      size: (375 * 0.052).w,
                       color: AppColors.primary,
                     ),
                     tooltip: 'Listen',
@@ -538,7 +539,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                   IconButton(
                     icon: Icon(
                       Icons.copy_rounded,
-                      size: screenWidth * 0.048,
+                      size: (375 * 0.048).w,
                       color: AppColors.primary,
                     ),
                     tooltip: 'Copy',
@@ -549,10 +550,10 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             )
           else if (vm.errorMessage != null)
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.error.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                borderRadius: BorderRadius.circular((375 * 0.04).r),
                 border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
               ),
               child: Column(
@@ -560,18 +561,18 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                   Icon(
                     Icons.info_outline_rounded,
                     color: AppColors.error,
-                    size: screenWidth * 0.07,
+                    size: (375 * 0.07).w,
                   ),
-                  SizedBox(height: screenHeight * 0.01),
+                  SizedBox(height: (812 * 0.01).h),
                   Text(
                     vm.errorMessage!,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.outfit(
                       color: AppColors.error,
-                      fontSize: (screenWidth * 0.034).clamp(12.0, 14.0),
+                      fontSize: (375 * 0.034).sp,
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.015),
+                  SizedBox(height: (812 * 0.015).h),
                   CustomButton(
                     text: 'Retake Photo',
                     leadingIcon: Icons.camera_alt_rounded,
@@ -581,7 +582,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               ),
             ),
 
-          SizedBox(height: screenHeight * 0.025),
+          SizedBox(height: (812 * 0.025).h),
 
           // Bottom Scan Again Button
           CustomButton(
@@ -599,28 +600,27 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     required String title,
     required String content,
     required IconData icon,
-    required double screenWidth,
     bool isHighlight = false,
     Widget? trailing,
   }) {
     return Container(
-      padding: EdgeInsets.all(screenWidth * 0.045),
+      padding: EdgeInsets.all((375 * 0.045).w),
       decoration: BoxDecoration(
         color: isHighlight
             ? AppColors.primary.withValues(alpha: 0.05)
             : AppColors.surface,
-        borderRadius: BorderRadius.circular(screenWidth * 0.05),
+        borderRadius: BorderRadius.circular((375 * 0.05).r),
         border: Border.all(
           color: isHighlight
               ? AppColors.primary.withValues(alpha: 0.3)
               : AppColors.border,
           width: isHighlight ? 1.5 : 1.0,
         ),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            blurRadius: 8.r,
+            offset: Offset(0, 2.h),
           ),
         ],
       ),
@@ -632,14 +632,14 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             children: [
               Row(
                 children: [
-                  Icon(icon, size: screenWidth * 0.045, color: AppColors.primary),
-                  SizedBox(width: screenWidth * 0.02),
+                  Icon(icon, size: (375 * 0.045).w, color: AppColors.primary),
+                  SizedBox(width: (375 * 0.02).w),
                   Text(
                     title,
                     style: GoogleFonts.outfit(
-                      fontSize: (screenWidth * 0.032).clamp(11.0, 13.0),
+                      fontSize: (375 * 0.032).sp,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 0.7,
+                      letterSpacing: 0.7.sp,
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -648,13 +648,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               ?trailing,
             ],
           ),
-          SizedBox(height: screenWidth * 0.02),
+          SizedBox(height: (375 * 0.02).w),
           SelectableText(
             content.isEmpty ? 'No text detected' : content,
             style: GoogleFonts.outfit(
-              fontSize: (screenWidth * 0.042).clamp(14.0, 17.0),
+              fontSize: (375 * 0.042).sp,
               color: content.isEmpty ? AppColors.textMuted : AppColors.textPrimary,
-              height: 1.4,
+              height: 1.4.h,
             ),
           ),
         ],
@@ -665,8 +665,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   // --- PROCESSING OVERLAY ---
   Widget _buildProcessingOverlay(
     CameraViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
     final message = vm.state == CameraState.capturing
         ? 'Capturing...'
@@ -677,17 +675,17 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       child: Center(
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.07,
-            vertical: screenHeight * 0.03,
+            horizontal: (375 * 0.07).w,
+            vertical: (812 * 0.03).h,
           ),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(screenWidth * 0.05),
-            boxShadow: const [
+            borderRadius: BorderRadius.circular((375 * 0.05).r),
+            boxShadow: [
               BoxShadow(
                 color: AppColors.shadow,
-                blurRadius: 16,
-                offset: Offset(0, 4),
+                blurRadius: 16.r,
+                offset: Offset(0, 4.h),
               ),
             ],
           ),
@@ -695,12 +693,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             mainAxisSize: MainAxisSize.min,
             children: [
               CircularProgressIndicator(color: AppColors.primary),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: (812 * 0.02).h),
               Text(
                 message,
                 style: GoogleFonts.outfit(
                   color: AppColors.textPrimary,
-                  fontSize: (screenWidth * 0.04).clamp(14.0, 16.0),
+                  fontSize: (375 * 0.04).sp,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -715,55 +713,60 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget _buildPermissionDeniedView(
     BuildContext context,
     CameraViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.06,
-          vertical: screenHeight * 0.03,
+          horizontal: (375 * 0.06).w,
+          vertical: (812 * 0.03).h,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.05),
+              padding: EdgeInsets.all((375 * 0.05).w),
               decoration: BoxDecoration(
                 color: AppColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.no_photography_rounded,
-                size: screenWidth * 0.14,
+                size: (375 * 0.14).w,
                 color: AppColors.error,
               ),
             ),
-            SizedBox(height: screenHeight * 0.025),
+            SizedBox(height: (812 * 0.025).h),
             Text(
               'Camera Permission Required',
               style: GoogleFonts.outfit(
-                fontSize: (screenWidth * 0.05).clamp(18.0, 22.0),
+                fontSize: (375 * 0.05).sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            SizedBox(height: screenHeight * 0.012),
+            SizedBox(height: (812 * 0.012).h),
             Text(
               'Please grant camera permissions to scan text directly from documents and signs.',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                fontSize: (screenWidth * 0.036).clamp(13.0, 15.0),
+                fontSize: (375 * 0.036).sp,
                 color: AppColors.textSecondary,
               ),
             ),
-            SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: (812 * 0.03).h),
+            CustomButton(
+              text: 'Open Settings',
+              leadingIcon: Icons.settings_rounded,
+              onPressed: vm.openSystemSettings,
+            ),
+            SizedBox(height: (812 * 0.015).h),
             CustomButton(
               text: 'Try Again',
+              variant: ButtonVariant.outlined,
               leadingIcon: Icons.refresh_rounded,
               onPressed: vm.initializeCamera,
             ),
-            SizedBox(height: screenHeight * 0.015),
+            SizedBox(height: (812 * 0.015).h),
             CustomButton(
               text: 'Choose Image from Gallery',
               variant: ButtonVariant.outlined,
@@ -780,40 +783,38 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget _buildErrorView(
     BuildContext context,
     CameraViewModel vm,
-    double screenWidth,
-    double screenHeight,
   ) {
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.06,
-          vertical: screenHeight * 0.03,
+          horizontal: (375 * 0.06).w,
+          vertical: (812 * 0.03).h,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.error_outline_rounded,
-              size: screenWidth * 0.14,
+              size: (375 * 0.14).w,
               color: AppColors.warning,
             ),
-            SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: (812 * 0.02).h),
             Text(
               vm.errorMessage ?? 'Camera error occurred',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                fontSize: (screenWidth * 0.04).clamp(14.0, 16.0),
+                fontSize: (375 * 0.04).sp,
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: (812 * 0.03).h),
             CustomButton(
               text: 'Retry Camera',
               leadingIcon: Icons.refresh_rounded,
               onPressed: vm.initializeCamera,
             ),
-            SizedBox(height: screenHeight * 0.015),
+            SizedBox(height: (812 * 0.015).h),
             CustomButton(
               text: 'Pick from Gallery',
               variant: ButtonVariant.outlined,

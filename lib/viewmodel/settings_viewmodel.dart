@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:translator_app/apptheme/app_colors.dart';
+import 'package:translator_app/data/services/speech_preferences.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   final FlutterTts _flutterTts = FlutterTts();
@@ -13,21 +14,21 @@ class SettingsViewModel extends ChangeNotifier {
   bool _isPlayingSpeech = false;
 
   // Voice Recognition State
-  bool _preferOfflineRecognition = true;
+  bool _preferOfflineRecognition = false;
   bool _autoPunctuation = true;
   bool _soundFeedback = true;
 
   // Theme & Appearance State
   String _selectedTheme = 'Light Mode';
   String _selectedPalette = 'Cobalt Sapphire (Default)';
-  Color _primaryColor = const Color(0xFF2563EB);
+  Color _primaryColor = AppColors.cobaltSapphire;
 
   // Offline & Storage State
   int _cachedPhrasesCount = 0;
   bool _isClearingCache = false;
 
   // Feedback State
-  bool _isSubmittingFeedback = false;
+  bool get isSubmittingFeedback => false;
 
   SettingsViewModel() {
     _initTts();
@@ -51,7 +52,6 @@ class SettingsViewModel extends ChangeNotifier {
 
   int get cachedPhrasesCount => _cachedPhrasesCount;
   bool get isClearingCache => _isClearingCache;
-  bool get isSubmittingFeedback => _isSubmittingFeedback;
 
   Future<void> _loadSavedPreferences() async {
     try {
@@ -61,9 +61,18 @@ class SettingsViewModel extends ChangeNotifier {
         setPalette(savedPalette);
       }
       final savedTheme = prefs.getString('pref_theme');
-      if (savedTheme != null) {
-        _selectedTheme = savedTheme;
+      if (savedTheme != 'Light Mode' && savedTheme != null) {
+        await prefs.setString('pref_theme', 'Light Mode');
       }
+      _selectedTheme = 'Light Mode';
+      _speechRate = prefs.getDouble(SpeechPreferences.rateKey) ?? _speechRate;
+      _pitch = prefs.getDouble(SpeechPreferences.pitchKey) ?? _pitch;
+      _volume = prefs.getDouble(SpeechPreferences.volumeKey) ?? _volume;
+      _preferOfflineRecognition =
+          prefs.getBool(SpeechPreferences.onDeviceKey) ?? false;
+      await _flutterTts.setSpeechRate(_speechRate);
+      await _flutterTts.setPitch(_pitch);
+      await _flutterTts.setVolume(_volume);
       notifyListeners();
     } catch (_) {}
   }
@@ -83,18 +92,21 @@ class SettingsViewModel extends ChangeNotifier {
     _speechRate = rate;
     _flutterTts.setSpeechRate(rate);
     notifyListeners();
+    SpeechPreferences.save(rate: rate);
   }
 
   void setPitch(double pitch) {
     _pitch = pitch;
     _flutterTts.setPitch(pitch);
     notifyListeners();
+    SpeechPreferences.save(pitch: pitch);
   }
 
   void setVolume(double vol) {
     _volume = vol;
     _flutterTts.setVolume(vol);
     notifyListeners();
+    SpeechPreferences.save(volume: vol);
   }
 
   Future<void> testSpeech() async {
@@ -109,6 +121,7 @@ class SettingsViewModel extends ChangeNotifier {
   void toggleOfflineRecognition(bool val) {
     _preferOfflineRecognition = val;
     notifyListeners();
+    SpeechPreferences.save(onDevice: val);
   }
 
   void toggleAutoPunctuation(bool val) {
@@ -132,26 +145,7 @@ class SettingsViewModel extends ChangeNotifier {
 
   void setPalette(String palette, {Color? color}) async {
     _selectedPalette = palette;
-    if (color != null) {
-      _primaryColor = color;
-    } else {
-      switch (palette) {
-        case 'Cobalt Sapphire (Default)':
-          _primaryColor = const Color(0xFF2563EB);
-          break;
-        case 'Ocean Indigo':
-          _primaryColor = const Color(0xFF1D4ED8);
-          break;
-        case 'Azure Tech Blue':
-          _primaryColor = const Color(0xFF0070F3);
-          break;
-        case 'Emerald Accent':
-          _primaryColor = const Color(0xFF10B981);
-          break;
-        default:
-          _primaryColor = const Color(0xFF2563EB);
-      }
-    }
+    _primaryColor = color ?? AppColors.colorForPalette(palette);
     AppColors.updatePalette(_primaryColor);
     notifyListeners();
 
@@ -192,13 +186,7 @@ class SettingsViewModel extends ChangeNotifier {
 
   Future<bool> submitFeedback({String? email, required String message}) async {
     if (message.trim().isEmpty) return false;
-    _isSubmittingFeedback = true;
-    notifyListeners();
-
-    await Future.delayed(const Duration(seconds: 1));
-    _isSubmittingFeedback = false;
-    notifyListeners();
-    return true;
+    return false;
   }
 
   @override

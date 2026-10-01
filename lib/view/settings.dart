@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
@@ -14,10 +15,8 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    final horizontalPadding = screenWidth * 0.045;
+
+    final horizontalPadding = (375 * 0.045).w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -28,48 +27,48 @@ class Settings extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: screenHeight * 0.02,
+            vertical: (812 * 0.02).h,
           ),
           children: [
             // App Information Card
             Container(
-              padding: EdgeInsets.all(screenWidth * 0.045),
+              padding: EdgeInsets.all((375 * 0.045).w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.border),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                     color: AppColors.shadow,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+                    blurRadius: 8.r,
+                    offset: Offset(0, 2.h),
                   ),
                 ],
               ),
               child: Row(
                 children: [
                   Container(
-                    width: screenWidth * 0.14,
-                    height: screenWidth * 0.14,
+                    width: (375 * 0.14).w,
+                    height: (375 * 0.14).w,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.primary.withValues(alpha: 0.15),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
+                          blurRadius: 10.r,
+                          offset: Offset(0, 3.h),
                         ),
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16.r),
                       child: Image.asset(
                         'assets/images/app_logo.png',
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,16 +76,16 @@ class Settings extends StatelessWidget {
                         Text(
                           'Translator App',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.046,
+                            fontSize: (375 * 0.046).sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2.h),
                         Text(
                           'Version 1.0.0 • AI-Powered Translation',
                           style: GoogleFonts.outfit(
-                            fontSize: screenWidth * 0.034,
+                            fontSize: (375 * 0.034).sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -97,16 +96,15 @@ class Settings extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: (812 * 0.03).h),
 
             // Section: Audio & Speech
-            _buildSectionHeader('Speech & Audio', screenWidth),
-            SizedBox(height: screenHeight * 0.01),
+            _buildSectionHeader('Speech & Audio'),
+            SizedBox(height: (812 * 0.01).h),
             _buildSettingsTile(
               icon: Icons.volume_up_rounded,
               title: 'Text-to-Speech Speed',
               subtitle: 'Configure speech rate, pitch & voice output',
-              screenWidth: screenWidth,
               onTap: () {
                 Navigator.push(
                   context,
@@ -120,7 +118,6 @@ class Settings extends StatelessWidget {
               icon: Icons.mic_rounded,
               title: 'Voice Recognition',
               subtitle: 'Microphone preferences & offline speech',
-              screenWidth: screenWidth,
               onTap: () {
                 Navigator.push(
                   context,
@@ -131,16 +128,15 @@ class Settings extends StatelessWidget {
               },
             ),
 
-            SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: (812 * 0.03).h),
 
             // Section: Preferences
-            _buildSectionHeader('Appearance & Language', screenWidth),
-            SizedBox(height: screenHeight * 0.01),
+            _buildSectionHeader('Appearance & Language'),
+            SizedBox(height: (812 * 0.01).h),
             _buildSettingsTile(
               icon: Icons.palette_outlined,
               title: 'App Theme',
               subtitle: 'Choose accent color palette & light mode',
-              screenWidth: screenWidth,
               onTap: () {
                 Navigator.push(
                   context,
@@ -154,7 +150,6 @@ class Settings extends StatelessWidget {
               icon: Icons.offline_bolt_outlined,
               title: 'Offline & Storage',
               subtitle: 'Manage local translation cache & data',
-              screenWidth: screenWidth,
               onTap: () {
                 Navigator.push(
                   context,
@@ -165,16 +160,15 @@ class Settings extends StatelessWidget {
               },
             ),
 
-            SizedBox(height: screenHeight * 0.03),
+            SizedBox(height: (812 * 0.03).h),
 
             // Section: About & Help
-            _buildSectionHeader('About & Help', screenWidth),
-            SizedBox(height: screenHeight * 0.01),
+            _buildSectionHeader('About & Help'),
+            SizedBox(height: (812 * 0.01).h),
             _buildSettingsTile(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
               subtitle: 'How we protect your data & on-device security',
-              screenWidth: screenWidth,
               onTap: () {
                 Navigator.push(
                   context,
@@ -188,7 +182,6 @@ class Settings extends StatelessWidget {
               icon: Icons.help_outline_rounded,
               title: 'Help & Feedback',
               subtitle: 'Frequently asked questions & contact form',
-              screenWidth: screenWidth,
               onTap: () {
                 Navigator.push(
                   context,
@@ -204,11 +197,11 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, double screenWidth) {
+  Widget _buildSectionHeader(String title) {
     return Text(
       title,
       style: GoogleFonts.outfit(
-        fontSize: screenWidth * 0.04,
+        fontSize: (375 * 0.04).sp,
         fontWeight: FontWeight.bold,
         color: AppColors.primary,
       ),
@@ -219,36 +212,35 @@ class Settings extends StatelessWidget {
     required IconData icon,
     required String title,
     required String subtitle,
-    required double screenWidth,
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.only(bottom: 10.h),
       child: Material(
         color: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           side: const BorderSide(color: AppColors.border),
         ),
         clipBehavior: Clip.antiAlias,
         child: ListTile(
           onTap: onTap,
           contentPadding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.04,
-            vertical: 2,
+            horizontal: (375 * 0.04).w,
+            vertical: 2.h,
           ),
           leading: Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
               color: AppColors.lightBlueBackground,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 22),
+            child: Icon(icon, color: AppColors.primary, size: 22.w),
           ),
           title: Text(
             title,
             style: GoogleFonts.outfit(
-              fontSize: screenWidth * 0.038,
+              fontSize: (375 * 0.038).sp,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
@@ -256,13 +248,13 @@ class Settings extends StatelessWidget {
           subtitle: Text(
             subtitle,
             style: GoogleFonts.outfit(
-              fontSize: screenWidth * 0.032,
+              fontSize: (375 * 0.032).sp,
               color: AppColors.textSecondary,
             ),
           ),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.arrow_forward_ios_rounded,
-            size: 14,
+            size: 14.w,
             color: AppColors.textSecondary,
           ),
         ),
