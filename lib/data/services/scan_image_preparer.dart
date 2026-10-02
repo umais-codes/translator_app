@@ -58,6 +58,13 @@ class ScanImagePreparer {
     return out.path;
   }
 
+  Future<void> discardPrepared(String? path, {required String sourcePath}) async {
+    if (path == null || path == sourcePath) return;
+    try {
+      await File(path).delete();
+    } catch (_) {}
+  }
+
   img.Image _downscale(img.Image image, int maxEdge) {
     if (image.width <= maxEdge && image.height <= maxEdge) return image;
     if (image.width >= image.height) {

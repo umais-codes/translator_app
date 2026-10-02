@@ -123,8 +123,8 @@ class OfflineSettingsScreen extends StatelessWidget {
                   Divider(height: 24.h, color: AppColors.borderLight),
                   _buildFeatureRow(
                     icon: Icons.model_training_rounded,
-                    title: 'On-Device ML Ready',
-                    desc: 'Compatible with on-device neural translation models for full standalone dictionary translation.',
+                    title: 'Saved phrases only',
+                    desc: 'Offline mode repeats phrases this device has already translated. It does not include a translation model.',
                   ),
                 ],
               ),

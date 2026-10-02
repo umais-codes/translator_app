@@ -320,8 +320,9 @@ class CameraViewModel extends ChangeNotifier {
     _setCameraState(CameraState.recognizing);
     _errorMessage = null;
 
+    String? preparedPath;
     try {
-      final preparedPath = await _imagePreparer.prepareForOcr(
+      preparedPath = await _imagePreparer.prepareForOcr(
         sourcePath: imagePath,
         frame: frame,
       );
@@ -347,6 +348,11 @@ class CameraViewModel extends ChangeNotifier {
     } catch (e) {
       _errorMessage = 'Failed to recognize text from image. Please try again.';
       _setCameraState(CameraState.error);
+    } finally {
+      await _imagePreparer.discardPrepared(
+        preparedPath,
+        sourcePath: imagePath,
+      );
     }
   }
 

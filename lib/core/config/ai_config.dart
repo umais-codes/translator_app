@@ -1,7 +1,7 @@
 class AIConfig {
   /// Rephrasing and nuance insights need an OpenRouter key.
-  /// Local: flutter run --dart-define-from-file=dart_defines.json
-  /// Release builds read OPENROUTER_API_KEY from GitHub Actions secrets.
+  /// Local only: flutter run --dart-define-from-file=dart_defines.json
+  /// Do not compile that key into a release APK. It can be extracted from the app.
   static const String apiKey = '';
 
   static const String _envApiKey = String.fromEnvironment('OPENROUTER_API_KEY');

@@ -63,3 +63,11 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Bundled by the ML Kit plugin as compileOnly. The app uses these scripts.
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.1")
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.1")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.1")
+}

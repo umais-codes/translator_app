@@ -61,6 +61,13 @@ class DictionaryViewModel extends ChangeNotifier {
   Future<void> searchWord(String word) async {
     final query = word.trim();
     if (query.isEmpty) return;
+    if (query.length > 64 || query.contains('/') || query.contains('\\')) {
+      _searchQuery = query;
+      _errorMessage = 'Enter a single word to look up.';
+      _entry = null;
+      notifyListeners();
+      return;
+    }
 
     _searchQuery = query;
     _isLoading = true;
@@ -70,11 +77,13 @@ class DictionaryViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(
-        Uri.parse(
-          'https://api.dictionaryapi.dev/api/v2/entries/en/${query.toLowerCase()}',
-        ),
-      );
+      final response = await http
+          .get(
+            Uri.parse(
+              'https://api.dictionaryapi.dev/api/v2/entries/en/${Uri.encodeComponent(query.toLowerCase())}',
+            ),
+          )
+          .timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);

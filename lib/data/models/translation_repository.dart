@@ -10,8 +10,16 @@ class TranslationRepository {
   final g_translator.GoogleTranslator _googleTranslator = g_translator.GoogleTranslator();
   static const String _cachePrefix = 'offline_trans_';
 
+  static final RegExp _languageCode = RegExp(r'^[a-z]{2}(?:-[a-z]{2})?$');
+
   String _cacheKey(String text, String from, String to) =>
       '${from.toLowerCase()}_${to.toLowerCase()}_${text.trim().toLowerCase()}';
+
+  void _requireLanguageCode(String code) {
+    if (!_languageCode.hasMatch(code.toLowerCase())) {
+      throw Exception('Choose a supported language.');
+    }
+  }
 
   Future<String> translate(
     String text, {
@@ -20,6 +28,8 @@ class TranslationRepository {
   }) async {
     final cleanText = text.trim();
     if (cleanText.isEmpty) return '';
+    _requireLanguageCode(from);
+    _requireLanguageCode(to);
     if (cleanText.length > TranslationLimits.maxDocumentCharacters) {
       throw Exception(
         'This text is too long to translate in one pass. Shorten it to ${TranslationLimits.maxDocumentCharacters} characters or less.',
@@ -58,9 +68,13 @@ class TranslationRepository {
 
     try {
       // 3. Try primary online endpoint (MyMemory API)
-      final encodedText = Uri.encodeComponent(cleanText);
-      final url = Uri.parse(
-        'https://api.mymemory.translated.net/get?q=$encodedText&langpair=$from|$to',
+      final url = Uri.https(
+        'api.mymemory.translated.net',
+        '/get',
+        {
+          'q': cleanText,
+          'langpair': '${from.toLowerCase()}|${to.toLowerCase()}',
+        },
       );
 
       final response = await http.get(url).timeout(const Duration(seconds: 4));
