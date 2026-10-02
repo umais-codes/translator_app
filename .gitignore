@@ -53,3 +53,6 @@ app.*.map.json
 **/*.jks
 **/*.keystore
 
+# Local OpenRouter key. Copy dart_defines.example.json and fill it in.
+dart_defines.json
+
