@@ -1,16 +1,13 @@
 class AIConfig {
-  /// Injected at build time with `--dart-define=OPENROUTER_API_KEY=...`.
-  /// There is no default key. A key in the app binary can be extracted.
+  /// Rephrasing and nuance insights need an OpenRouter key.
+  /// Pass it at run time; do not commit it:
+  /// `--dart-define=OPENROUTER_API_KEY=your_key`
+  static const String apiKey = '';
+
   static const String _envApiKey = String.fromEnvironment('OPENROUTER_API_KEY');
 
-  static String? customApiKey;
-
-  static String get openRouterApiKey {
-    if (customApiKey != null && customApiKey!.isNotEmpty) {
-      return customApiKey!;
-    }
-    return _envApiKey;
-  }
+  static String get openRouterApiKey =>
+      _envApiKey.isNotEmpty ? _envApiKey : apiKey;
 
   static bool get hasApiKey => openRouterApiKey.isNotEmpty;
 

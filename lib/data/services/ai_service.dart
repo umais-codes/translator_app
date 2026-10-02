@@ -31,7 +31,7 @@ class AIService {
     if (!AIConfig.hasApiKey &&
         (_backendEndpoint == null || _backendEndpoint.isEmpty)) {
       throw const AIUnavailableException(
-        'Rephrasing needs a model service. No API key is configured in this build.',
+        'Set AIConfig.apiKey to rephrase this text. Translation still works without one.',
       );
     }
 
@@ -179,7 +179,7 @@ class AIService {
     if (!AIConfig.hasApiKey &&
         (_backendEndpoint == null || _backendEndpoint.isEmpty)) {
       throw const AIUnavailableException(
-        'Nuance explanations need a model service. No API key is configured in this build.',
+        'Set AIConfig.apiKey to explain nuance. Translation still works without one.',
       );
     }
 

@@ -10,7 +10,6 @@ import 'package:translator_app/viewmodel/camera_viewmodel.dart';
 import 'package:translator_app/viewmodel/conversation_viewmodel.dart';
 import 'package:translator_app/viewmodel/dictionary_viewmodel.dart';
 import 'package:translator_app/viewmodel/file_translate_viewmodel.dart';
-import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 import 'package:translator_app/viewmodel/settings_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_history_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
@@ -24,7 +23,6 @@ void main() {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => MainNavViewModel()),
           ChangeNotifierProvider(
             create: (_) => TranslationViewModel(
               translationRepo,

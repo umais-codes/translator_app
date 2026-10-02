@@ -15,7 +15,7 @@ class FileTranslationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<FileTranslateViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -26,7 +26,7 @@ class FileTranslationScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: (812 * 0.015).h,
+            vertical: 12.h,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,13 +40,13 @@ class FileTranslationScreen extends StatelessWidget {
                 onSwap: vm.swapLanguages,
               ),
 
-              SizedBox(height: (812 * 0.02).h),
+              SizedBox(height: 16.h),
 
               // 2. Upload Zone Card
               GestureDetector(
                 onTap: vm.isLoading ? null : vm.selectFile,
                 child: Container(
-                  padding: EdgeInsets.all((375 * 0.06).w),
+                  padding: EdgeInsets.all(23.w),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20.r),
@@ -54,7 +54,7 @@ class FileTranslationScreen extends StatelessWidget {
                       color: vm.selectedFileName != null
                           ? AppColors.primary
                           : AppColors.border,
-                      width: 1.5.w,
+                      width: 2.w,
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -76,7 +76,7 @@ class FileTranslationScreen extends StatelessWidget {
                           vm.selectedFileName != null
                               ? Icons.check_circle_rounded
                               : Icons.cloud_upload_rounded,
-                          size: (375 * 0.12).w,
+                          size: 45.w,
                           color: AppColors.primary,
                         ),
                       ),
@@ -84,7 +84,7 @@ class FileTranslationScreen extends StatelessWidget {
                       Text(
                         vm.selectedFileName ?? 'Tap to Select Document',
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.044).sp,
+                          fontSize: 17.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
@@ -94,7 +94,7 @@ class FileTranslationScreen extends StatelessWidget {
                       Text(
                         'Supports .txt, .json, and .csv files',
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.034).sp,
+                          fontSize: 13.sp,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -103,29 +103,29 @@ class FileTranslationScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: (812 * 0.02).h),
+              SizedBox(height: 16.h),
 
               // 3. Translate Button
               CustomButton(
                 text: 'Translate File',
                 variant: ButtonVariant.filled,
-                height: (812 * 0.062).h,
-                borderRadius: 16,
+                height: 50.h,
+                borderRadius: 16.r,
                 leadingIcon: Icons.translate_rounded,
                 isLoading: vm.isLoading,
                 isDisabled: vm.fileContent == null,
                 onPressed: vm.translateFile,
-                fontSize: (375 * 0.044).sp,
+                fontSize: 17.sp,
                 fontWeight: FontWeight.bold,
               ),
 
               if (vm.errorMessage != null) ...[
-                SizedBox(height: (812 * 0.015).h),
+                SizedBox(height: 12.h),
                 Text(
                   vm.errorMessage!,
                   style: GoogleFonts.outfit(
                     color: AppColors.error,
-                    fontSize: (375 * 0.036).sp,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
                   ),
                   textAlign: TextAlign.center,
@@ -134,9 +134,9 @@ class FileTranslationScreen extends StatelessWidget {
 
               // 4. Translated Output Preview
               if (vm.translatedContent != null) ...[
-                SizedBox(height: (812 * 0.02).h),
+                SizedBox(height: 16.h),
                 Container(
-                  padding: EdgeInsets.all((375 * 0.045).w),
+                  padding: EdgeInsets.all(17.w),
                   decoration: BoxDecoration(
                     color: AppColors.lightBlueBackground,
                     borderRadius: BorderRadius.circular(20.r),
@@ -159,13 +159,13 @@ class FileTranslationScreen extends StatelessWidget {
                             children: [
                               Text(
                                 vm.toLanguage.flag,
-                                style: TextStyle(fontSize: (375 * 0.048).sp),
+                                style: TextStyle(fontSize: 18.sp),
                               ),
                               SizedBox(width: 8.w),
                               Text(
                                 'Translated Output (${vm.toLanguage.name})',
                                 style: GoogleFonts.outfit(
-                                  fontSize: (375 * 0.04).sp,
+                                  fontSize: 15.sp,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.primary,
                                 ),
@@ -186,9 +186,9 @@ class FileTranslationScreen extends StatelessWidget {
                       Text(
                         vm.translatedContent!,
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.04).sp,
+                          fontSize: 15.sp,
                           color: AppColors.textPrimary,
-                          height: 1.4.h,
+                          height: 1.h,
                         ),
                       ),
                     ],

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/core/router/app_routes.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
-import 'package:translator_app/view/settings/help_feedback_screen.dart';
-import 'package:translator_app/view/settings/offline_settings_screen.dart';
-import 'package:translator_app/view/settings/privacy_policy_screen.dart';
-import 'package:translator_app/view/settings/theme_settings_screen.dart';
-import 'package:translator_app/view/settings/tts_settings_screen.dart';
-import 'package:translator_app/view/settings/voice_settings_screen.dart';
 
 class Settings extends StatelessWidget {
   const Settings({super.key});
@@ -16,7 +12,7 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -27,12 +23,12 @@ class Settings extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: (812 * 0.02).h,
+            vertical: 16.h,
           ),
           children: [
             // App Information Card
             Container(
-              padding: EdgeInsets.all((375 * 0.045).w),
+              padding: EdgeInsets.all(17.w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(20.r),
@@ -48,8 +44,8 @@ class Settings extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: (375 * 0.14).w,
-                    height: (375 * 0.14).w,
+                    width: 53.w,
+                    height: 53.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
@@ -76,7 +72,7 @@ class Settings extends StatelessWidget {
                         Text(
                           'Translator App',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.046).sp,
+                            fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
@@ -85,7 +81,7 @@ class Settings extends StatelessWidget {
                         Text(
                           'Version 1.0.0 • AI-Powered Translation',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.034).sp,
+                            fontSize: 13.sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -96,100 +92,58 @@ class Settings extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: (812 * 0.03).h),
+            SizedBox(height: 24.h),
 
             // Section: Audio & Speech
             _buildSectionHeader('Speech & Audio'),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
             _buildSettingsTile(
               icon: Icons.volume_up_rounded,
               title: 'Text-to-Speech Speed',
               subtitle: 'Configure speech rate, pitch & voice output',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TtsSettingsScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push(AppRoutes.settingsTts),
             ),
             _buildSettingsTile(
               icon: Icons.mic_rounded,
               title: 'Voice Recognition',
               subtitle: 'Microphone preferences & offline speech',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const VoiceSettingsScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push(AppRoutes.settingsVoice),
             ),
 
-            SizedBox(height: (812 * 0.03).h),
+            SizedBox(height: 24.h),
 
             // Section: Preferences
             _buildSectionHeader('Appearance & Language'),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
             _buildSettingsTile(
               icon: Icons.palette_outlined,
               title: 'App Theme',
               subtitle: 'Choose accent color palette & light mode',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ThemeSettingsScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push(AppRoutes.settingsTheme),
             ),
             _buildSettingsTile(
               icon: Icons.offline_bolt_outlined,
               title: 'Offline & Storage',
               subtitle: 'Manage local translation cache & data',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OfflineSettingsScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push(AppRoutes.settingsOffline),
             ),
 
-            SizedBox(height: (812 * 0.03).h),
+            SizedBox(height: 24.h),
 
             // Section: About & Help
             _buildSectionHeader('About & Help'),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
             _buildSettingsTile(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
               subtitle: 'How we protect your data & on-device security',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PrivacyPolicyScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push(AppRoutes.settingsPrivacy),
             ),
             _buildSettingsTile(
               icon: Icons.help_outline_rounded,
               title: 'Help & Feedback',
               subtitle: 'Frequently asked questions & contact form',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HelpFeedbackScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push(AppRoutes.settingsHelp),
             ),
           ],
         ),
@@ -201,7 +155,7 @@ class Settings extends StatelessWidget {
     return Text(
       title,
       style: GoogleFonts.outfit(
-        fontSize: (375 * 0.04).sp,
+        fontSize: 15.sp,
         fontWeight: FontWeight.bold,
         color: AppColors.primary,
       ),
@@ -226,7 +180,7 @@ class Settings extends StatelessWidget {
         child: ListTile(
           onTap: onTap,
           contentPadding: EdgeInsets.symmetric(
-            horizontal: (375 * 0.04).w,
+            horizontal: 15.w,
             vertical: 2.h,
           ),
           leading: Container(
@@ -240,7 +194,7 @@ class Settings extends StatelessWidget {
           title: Text(
             title,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.038).sp,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
@@ -248,7 +202,7 @@ class Settings extends StatelessWidget {
           subtitle: Text(
             subtitle,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.032).sp,
+              fontSize: 12.sp,
               color: AppColors.textSecondary,
             ),
           ),

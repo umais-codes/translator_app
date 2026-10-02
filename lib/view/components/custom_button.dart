@@ -51,14 +51,13 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // Responsive scaling based on MediaQuery
-    final effectiveHeight = height ?? (812 * 0.062).h;
-    final effectiveFontSize = fontSize ?? (375 * 0.039).sp;
-    final effectiveBorderRadius = borderRadius ?? (375 * 0.038).r;
-    final effectiveIconSize = (375 * 0.05).w;
+    final effectiveHeight = height ?? 50.h;
+    final effectiveFontSize = fontSize ?? 15.sp;
+    final effectiveBorderRadius = borderRadius ?? 14.r;
+    final effectiveIconSize = 19.w;
     final effectivePadding = padding ??
         EdgeInsets.symmetric(
-          horizontal: (375 * 0.04).w,
+          horizontal: 15.w,
         );
 
     final effectiveDisabled = isDisabled || isLoading || onPressed == null;
@@ -77,7 +76,7 @@ class CustomButton extends StatelessWidget {
         fg = textColor ?? (effectiveDisabled ? AppColors.textMuted : AppColors.primary);
         borderSide = BorderSide(
           color: borderColor ?? (effectiveDisabled ? AppColors.border : AppColors.primary),
-          width: 1.5.w,
+          width: 2.w,
         );
         break;
       case ButtonVariant.soft:
@@ -103,14 +102,14 @@ class CustomButton extends StatelessWidget {
             width: effectiveIconSize,
             height: effectiveIconSize,
             child: CircularProgressIndicator(
-              strokeWidth: 2.2.w,
+              strokeWidth: 2.w,
               valueColor: AlwaysStoppedAnimation<Color>(fg),
             ),
           ),
-          SizedBox(width: (375 * 0.025).w),
+          SizedBox(width: 9.w),
         ] else if (leadingIcon != null) ...[
           Icon(leadingIcon, size: effectiveIconSize, color: fg),
-          SizedBox(width: (375 * 0.02).w),
+          SizedBox(width: 8.w),
         ],
         Flexible(
           child: Text(
@@ -121,12 +120,12 @@ class CustomButton extends StatelessWidget {
               fontSize: effectiveFontSize,
               fontWeight: fontWeight,
               color: fg,
-              letterSpacing: 0.2.sp,
+              letterSpacing: 0.sp,
             ),
           ),
         ),
         if (!isLoading && trailingIcon != null) ...[
-          SizedBox(width: (375 * 0.02).w),
+          SizedBox(width: 8.w),
           Icon(trailingIcon, size: effectiveIconSize, color: fg),
         ],
       ],

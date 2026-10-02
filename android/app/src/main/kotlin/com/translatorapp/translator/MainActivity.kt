@@ -1,4 +1,4 @@
-package com.example.translator_app
+package com.translatorapp.translator
 
 import io.flutter.embedding.android.FlutterActivity
 

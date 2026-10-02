@@ -13,7 +13,7 @@ class ThemeSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -24,19 +24,19 @@ class ThemeSettingsScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: (812 * 0.02).h,
+            vertical: 16.h,
           ),
           children: [
             // Mode Section
             Text(
               'Appearance Mode',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
 
             Material(
               color: AppColors.surface,
@@ -58,18 +58,18 @@ class ThemeSettingsScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: (812 * 0.03).h),
+            SizedBox(height: 24.h),
 
             // Color Palette Section
             Text(
               'Accent Color Palette',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
 
             Material(
               color: AppColors.surface,
@@ -84,12 +84,12 @@ class ThemeSettingsScreen extends StatelessWidget {
                   final isSelected = vm.selectedPalette == palette.name;
                   return ListTile(
                     contentPadding: EdgeInsets.symmetric(
-                      horizontal: (375 * 0.04).w,
+                      horizontal: 15.w,
                       vertical: 4.h,
                     ),
                     leading: Container(
-                      width: (375 * 0.1).w,
-                      height: (375 * 0.1).w,
+                      width: 38.w,
+                      height: 38.w,
                       decoration: BoxDecoration(
                         color: palette.color,
                         shape: BoxShape.circle,
@@ -105,7 +105,7 @@ class ThemeSettingsScreen extends StatelessWidget {
                     title: Text(
                       palette.name,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.038).sp,
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
@@ -113,7 +113,7 @@ class ThemeSettingsScreen extends StatelessWidget {
                     subtitle: Text(
                       palette.description,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.03).sp,
+                        fontSize: 11.sp,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -150,7 +150,7 @@ class ThemeSettingsScreen extends StatelessWidget {
     return ListTile(
       enabled: enabled,
       contentPadding: EdgeInsets.symmetric(
-        horizontal: (375 * 0.04).w,
+        horizontal: 15.w,
         vertical: 2.h,
       ),
       leading: Container(
@@ -168,7 +168,7 @@ class ThemeSettingsScreen extends StatelessWidget {
       title: Text(
         title,
         style: GoogleFonts.outfit(
-          fontSize: (375 * 0.038).sp,
+          fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           color: enabled ? AppColors.textPrimary : AppColors.textMuted,
         ),
@@ -176,7 +176,7 @@ class ThemeSettingsScreen extends StatelessWidget {
       subtitle: Text(
         subtitle,
         style: GoogleFonts.outfit(
-          fontSize: (375 * 0.03).sp,
+          fontSize: 11.sp,
           color: AppColors.textSecondary,
         ),
       ),

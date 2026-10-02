@@ -54,16 +54,16 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final labelFontSize = (375 * 0.036).sp;
-    final inputFontSize = (375 * 0.038).sp;
-    final hintFontSize = (375 * 0.036).sp;
-    final borderRadius = (375 * 0.036).r;
-    final iconSize = (375 * 0.05).w;
+    final labelFontSize = 14.sp;
+    final inputFontSize = 14.sp;
+    final hintFontSize = 14.sp;
+    final borderRadius = 14.r;
+    final iconSize = 19.w;
 
     final responsivePadding = contentPadding ??
         EdgeInsets.symmetric(
-          vertical: (812 * 0.016).h,
-          horizontal: (375 * 0.04).w,
+          vertical: 13.h,
+          horizontal: 15.w,
         );
 
     final obscureNotifier = ValueNotifier<bool>(obscureText);
@@ -84,7 +84,7 @@ class CustomTextField extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              SizedBox(height: (812 * 0.008).h),
+              SizedBox(height: 7.h),
             ],
             TextFormField(
               controller: controller,
@@ -137,7 +137,7 @@ class CustomTextField extends StatelessWidget {
                   borderRadius: BorderRadius.circular(borderRadius),
                   borderSide: BorderSide(
                     color: AppColors.error,
-                    width: 1.5.w,
+                    width: 2.w,
                   ),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
@@ -149,7 +149,7 @@ class CustomTextField extends StatelessWidget {
                 ),
                 errorStyle: GoogleFonts.outfit(
                   color: AppColors.error,
-                  fontSize: (375 * 0.03).sp,
+                  fontSize: 11.sp,
                 ),
               ),
             ),

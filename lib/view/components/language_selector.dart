@@ -28,8 +28,8 @@ class LanguageSelectorCard extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: (375 * 0.025).w,
-        vertical: (812 * 0.008).h,
+        horizontal: 9.w,
+        vertical: 7.h,
       ),
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -67,7 +67,7 @@ class LanguageSelectorCard extends StatelessWidget {
               child: Icon(
                 Icons.swap_horiz_rounded,
                 color: AppColors.primary,
-                size: (375 * 0.055).w,
+                size: 21.w,
               ),
             ),
           ),
@@ -103,8 +103,8 @@ class LanguageSelectorCard extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: (375 * 0.025).w,
-          vertical: (812 * 0.01).h,
+          horizontal: 9.w,
+          vertical: 8.h,
         ),
         decoration: BoxDecoration(
           color: AppColors.inputBackground,
@@ -115,8 +115,8 @@ class LanguageSelectorCard extends StatelessWidget {
           children: [
             // Flag Avatar Circle
             Container(
-              width: (375 * 0.075).w,
-              height: (375 * 0.075).w,
+              width: 28.w,
+              height: 28.w,
               decoration: const BoxDecoration(
                 color: AppColors.surface,
                 shape: BoxShape.circle,
@@ -124,7 +124,7 @@ class LanguageSelectorCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   language.flag,
-                  style: TextStyle(fontSize: (375 * 0.042).sp),
+                  style: TextStyle(fontSize: 16.sp),
                 ),
               ),
             ),
@@ -135,7 +135,7 @@ class LanguageSelectorCard extends StatelessWidget {
               child: Text(
                 language.name,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.036).sp,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
@@ -147,7 +147,7 @@ class LanguageSelectorCard extends StatelessWidget {
             Icon(
               Icons.keyboard_arrow_down_rounded,
               color: AppColors.textSecondary,
-              size: (375 * 0.05).w,
+              size: 19.w,
             ),
           ],
         ),

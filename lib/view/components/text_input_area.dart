@@ -13,7 +13,7 @@ class TextInputArea extends StatelessWidget {
     final provider = Provider.of<TranslationViewModel>(context);
 
     return Padding(
-      padding: EdgeInsets.all(16.0.r),
+      padding: EdgeInsets.all(16.r),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,7 +47,7 @@ class TextInputArea extends StatelessWidget {
 
           // Text Input Field
           Container(
-            height: (812 * 0.1).h,
+            height: 81.h,
             decoration: BoxDecoration(
               color: AppColors.inputBackground,
               borderRadius: BorderRadius.circular(8.r),

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/core/router/app_routes.dart';
 import 'package:translator_app/data/models/translation_history_model.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/custom_button.dart';
 import 'package:translator_app/view/components/custom_chip.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
-import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_history_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
 
@@ -19,7 +20,7 @@ class TranslationHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<TranslationHistoryViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
@@ -32,7 +33,7 @@ class TranslationHistoryScreen extends StatelessWidget {
             icon: Icon(
               vm.isSearchOpen ? Icons.close_rounded : Icons.search_rounded,
               color: AppColors.textWhite,
-              size: (375 * 0.06).w,
+              size: 23.w,
             ),
             onPressed: vm.toggleSearch,
           ),
@@ -42,7 +43,7 @@ class TranslationHistoryScreen extends StatelessWidget {
             icon: Icon(
               Icons.more_vert_rounded,
               color: AppColors.textWhite,
-              size: (375 * 0.06).w,
+              size: 23.w,
             ),
             onSelected: (value) {
               if (value == 'sort_newest') {
@@ -112,7 +113,7 @@ class TranslationHistoryScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: horizontalPadding,
-                  vertical: (812 * 0.012).h,
+                  vertical: 10.h,
                 ),
                 color: AppColors.surface,
                 child: TextField(
@@ -121,13 +122,13 @@ class TranslationHistoryScreen extends StatelessWidget {
                   onChanged: vm.setSearchQuery,
                   style: GoogleFonts.outfit(
                     color: AppColors.textPrimary,
-                    fontSize: (375 * 0.04).sp,
+                    fontSize: 15.sp,
                   ),
                   decoration: InputDecoration(
                     hintText: 'Search words, phrases, or categories...',
                     hintStyle: GoogleFonts.outfit(
                       color: AppColors.textMuted,
-                      fontSize: (375 * 0.038).sp,
+                      fontSize: 14.sp,
                     ),
                     prefixIcon: Icon(Icons.search_rounded, color: AppColors.primary),
                     suffixIcon: vm.searchController.text.isNotEmpty
@@ -138,9 +139,9 @@ class TranslationHistoryScreen extends StatelessWidget {
                         : null,
                     filled: true,
                     fillColor: AppColors.inputBackground,
-                    contentPadding: EdgeInsets.symmetric(vertical: (812 * 0.012).h),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10.h),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular((375 * 0.03).r),
+                      borderRadius: BorderRadius.circular(11.r),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -178,13 +179,13 @@ class TranslationHistoryScreen extends StatelessWidget {
     ];
 
     return Container(
-      height: (812 * 0.065).h,
-      padding: EdgeInsets.symmetric(vertical: (812 * 0.008).h),
+      height: 53.h,
+      padding: EdgeInsets.symmetric(vertical: 7.h),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: (375 * 0.045).w),
+        padding: EdgeInsets.symmetric(horizontal: 17.w),
         itemCount: tabs.length + 1,
-        separatorBuilder: (_, _) => SizedBox(width: (375 * 0.02).w),
+        separatorBuilder: (_, _) => SizedBox(width: 8.w),
         itemBuilder: (context, index) {
           if (index == tabs.length) {
             // "+ Category" button
@@ -218,11 +219,11 @@ class TranslationHistoryScreen extends StatelessWidget {
 
     return ListView.separated(
       padding: EdgeInsets.symmetric(
-        horizontal: (375 * 0.045).w,
-        vertical: (812 * 0.015).h,
+        horizontal: 17.w,
+        vertical: 12.h,
       ),
       itemCount: items.length,
-      separatorBuilder: (_, _) => SizedBox(height: (812 * 0.014).h),
+      separatorBuilder: (_, _) => SizedBox(height: 11.h),
       itemBuilder: (context, index) {
         final item = items[index];
         return _buildHistoryCard(context, vm, item);
@@ -241,10 +242,10 @@ class TranslationHistoryScreen extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: (375 * 0.05).w),
+        padding: EdgeInsets.only(right: 19.w),
         decoration: BoxDecoration(
           color: AppColors.error,
-          borderRadius: BorderRadius.circular((375 * 0.045).r),
+          borderRadius: BorderRadius.circular(17.r),
         ),
         child: Icon(Icons.delete_outline_rounded, color: AppColors.textWhite, size: 28.w),
       ),
@@ -260,12 +261,12 @@ class TranslationHistoryScreen extends StatelessWidget {
       },
       child: InkWell(
         onTap: () => _showDetailModal(context, vm, item),
-        borderRadius: BorderRadius.circular((375 * 0.045).r),
+        borderRadius: BorderRadius.circular(17.r),
         child: Container(
-          padding: EdgeInsets.all((375 * 0.04).w),
+          padding: EdgeInsets.all(15.w),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular((375 * 0.045).r),
+            borderRadius: BorderRadius.circular(17.r),
             border: Border.all(color: AppColors.border),
             boxShadow: [
               BoxShadow(
@@ -289,13 +290,13 @@ class TranslationHistoryScreen extends StatelessWidget {
                       Text(
                         item.sourceLanguageCode.toUpperCase(),
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.03).sp,
+                          fontSize: 11.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                        padding: EdgeInsets.symmetric(horizontal: 4.w),
                         child: Icon(Icons.arrow_forward_rounded, size: 14.w, color: AppColors.textMuted),
                       ),
                       Text(item.targetLanguageFlag, style: TextStyle(fontSize: 16.sp)),
@@ -303,7 +304,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                       Text(
                         item.targetLanguageCode.toUpperCase(),
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.03).sp,
+                          fontSize: 11.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                         ),
@@ -320,7 +321,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                         child: Text(
                           item.category,
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.026).sp,
+                            fontSize: 10.sp,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
@@ -334,7 +335,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                     icon: Icon(
                       item.isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
                       color: item.isFavorite ? AppColors.favorite : AppColors.textMuted,
-                      size: (375 * 0.06).w,
+                      size: 23.w,
                     ),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -343,7 +344,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: (812 * 0.01).h),
+              SizedBox(height: 8.h),
 
               // Source Text
               Text(
@@ -351,13 +352,13 @@ class TranslationHistoryScreen extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.038).sp,
+                  fontSize: 14.sp,
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
 
-              SizedBox(height: (812 * 0.006).h),
+              SizedBox(height: 5.h),
 
               // Translated Text
               Text(
@@ -365,13 +366,13 @@ class TranslationHistoryScreen extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.038).sp,
+                  fontSize: 14.sp,
                   color: AppColors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
 
-              SizedBox(height: (812 * 0.01).h),
+              SizedBox(height: 8.h),
 
               // Bottom Actions: Date + Audio Speak + Copy
               Row(
@@ -380,7 +381,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                   Text(
                     _formatTimestamp(item.timestamp),
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.028).sp,
+                      fontSize: 11.sp,
                       color: AppColors.textMuted,
                     ),
                   ),
@@ -390,7 +391,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                       IconButton(
                         icon: Icon(
                           Icons.volume_up_rounded,
-                          size: (375 * 0.048).w,
+                          size: 18.w,
                           color: AppColors.primary,
                         ),
                         padding: EdgeInsets.zero,
@@ -398,13 +399,13 @@ class TranslationHistoryScreen extends StatelessWidget {
                         tooltip: 'Listen',
                         onPressed: () => vm.speakText(item.translatedText, item.targetLanguageCode),
                       ),
-                      SizedBox(width: (375 * 0.04).w),
+                      SizedBox(width: 15.w),
 
                       // Copy Translated Text
                       IconButton(
                         icon: Icon(
                           Icons.copy_rounded,
-                          size: (375 * 0.045).w,
+                          size: 17.w,
                           color: AppColors.textSecondary,
                         ),
                         padding: EdgeInsets.zero,
@@ -434,15 +435,15 @@ class TranslationHistoryScreen extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular((375 * 0.06).r)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(23.r)),
       ),
       builder: (context) {
         return Padding(
           padding: EdgeInsets.only(
-            left: (375 * 0.05).w,
-            right: (375 * 0.05).w,
-            top: (812 * 0.025).h,
-            bottom: MediaQuery.of(context).viewInsets.bottom + (812 * 0.03).h,
+            left: 19.w,
+            right: 19.w,
+            top: 20.h,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24.h,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -451,7 +452,7 @@ class TranslationHistoryScreen extends StatelessWidget {
               // Sheet Handle
               Center(
                 child: Container(
-                  width: (375 * 0.12).w,
+                  width: 40.w,
                   height: 4.h,
                   decoration: BoxDecoration(
                     color: AppColors.border,
@@ -459,7 +460,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: (812 * 0.02).h),
+              SizedBox(height: 16.h),
 
               // Title & Category Selector
               Row(
@@ -468,7 +469,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                   Text(
                     'Translation Details',
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.048).sp,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
                     ),
@@ -491,7 +492,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                           Text(
                             item.category,
                             style: GoogleFonts.outfit(
-                              fontSize: (375 * 0.03).sp,
+                              fontSize: 11.sp,
                               fontWeight: FontWeight.w600,
                               color: AppColors.primary,
                             ),
@@ -515,14 +516,14 @@ class TranslationHistoryScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: (812 * 0.02).h),
+              SizedBox(height: 16.h),
 
               // Source Text Block
               Container(
-                padding: EdgeInsets.all((375 * 0.035).w),
+                padding: EdgeInsets.all(13.w),
                 decoration: BoxDecoration(
                   color: AppColors.inputBackground,
-                  borderRadius: BorderRadius.circular((375 * 0.035).r),
+                  borderRadius: BorderRadius.circular(13.r),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -533,7 +534,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                         Text(
                           '${item.sourceLanguageFlag} ${item.sourceLanguageName.toUpperCase()}',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.03).sp,
+                            fontSize: 11.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textSecondary,
                           ),
@@ -550,23 +551,23 @@ class TranslationHistoryScreen extends StatelessWidget {
                     SelectableText(
                       item.sourceText,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.04).sp,
+                        fontSize: 15.sp,
                         color: AppColors.textPrimary,
-                        height: 1.4.h,
+                        height: 1.h,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: (812 * 0.015).h),
+              SizedBox(height: 12.h),
 
               // Translated Text Block
               Container(
-                padding: EdgeInsets.all((375 * 0.035).w),
+                padding: EdgeInsets.all(13.w),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular((375 * 0.035).r),
+                  borderRadius: BorderRadius.circular(13.r),
                   border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
                 ),
                 child: Column(
@@ -578,7 +579,7 @@ class TranslationHistoryScreen extends StatelessWidget {
                         Text(
                           '${item.targetLanguageFlag} ${item.targetLanguageName.toUpperCase()}',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.03).sp,
+                            fontSize: 11.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -606,17 +607,17 @@ class TranslationHistoryScreen extends StatelessWidget {
                     SelectableText(
                       item.translatedText,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.042).sp,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
-                        height: 1.4.h,
+                        height: 1.h,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: (812 * 0.025).h),
+              SizedBox(height: 20.h),
 
               // "Translate Again" Action
               CustomButton(
@@ -625,7 +626,6 @@ class TranslationHistoryScreen extends StatelessWidget {
                 variant: ButtonVariant.filled,
                 onPressed: () {
                   final translationVm = context.read<TranslationViewModel>();
-                  final navVm = context.read<MainNavViewModel>();
 
                   translationVm.loadTranslationForReuse(
                     source: item.sourceText,
@@ -634,9 +634,8 @@ class TranslationHistoryScreen extends StatelessWidget {
                     targetLang: LanguageModel.fromCode(item.targetLanguageCode),
                   );
 
-                  Navigator.pop(context); // Close sheet
-                  Navigator.pop(context); // Exit history screen
-                  navVm.setIndex(0); // Switch to Home Translator tab
+                  Navigator.pop(context);
+                  context.go(AppRoutes.translate);
                 },
               ),
             ],
@@ -675,40 +674,37 @@ class TranslationHistoryScreen extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all((375 * 0.08).w),
+        padding: EdgeInsets.all(30.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: (375 * 0.18).w, color: AppColors.textMuted),
-            SizedBox(height: (812 * 0.02).h),
+            Icon(icon, size: 68.w, color: AppColors.textMuted),
+            SizedBox(height: 16.h),
             Text(
               title,
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.048).sp,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
             Text(
               subtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.035).sp,
+                fontSize: 13.sp,
                 color: AppColors.textSecondary,
-                height: 1.4.h,
+                height: 1.h,
               ),
             ),
             if (vm.totalCount == 0 && vm.searchQuery.isEmpty) ...[
-              SizedBox(height: (812 * 0.03).h),
+              SizedBox(height: 24.h),
               CustomButton(
                 text: 'Start Translating',
                 leadingIcon: Icons.translate_rounded,
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.read<MainNavViewModel>().setIndex(0);
-                },
+                onPressed: () => context.go(AppRoutes.translate),
               ),
             ],
           ],
@@ -727,7 +723,7 @@ class TranslationHistoryScreen extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular((375 * 0.045).r),
+            borderRadius: BorderRadius.circular(17.r),
           ),
           title: Text(
             'Clear History',
@@ -773,7 +769,7 @@ class TranslationHistoryScreen extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular((375 * 0.045).r),
+            borderRadius: BorderRadius.circular(17.r),
           ),
           title: Text(
             'New Category',

@@ -14,7 +14,7 @@ class OfflineSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -25,12 +25,12 @@ class OfflineSettingsScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: (812 * 0.02).h,
+            vertical: 16.h,
           ),
           children: [
             // Status Card
             Container(
-              padding: EdgeInsets.all((375 * 0.045).w),
+              padding: EdgeInsets.all(17.w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(20.r),
@@ -46,8 +46,8 @@ class OfflineSettingsScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: (375 * 0.13).w,
-                    height: (375 * 0.13).w,
+                    width: 49.w,
+                    height: 49.w,
                     decoration: BoxDecoration(
                       color: AppColors.lightBlueBackground,
                       borderRadius: BorderRadius.circular(14.r),
@@ -55,7 +55,7 @@ class OfflineSettingsScreen extends StatelessWidget {
                     child: Icon(
                       Icons.offline_bolt_rounded,
                       color: AppColors.primary,
-                      size: (375 * 0.07).w,
+                      size: 26.w,
                     ),
                   ),
                   SizedBox(width: 14.w),
@@ -66,7 +66,7 @@ class OfflineSettingsScreen extends StatelessWidget {
                         Text(
                           'Local Offline Cache',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.042).sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
@@ -75,7 +75,7 @@ class OfflineSettingsScreen extends StatelessWidget {
                         Text(
                           '${vm.cachedPhrasesCount} phrases stored locally',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.032).sp,
+                            fontSize: 12.sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -86,21 +86,21 @@ class OfflineSettingsScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: (812 * 0.025).h),
+            SizedBox(height: 20.h),
 
             // How Offline Works Card
             Text(
               'How Offline Mode Operates',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
 
             Container(
-              padding: EdgeInsets.all((375 * 0.045).w),
+              padding: EdgeInsets.all(17.w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(20.r),
@@ -130,13 +130,13 @@ class OfflineSettingsScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: (812 * 0.03).h),
+            SizedBox(height: 24.h),
 
             // Cache Management Button
             CustomButton(
               text: 'Clear Offline Translation Cache',
               variant: ButtonVariant.outlined,
-              height: (812 * 0.055).h,
+              height: 45.h,
               leadingIcon: Icons.delete_outline_rounded,
               borderColor: AppColors.error,
               textColor: AppColors.error,
@@ -169,7 +169,7 @@ class OfflineSettingsScreen extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppColors.primary, size: (375 * 0.055).w),
+        Icon(icon, color: AppColors.primary, size: 21.w),
         SizedBox(width: 12.w),
         Expanded(
           child: Column(
@@ -178,7 +178,7 @@ class OfflineSettingsScreen extends StatelessWidget {
               Text(
                 title,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.036).sp,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
@@ -187,9 +187,9 @@ class OfflineSettingsScreen extends StatelessWidget {
               Text(
                 desc,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.031).sp,
+                  fontSize: 12.sp,
                   color: AppColors.textSecondary,
-                  height: 1.35.h,
+                  height: 1.h,
                 ),
               ),
             ],

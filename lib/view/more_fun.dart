@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
-import 'package:translator_app/view/ai/ai_tools_screen.dart';
-import 'package:translator_app/view/camera.dart';
-import 'package:translator_app/view/file_translate.dart';
-import 'package:translator_app/view/history/translation_history_screen.dart';
-import 'package:translator_app/view/settings.dart';
-import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
+import 'package:translator_app/core/router/app_routes.dart';
 
 class MoreFunScreen extends StatelessWidget {
   const MoreFunScreen({super.key});
@@ -16,12 +11,12 @@ class MoreFunScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
-        vertical: (812 * 0.02).h,
+        vertical: 16.h,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,22 +25,22 @@ class MoreFunScreen extends StatelessWidget {
           Text(
             'Smart Tools',
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.058).sp,
+              fontSize: 22.sp,
               fontWeight: FontWeight.bold,
-              letterSpacing: -0.6.sp,
+              letterSpacing: -1.sp,
               color: AppColors.textPrimary,
             ),
           ),
           Text(
             'AI-powered language suite',
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.035).sp,
+              fontSize: 13.sp,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
 
-          SizedBox(height: (812 * 0.022).h),
+          SizedBox(height: 18.h),
 
           // 1. HERO BENTO CARD: Camera & OCR Live Translator
           _buildHeroCard(
@@ -54,17 +49,10 @@ class MoreFunScreen extends StatelessWidget {
             subtitle:
                 'Scan printed text from signs, menus, and documents with instant optical recognition.',
             icon: Icons.camera_alt_rounded,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CameraScreen(),
-                ),
-              );
-            },
+            onTap: () => context.push(AppRoutes.camera),
           ),
 
-          SizedBox(height: (812 * 0.016).h),
+          SizedBox(height: 13.h),
 
           // 2. AI LANGUAGE STUDIO CARD
           _buildBottomCard(
@@ -72,17 +60,10 @@ class MoreFunScreen extends StatelessWidget {
             title: 'AI Language Intelligence',
             subtitle: 'Tone rephraser, grammar explainer & cultural nuance analysis',
             icon: Icons.auto_awesome_rounded,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AIToolsScreen(),
-                ),
-              );
-            },
+            onTap: () => context.push(AppRoutes.ai),
           ),
 
-          SizedBox(height: (812 * 0.016).h),
+          SizedBox(height: 13.h),
 
           // 3. DOCUMENT TRANSLATOR WIDE CARD
           _buildBottomCard(
@@ -90,17 +71,10 @@ class MoreFunScreen extends StatelessWidget {
             title: 'File & Document Translator',
             subtitle: 'Translate TXT, JSON, and CSV documents in seconds',
             icon: Icons.auto_stories_rounded,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FileTranslationScreen(),
-                ),
-              );
-            },
+            onTap: () => context.push(AppRoutes.files),
           ),
 
-          SizedBox(height: (812 * 0.016).h),
+          SizedBox(height: 13.h),
 
           // 3. TWO-COLUMN BENTO GRID: Dictionary & Voice Conversation
           Row(
@@ -119,12 +93,10 @@ class MoreFunScreen extends StatelessWidget {
                         AppColors.success,
                   ],
 
-                  onTap: () {
-                    context.read<MainNavViewModel>().setIndex(2);
-                  },
+                  onTap: () => context.go(AppRoutes.dictionary),
                 ),
               ),
-              SizedBox(width: (375 * 0.03).w),
+              SizedBox(width: 11.w),
 
               // Right Bento Tile: Voice Conversation
               Expanded(
@@ -140,15 +112,13 @@ class MoreFunScreen extends StatelessWidget {
                         AppColors.warning,
                   ],
 
-                  onTap: () {
-                    context.read<MainNavViewModel>().setIndex(1);
-                  },
+                  onTap: () => context.go(AppRoutes.conversation),
                 ),
               ),
             ],
           ),
 
-          SizedBox(height: (812 * 0.016).h),
+          SizedBox(height: 13.h),
 
           // 4. HISTORY & FAVORITES CARD
           _buildBottomCard(
@@ -156,17 +126,10 @@ class MoreFunScreen extends StatelessWidget {
             title: 'History & Starred Favorites',
             subtitle: 'Search, categorize, and review your past translations',
             icon: Icons.history_rounded,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const TranslationHistoryScreen(),
-                ),
-              );
-            },
+            onTap: () => context.push(AppRoutes.history),
           ),
 
-          SizedBox(height: (812 * 0.016).h),
+          SizedBox(height: 13.h),
 
           // 5. BOTTOM WIDE CARD: System & Preferences
           _buildBottomCard(
@@ -174,15 +137,10 @@ class MoreFunScreen extends StatelessWidget {
             title: 'Settings & Preferences',
             subtitle: 'Color themes, speech speeds, and offline caching',
             icon: Icons.tune_rounded,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Settings()),
-              );
-            },
+            onTap: () => context.push(AppRoutes.settings),
           ),
 
-          SizedBox(height: (812 * 0.02).h),
+          SizedBox(height: 16.h),
         ],
       ),
     );
@@ -217,7 +175,7 @@ class MoreFunScreen extends StatelessWidget {
               ),
             ],
           ),
-          padding: EdgeInsets.all((375 * 0.05).w),
+          padding: EdgeInsets.all(19.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -236,16 +194,16 @@ class MoreFunScreen extends StatelessWidget {
                     child: Text(
                       'AI DOCUMENT ENGINE',
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.026).sp,
+                        fontSize: 10.sp,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8.sp,
+                        letterSpacing: 1.sp,
                         color: AppColors.textWhite,
                       ),
                     ),
                   ),
                   Container(
                     width: 32.w,
-                    height: 32.h,
+                    height: 32.w,
                     decoration: BoxDecoration(
                       color: AppColors.textWhite.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
@@ -261,28 +219,28 @@ class MoreFunScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: (812 * 0.016).h),
+              SizedBox(height: 13.h),
 
               Text(
                 title,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.046).sp,
+                  fontSize: 17.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textWhite,
-                  letterSpacing: -0.3.sp,
+                  letterSpacing: -0.sp,
                 ),
               ),
-              SizedBox(height: (812 * 0.005).h),
+              SizedBox(height: 4.h),
               Text(
                 subtitle,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.032).sp,
+                  fontSize: 12.sp,
                   color: AppColors.textWhite.withValues(alpha: 0.9),
-                  height: 1.35.h,
+                  height: 1.h,
                 ),
               ),
 
-              SizedBox(height: (812 * 0.016).h),
+              SizedBox(height: 13.h),
 
               // File Types Pill Badges
               Row(
@@ -306,7 +264,7 @@ class MoreFunScreen extends StatelessWidget {
                         fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textWhite,
-                        letterSpacing: 0.5.sp,
+                        letterSpacing: 1.sp,
                       ),
                     ),
                   );
@@ -335,8 +293,8 @@ class MoreFunScreen extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20.r),
         child: Container(
-          height: (812 * 0.21).h,
-          padding: EdgeInsets.all((375 * 0.04).w),
+          height: 171.h,
+          padding: EdgeInsets.all(15.w),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20.r),
@@ -358,8 +316,8 @@ class MoreFunScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: (375 * 0.115).w,
-                    height: (375 * 0.115).w,
+                    width: 43.w,
+                    height: 43.w,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: gradientColors,
@@ -379,7 +337,7 @@ class MoreFunScreen extends StatelessWidget {
                       child: Icon(
                         icon,
                         color: AppColors.textWhite,
-                        size: (375 * 0.058).w,
+                        size: 22.w,
                       ),
                     ),
                   ),
@@ -400,10 +358,10 @@ class MoreFunScreen extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.037).sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
-                      height: 1.2.h,
+                      height: 1.h,
                     ),
                   ),
                   SizedBox(height: 3.h),
@@ -412,9 +370,9 @@ class MoreFunScreen extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.029).sp,
+                      fontSize: 11.sp,
                       color: AppColors.textSecondary,
-                      height: 1.3.h,
+                      height: 1.h,
                     ),
                   ),
                 ],
@@ -440,7 +398,7 @@ class MoreFunScreen extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20.r),
         child: Container(
-          padding: EdgeInsets.all((375 * 0.042).w),
+          padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20.r),
@@ -456,8 +414,8 @@ class MoreFunScreen extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: (375 * 0.12).w,
-                height: (375 * 0.12).w,
+                width: 45.w,
+                height: 45.w,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [AppColors.primaryDark, AppColors.primaryAccent],
@@ -477,11 +435,11 @@ class MoreFunScreen extends StatelessWidget {
                   child: Icon(
                     icon,
                     color: AppColors.textWhite,
-                    size: (375 * 0.06).w,
+                    size: 23.w,
                   ),
                 ),
               ),
-              SizedBox(width: (375 * 0.035).w),
+              SizedBox(width: 13.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,7 +447,7 @@ class MoreFunScreen extends StatelessWidget {
                     Text(
                       title,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.039).sp,
+                        fontSize: 15.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
                       ),
@@ -498,7 +456,7 @@ class MoreFunScreen extends StatelessWidget {
                     Text(
                       subtitle,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.031).sp,
+                        fontSize: 12.sp,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -508,7 +466,7 @@ class MoreFunScreen extends StatelessWidget {
               Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textMuted,
-                size: (375 * 0.055).w,
+                size: 21.w,
               ),
             ],
           ),

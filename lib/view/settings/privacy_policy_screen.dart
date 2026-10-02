@@ -10,7 +10,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -21,12 +21,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: (812 * 0.02).h,
+            vertical: 16.h,
           ),
           children: [
             // Top Badge Card
             Container(
-              padding: EdgeInsets.all((375 * 0.045).w),
+              padding: EdgeInsets.all(17.w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(20.r),
@@ -42,8 +42,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: (375 * 0.13).w,
-                    height: (375 * 0.13).w,
+                    width: 49.w,
+                    height: 49.w,
                     decoration: BoxDecoration(
                       color: AppColors.lightBlueBackground,
                       borderRadius: BorderRadius.circular(14.r),
@@ -51,7 +51,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     child: Icon(
                       Icons.shield_outlined,
                       color: AppColors.primary,
-                      size: (375 * 0.07).w,
+                      size: 26.w,
                     ),
                   ),
                   SizedBox(width: 14.w),
@@ -62,7 +62,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                         Text(
                           'Your Privacy Matters',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.042).sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
@@ -71,7 +71,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                         Text(
                           'Last Updated: August 2026',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.032).sp,
+                            fontSize: 12.sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -82,7 +82,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: (812 * 0.025).h),
+            SizedBox(height: 20.h),
 
             _buildSection(
               title: '1. Information We Collect',
@@ -124,8 +124,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
     required String content,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: (812 * 0.015).h),
-      padding: EdgeInsets.all((375 * 0.045).w),
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(17.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18.r),
@@ -137,18 +137,18 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Text(
             title,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.038).sp,
+              fontSize: 14.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
           ),
-          SizedBox(height: (812 * 0.008).h),
+          SizedBox(height: 7.h),
           Text(
             content,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.033).sp,
+              fontSize: 12.sp,
               color: AppColors.textSecondary,
-              height: 1.45.h,
+              height: 1.h,
             ),
           ),
         ],

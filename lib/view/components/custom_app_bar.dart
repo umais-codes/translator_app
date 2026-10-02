@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
 
@@ -38,7 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleFontSize = (375 * 0.048).sp;
+    final titleFontSize = 18.sp;
 
     return AppBar(
       elevation: elevation,
@@ -46,11 +47,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor ?? AppColors.primary,
       foregroundColor: foregroundColor,
       automaticallyImplyLeading: false,
-      leading: showBackButton && Navigator.canPop(context)
+      leading: showBackButton && context.canPop()
           ? IconButton(
               icon: Icon(Icons.arrow_back_ios_new, size: 20.w),
               color: foregroundColor,
-              onPressed: onBackTap ?? () => Navigator.pop(context),
+              onPressed: onBackTap ?? () => context.pop(),
             )
           : null,
       title: titleWidget ??

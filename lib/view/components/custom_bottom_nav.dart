@@ -32,7 +32,7 @@ class CustomBottomNav extends StatelessWidget {
         top: false,
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: (375 * 0.04).w,
+            horizontal: 15.w,
             vertical: 8.h,
           ),
           child: Row(
@@ -79,7 +79,7 @@ class CustomBottomNav extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
         padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? (375 * 0.035).w : (375 * 0.02).w,
+          horizontal: isSelected ? 13.w : 8.w,
           vertical: 8.h,
         ),
         decoration: BoxDecoration(
@@ -92,14 +92,14 @@ class CustomBottomNav extends StatelessWidget {
             Icon(
               icon,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
-              size: (375 * 0.06).w,
+              size: 23.w,
             ),
             if (isSelected) ...[
               SizedBox(width: 6.w),
               Text(
                 label,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.035).sp,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),

@@ -14,8 +14,8 @@ class BottomActionBar1 extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: (812 * 0.018).h,
-        horizontal: (375 * 0.04).w,
+        vertical: 15.h,
+        horizontal: 15.w,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -68,11 +68,11 @@ class BottomActionBar1 extends StatelessWidget {
     required bool isActive,
     required VoidCallback onTap,
   }) {
-    final buttonSize = (375 * 0.16).w;
+    final buttonSize = 60.w;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular((375 * 0.08).r),
+      borderRadius: BorderRadius.circular(buttonSize / 2),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -95,15 +95,15 @@ class BottomActionBar1 extends StatelessWidget {
             child: Icon(
               icon,
               color: isActive ? AppColors.textWhite : AppColors.textSecondary,
-              size: (375 * 0.07).w,
+              size: 26.w,
             ),
           ),
-          SizedBox(height: (375 * 0.02).w),
+          SizedBox(height: 8.h),
           Text(
             label,
             style: GoogleFonts.outfit(
               color: isActive ? AppColors.primary : AppColors.textSecondary,
-              fontSize: (375 * 0.032).sp,
+              fontSize: 12.sp,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
             ),
           ),

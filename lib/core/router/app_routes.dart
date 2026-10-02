@@ -1,0 +1,19 @@
+/// Path constants for [GoRouter].
+abstract final class AppRoutes {
+  static const splash = '/splash';
+  static const translate = '/translate';
+  static const conversation = '/conversation';
+  static const dictionary = '/dictionary';
+  static const tools = '/tools';
+  static const history = '/history';
+  static const camera = '/camera';
+  static const ai = '/ai';
+  static const files = '/files';
+  static const settings = '/settings';
+  static const settingsTts = '/settings/tts';
+  static const settingsVoice = '/settings/voice';
+  static const settingsTheme = '/settings/theme';
+  static const settingsOffline = '/settings/offline';
+  static const settingsPrivacy = '/settings/privacy';
+  static const settingsHelp = '/settings/help';
+}

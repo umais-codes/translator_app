@@ -9,7 +9,7 @@ class MicrophoneButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 70.w,
-      height: 70.h,
+      height: 70.w,
       decoration: BoxDecoration(
         color: AppColors.primary,
         shape: BoxShape.circle,

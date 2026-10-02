@@ -14,12 +14,12 @@ class DictionaryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<DictionaryViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
-        vertical: (812 * 0.015).h,
+        vertical: 12.h,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,13 +46,13 @@ class DictionaryScreen extends StatelessWidget {
               },
               style: GoogleFonts.outfit(
                 color: AppColors.textPrimary,
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
               ),
               decoration: InputDecoration(
                 hintText: 'Search word (e.g. "Eloquent", "Inspire")...',
                 hintStyle: GoogleFonts.outfit(
                   color: AppColors.textMuted,
-                  fontSize: (375 * 0.038).sp,
+                  fontSize: 14.sp,
                 ),
                 prefixIcon: Icon(
                   Icons.search_rounded,
@@ -73,18 +73,18 @@ class DictionaryScreen extends StatelessWidget {
                 focusedBorder: InputBorder.none,
                 fillColor: AppColors.transparent,
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: (375 * 0.04).w,
-                  vertical: (812 * 0.016).h,
+                  horizontal: 15.w,
+                  vertical: 13.h,
                 ),
               ),
             ),
           ),
 
-          SizedBox(height: (812 * 0.02).h),
+          SizedBox(height: 16.h),
 
           // 2. State Handling: Loading, Error, Content, Empty
           if (vm.isLoading) ...[
-            SizedBox(height: (812 * 0.1).h),
+            SizedBox(height: 81.h),
             Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
@@ -112,55 +112,55 @@ class DictionaryScreen extends StatelessWidget {
 
     return Column(
       children: [
-        SizedBox(height: (812 * 0.04).h),
+        SizedBox(height: 33.h),
         Container(
-          width: (375 * 0.22).w,
-          height: (375 * 0.22).w,
+          width: 83.w,
+          height: 83.w,
           decoration: BoxDecoration(
             color: AppColors.lightBlueBackground,
             borderRadius: BorderRadius.circular(24.r),
           ),
           child: Icon(
             Icons.menu_book_rounded,
-            size: (375 * 0.11).w,
+            size: 41.w,
             color: AppColors.primary,
           ),
         ),
-        SizedBox(height: (812 * 0.02).h),
+        SizedBox(height: 16.h),
         Text(
           'Instant Smart Dictionary',
           style: GoogleFonts.outfit(
-            fontSize: (375 * 0.048).sp,
+            fontSize: 18.sp,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
         ),
-        SizedBox(height: (812 * 0.008).h),
+        SizedBox(height: 7.h),
         Text(
           'Type any word above to explore comprehensive definitions, pronunciations, examples, and synonyms.',
           textAlign: TextAlign.center,
           style: GoogleFonts.outfit(
-            fontSize: (375 * 0.035).sp,
+            fontSize: 13.sp,
             color: AppColors.textSecondary,
-            height: 1.4.h,
+            height: 1.h,
           ),
         ),
-        SizedBox(height: (812 * 0.03).h),
+        SizedBox(height: 24.h),
 
         // Quick Suggestions Tag Cloud
         Text(
           'POPULAR SEARCHES',
           style: GoogleFonts.outfit(
-            fontSize: (375 * 0.03).sp,
+            fontSize: 11.sp,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.2.sp,
+            letterSpacing: 1.sp,
             color: AppColors.textMuted,
           ),
         ),
-        SizedBox(height: (812 * 0.012).h),
+        SizedBox(height: 10.h),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: 8.w,
+          runSpacing: 8.h,
           alignment: WrapAlignment.center,
           children: suggestedWords.map((word) {
             return InkWell(
@@ -178,7 +178,7 @@ class DictionaryScreen extends StatelessWidget {
                 child: Text(
                   word,
                   style: GoogleFonts.outfit(
-                    fontSize: (375 * 0.033).sp,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.primary,
                   ),
@@ -195,7 +195,7 @@ class DictionaryScreen extends StatelessWidget {
     String message,
   ) {
     return Container(
-      padding: EdgeInsets.all((375 * 0.06).w),
+      padding: EdgeInsets.all(23.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20.r),
@@ -205,26 +205,26 @@ class DictionaryScreen extends StatelessWidget {
         children: [
           Icon(
             Icons.search_off_rounded,
-            size: (375 * 0.12).w,
+            size: 45.w,
             color: AppColors.error,
           ),
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
           Text(
             'Definition Not Found',
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.044).sp,
+              fontSize: 17.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: (812 * 0.008).h),
+          SizedBox(height: 7.h),
           Text(
             message,
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.034).sp,
+              fontSize: 13.sp,
               color: AppColors.textSecondary,
-              height: 1.4.h,
+              height: 1.h,
             ),
           ),
         ],
@@ -245,7 +245,7 @@ class DictionaryScreen extends StatelessWidget {
       children: [
         // Word Header Card
         Container(
-          padding: EdgeInsets.all((375 * 0.045).w),
+          padding: EdgeInsets.all(17.w),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20.r),
@@ -268,7 +268,7 @@ class DictionaryScreen extends StatelessWidget {
                     Text(
                       entry.word,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.065).sp,
+                        fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
                       ),
@@ -278,7 +278,7 @@ class DictionaryScreen extends StatelessWidget {
                       Text(
                         entry.phonetic!,
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.038).sp,
+                          fontSize: 14.sp,
                           color: AppColors.primary,
                           fontWeight: FontWeight.w500,
                         ),
@@ -321,7 +321,7 @@ class DictionaryScreen extends StatelessWidget {
           ),
         ),
 
-        SizedBox(height: (812 * 0.015).h),
+        SizedBox(height: 12.h),
 
         // Filter Pills for Parts of Speech
         if (partsOfSpeech.length > 1) ...[
@@ -336,7 +336,7 @@ class DictionaryScreen extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
         ],
 
         // Detailed Meanings & Definitions
@@ -346,7 +346,7 @@ class DictionaryScreen extends StatelessWidget {
 
         // Global Synonyms & Antonyms Card
         if (entry.allSynonyms.isNotEmpty || entry.allAntonyms.isNotEmpty) ...[
-          SizedBox(height: (812 * 0.01).h),
+          SizedBox(height: 8.h),
           _buildThesaurusCard(entry, vm),
         ],
       ],
@@ -359,7 +359,7 @@ class DictionaryScreen extends StatelessWidget {
     DictionaryViewModel vm,
   ) {
     final isSelected = vm.selectedPartOfSpeech == value;
-    final borderRadius = (375 * 0.045).r;
+    final borderRadius = 17.r;
 
     return Padding(
       padding: EdgeInsets.only(right: 8.w),
@@ -368,9 +368,9 @@ class DictionaryScreen extends StatelessWidget {
         label: Text(
           label.toUpperCase(),
           style: GoogleFonts.outfit(
-            fontSize: (375 * 0.031).sp,
+            fontSize: 12.sp,
             fontWeight: FontWeight.bold,
-            letterSpacing: 0.6.sp,
+            letterSpacing: 1.sp,
             color: isSelected ? AppColors.textWhite : AppColors.textPrimary,
           ),
         ),
@@ -381,11 +381,11 @@ class DictionaryScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius),
           side: BorderSide(
             color: isSelected ? AppColors.primary : AppColors.border,
-            width: 1.2.w,
+            width: 1.w,
           ),
         ),
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-        elevation: isSelected ? 1.5.r : 0,
+        elevation: isSelected ? 2.r : 0,
         shadowColor: AppColors.shadowPrimary,
         onSelected: (selected) {
           if (selected) {
@@ -400,8 +400,8 @@ class DictionaryScreen extends StatelessWidget {
     MeaningModel meaning,
   ) {
     return Container(
-      margin: EdgeInsets.only(bottom: (812 * 0.015).h),
-      padding: EdgeInsets.all((375 * 0.04).w),
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18.r),
@@ -426,9 +426,9 @@ class DictionaryScreen extends StatelessWidget {
             child: Text(
               meaning.partOfSpeech.toUpperCase(),
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.03).sp,
+                fontSize: 11.sp,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 0.8.sp,
+                letterSpacing: 1.sp,
                 color: AppColors.primary,
               ),
             ),
@@ -444,7 +444,7 @@ class DictionaryScreen extends StatelessWidget {
                 children: [
                   Container(
                     width: 20.w,
-                    height: 20.h,
+                    height: 20.w,
                     margin: EdgeInsets.only(top: 2.h, right: 10.w),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
@@ -468,9 +468,9 @@ class DictionaryScreen extends StatelessWidget {
                         Text(
                           def.definition,
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.037).sp,
+                            fontSize: 14.sp,
                             color: AppColors.textPrimary,
-                            height: 1.35.h,
+                            height: 1.h,
                           ),
                         ),
                         if (def.example != null && def.example!.isNotEmpty) ...[
@@ -478,7 +478,7 @@ class DictionaryScreen extends StatelessWidget {
                           Text(
                             '"${def.example!}"',
                             style: GoogleFonts.outfit(
-                              fontSize: (375 * 0.033).sp,
+                              fontSize: 12.sp,
                               fontStyle: FontStyle.italic,
                               color: AppColors.textSecondary,
                             ),
@@ -501,7 +501,7 @@ class DictionaryScreen extends StatelessWidget {
     DictionaryViewModel vm,
   ) {
     return Container(
-      padding: EdgeInsets.all((375 * 0.045).w),
+      padding: EdgeInsets.all(17.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(18.r),
@@ -513,16 +513,16 @@ class DictionaryScreen extends StatelessWidget {
           Text(
             'Synonyms & Antonyms',
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.038).sp,
+              fontSize: 14.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
           ),
-          SizedBox(height: (812 * 0.012).h),
+          SizedBox(height: 10.h),
           if (entry.allSynonyms.isNotEmpty) ...[
             Wrap(
-              spacing: 6,
-              runSpacing: 6,
+              spacing: 6.w,
+              runSpacing: 6.h,
               children: entry.allSynonyms.take(8).map((syn) {
                 return InkWell(
                   onTap: () => vm.searchWord(syn),
@@ -535,7 +535,7 @@ class DictionaryScreen extends StatelessWidget {
                     child: Text(
                       syn,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.031).sp,
+                        fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.success,
                       ),

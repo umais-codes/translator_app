@@ -53,7 +53,7 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
   Widget build(BuildContext context) {
     final vm = context.watch<SettingsViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -64,23 +64,23 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
         child: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
-            vertical: (812 * 0.02).h,
+            vertical: 16.h,
           ),
           children: [
             // FAQ Header
             Text(
               'Frequently Asked Questions',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
 
             ..._faqs.map(
               (faq) => Container(
-                margin: EdgeInsets.only(bottom: (812 * 0.012).h),
+                margin: EdgeInsets.only(bottom: 10.h),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16.r),
@@ -92,19 +92,19 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
                   title: Text(
                     faq['q']!,
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.036).sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  childrenPadding: EdgeInsets.all((375 * 0.04).w),
+                  childrenPadding: EdgeInsets.all(15.w),
                   children: [
                     Text(
                       faq['a']!,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.033).sp,
+                        fontSize: 12.sp,
                         color: AppColors.textSecondary,
-                        height: 1.4.h,
+                        height: 1.h,
                       ),
                     ),
                   ],
@@ -112,21 +112,21 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
               ),
             ),
 
-            SizedBox(height: (812 * 0.025).h),
+            SizedBox(height: 20.h),
 
             // Feedback Form Header
             Text(
               'Send Us Feedback or Report an Issue',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
 
             Container(
-              padding: EdgeInsets.all((375 * 0.045).w),
+              padding: EdgeInsets.all(17.w),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(20.r),
@@ -142,7 +142,7 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email_outlined,
                   ),
-                  SizedBox(height: (812 * 0.015).h),
+                  SizedBox(height: 12.h),
                   CustomTextField(
                     label: 'Message',
                     hintText: 'How can we improve Translator App?',
@@ -150,11 +150,11 @@ class _HelpFeedbackScreenState extends State<HelpFeedbackScreen> {
                     maxLines: 4,
                     minLines: 3,
                   ),
-                  SizedBox(height: (812 * 0.02).h),
+                  SizedBox(height: 16.h),
                   CustomButton(
                     text: 'Submit Feedback',
                     variant: ButtonVariant.filled,
-                    height: (812 * 0.055).h,
+                    height: 45.h,
                     leadingIcon: Icons.send_rounded,
                     isLoading: vm.isSubmittingFeedback,
                     onPressed: () async {

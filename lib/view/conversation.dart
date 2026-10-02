@@ -13,12 +13,12 @@ class Conversation extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<ConversationViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
-        vertical: (812 * 0.015).h,
+        vertical: 12.h,
       ),
       child: Column(
         children: [
@@ -31,18 +31,18 @@ class Conversation extends StatelessWidget {
             onSwap: vm.swapLanguages,
           ),
 
-          SizedBox(height: (812 * 0.02).h),
+          SizedBox(height: 16.h),
 
           // 2. Speaker 1 Panel (Input)
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all((375 * 0.045).w),
+            padding: EdgeInsets.all(17.w),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
                 color: vm.isListening ? AppColors.primary : AppColors.border,
-                width: vm.isListening ? 1.5 : 1,
+                width: vm.isListening ? 2.w : 1.w,
               ),
               boxShadow: [
                 BoxShadow(
@@ -62,13 +62,13 @@ class Conversation extends StatelessWidget {
                       children: [
                         Text(
                           vm.inputLanguage.flag,
-                          style: TextStyle(fontSize: (375 * 0.048).sp),
+                          style: TextStyle(fontSize: 18.sp),
                         ),
                         SizedBox(width: 8.w),
                         Text(
                           'You (${vm.inputLanguage.name})',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.038).sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -92,18 +92,18 @@ class Conversation extends StatelessWidget {
                       ? 'Tap the microphone and start speaking...'
                       : vm.inputText,
                   style: GoogleFonts.outfit(
-                    fontSize: (375 * 0.042).sp,
+                    fontSize: 16.sp,
                     color: vm.inputText.isEmpty
                         ? AppColors.textMuted
                         : AppColors.textPrimary,
-                    height: 1.4.h,
+                    height: 1.h,
                   ),
                 ),
               ],
             ),
           ),
 
-          SizedBox(height: (812 * 0.02).h),
+          SizedBox(height: 16.h),
 
           // 3. Center Microphone Button
           Center(
@@ -111,8 +111,8 @@ class Conversation extends StatelessWidget {
               onTap: vm.isListening ? vm.stopListening : vm.startListening,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
-                width: (375 * 0.18).w,
-                height: (375 * 0.18).w,
+                width: 68.w,
+                height: 68.w,
                 decoration: BoxDecoration(
                   color: vm.isListening ? AppColors.micActive : AppColors.primary,
                   shape: BoxShape.circle,
@@ -121,26 +121,26 @@ class Conversation extends StatelessWidget {
                       color: vm.isListening
                           ? AppColors.micActive.withValues(alpha: 0.5)
                           : AppColors.shadowPrimary,
-                      blurRadius: vm.isListening ? 18 : 10,
-                      spreadRadius: vm.isListening ? 4 : 1,
+                      blurRadius: vm.isListening ? 18.r : 10.r,
+                      spreadRadius: vm.isListening ? 4.r : 1.r,
                     ),
                   ],
                 ),
                 child: Icon(
                   vm.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
                   color: AppColors.textWhite,
-                  size: (375 * 0.08).w,
+                  size: 30.w,
                 ),
               ),
             ),
           ),
 
-          SizedBox(height: (812 * 0.02).h),
+          SizedBox(height: 16.h),
 
           // 4. Speaker 2 Panel (Output / Translated)
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all((375 * 0.045).w),
+            padding: EdgeInsets.all(17.w),
             decoration: BoxDecoration(
               color: AppColors.lightBlueBackground,
               borderRadius: BorderRadius.circular(20.r),
@@ -163,13 +163,13 @@ class Conversation extends StatelessWidget {
                       children: [
                         Text(
                           vm.outputLanguage.flag,
-                          style: TextStyle(fontSize: (375 * 0.048).sp),
+                          style: TextStyle(fontSize: 18.sp),
                         ),
                         SizedBox(width: 8.w),
                         Text(
                           'Partner (${vm.outputLanguage.name})',
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.038).sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -196,11 +196,11 @@ class Conversation extends StatelessWidget {
                           ? 'Translation will appear here in real-time...'
                           : vm.translatedText,
                   style: GoogleFonts.outfit(
-                    fontSize: (375 * 0.042).sp,
+                    fontSize: 16.sp,
                     color: vm.translatedText.isEmpty
                         ? AppColors.textMuted
                         : AppColors.textPrimary,
-                    height: 1.4.h,
+                    height: 1.h,
                   ),
                 ),
               ],

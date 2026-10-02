@@ -1,73 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/core/router/app_routes.dart';
 import 'package:translator_app/view/components/custom_app_bar.dart';
 import 'package:translator_app/view/components/custom_bottom_nav.dart';
-import 'package:translator_app/view/conversation.dart';
-import 'package:translator_app/view/dictionary.dart';
-import 'package:translator_app/view/history/translation_history_screen.dart';
-import 'package:translator_app/view/home/home_translate_view.dart';
-import 'package:translator_app/view/more_fun.dart';
-import 'package:translator_app/view/settings.dart';
-import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 
 class MainNavigationScreen extends StatelessWidget {
-  const MainNavigationScreen({super.key});
+  const MainNavigationScreen({super.key, required this.navigationShell});
+
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
-    final navVm = context.watch<MainNavViewModel>();
-
     return Scaffold(
       appBar: CustomAppBar(
-        title: _getTitle(navVm.currentIndex),
+        title: _getTitle(navigationShell.currentIndex),
         showBackButton: false,
         actions: [
           IconButton(
             icon: Icon(
               Icons.history_rounded,
               color: AppColors.textWhite,
-              size: (375 * 0.06).w,
+              size: 23.w,
             ),
             tooltip: 'History & Favorites',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const TranslationHistoryScreen(),
-                ),
-              );
-            },
+            onPressed: () => context.push(AppRoutes.history),
           ),
           IconButton(
             icon: Icon(
               Icons.settings_outlined,
               color: AppColors.textWhite,
-              size: (375 * 0.06).w,
+              size: 23.w,
             ),
             tooltip: 'Settings',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Settings()),
-              );
-            },
+            onPressed: () => context.push(AppRoutes.settings),
           ),
         ],
       ),
-      body: IndexedStack(
-        index: navVm.currentIndex,
-        children: const [
-          HomeTranslateView(),
-          Conversation(),
-          DictionaryScreen(),
-          MoreFunScreen(),
-        ],
-      ),
+      body: navigationShell,
       bottomNavigationBar: CustomBottomNav(
-        currentIndex: navVm.currentIndex,
-        onTap: navVm.setIndex,
+        currentIndex: navigationShell.currentIndex,
+        onTap: (index) => navigationShell.goBranch(index),
       ),
     );
   }

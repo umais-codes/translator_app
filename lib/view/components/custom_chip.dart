@@ -47,14 +47,11 @@ class CustomChip extends StatelessWidget {
     final onPrimary = activeTextColor ?? AppColors.textWhite;
 
     final isSmall = size == CustomChipSize.small;
-    final fontSize = isSmall
-        ? (375 * 0.03).sp
-        : (375 * 0.034).w;
-
-    final iconSize = isSmall ? (375 * 0.038).w : (375 * 0.045).w;
-    final verticalPadding = isSmall ? 6.0 : 8.0;
-    final horizontalPadding = isSmall ? (375 * 0.03).w : (375 * 0.04).w;
-    final borderRadius = BorderRadius.circular((375 * 0.04).r);
+    final fontSize = isSmall ? 11.sp : 13.sp;
+    final iconSize = isSmall ? 14.w : 17.w;
+    final verticalPadding = isSmall ? 6.h : 8.h;
+    final horizontalPadding = isSmall ? 11.w : 15.w;
+    final borderRadius = BorderRadius.circular(15.r);
 
     Color backgroundColor;
     Color textColor;
@@ -63,23 +60,23 @@ class CustomChip extends StatelessWidget {
     if (isSelected) {
       backgroundColor = primary;
       textColor = onPrimary;
-      border = Border.all(color: primary, width: 1.2.w);
+      border = Border.all(color: primary, width: 1.w);
     } else {
       switch (variant) {
         case CustomChipVariant.filled:
           backgroundColor = AppColors.surface;
           textColor = AppColors.textPrimary;
-          border = Border.all(color: AppColors.border, width: 1.0.w);
+          border = Border.all(color: AppColors.border, width: 1.w);
           break;
         case CustomChipVariant.outlined:
           backgroundColor = AppColors.transparent;
           textColor = AppColors.textSecondary;
-          border = Border.all(color: AppColors.border, width: 1.0.w);
+          border = Border.all(color: AppColors.border, width: 1.w);
           break;
         case CustomChipVariant.tonal:
           backgroundColor = primary.withValues(alpha: 0.08);
           textColor = primary;
-          border = Border.all(color: primary.withValues(alpha: 0.25), width: 1.0.w);
+          border = Border.all(color: primary.withValues(alpha: 0.25), width: 1.w);
           break;
       }
     }
@@ -122,7 +119,7 @@ class CustomChip extends StatelessWidget {
                   size: iconSize,
                   color: textColor,
                 ),
-                SizedBox(width: (375 * 0.015).w),
+                SizedBox(width: 6.w),
               ],
               Text(
                 label,
@@ -134,7 +131,7 @@ class CustomChip extends StatelessWidget {
                 ),
               ),
               if (badge != null) ...[
-                SizedBox(width: (375 * 0.015).w),
+                SizedBox(width: 6.w),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                   decoration: BoxDecoration(
@@ -146,7 +143,7 @@ class CustomChip extends StatelessWidget {
                   child: Text(
                     badge!,
                     style: GoogleFonts.outfit(
-                      fontSize: (fontSize * 0.85).clamp(9.0, 11.0),
+                      fontSize: (fontSize * 0.85).clamp(9.sp, 11.sp),
                       fontWeight: FontWeight.bold,
                       color: isSelected ? onPrimary : primary,
                     ),

@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
-import 'package:translator_app/view/homepage.dart';
+import 'package:translator_app/core/router/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -39,16 +40,7 @@ class SplashScreenState extends State<SplashScreen>
 
     Timer(const Duration(milliseconds: 2800), () {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            transitionDuration: const Duration(milliseconds: 600),
-            pageBuilder: (_, _, _) => const Homepage(),
-            transitionsBuilder: (_, animation, _, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
+        context.go(AppRoutes.translate);
       }
     });
   }
@@ -62,7 +54,7 @@ class SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
 
-    final logoSize = (375 * 0.38).w;
+    final logoSize = 143.w;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
@@ -71,11 +63,11 @@ class SplashScreenState extends State<SplashScreen>
         children: [
           // Subtle Ambient Top Gradient Blob
           Positioned(
-            top: -(812 * 0.1).h,
-            left: -(375 * 0.2).w,
+            top: -81.h,
+            left: -75.w,
             child: Container(
-              width: (375 * 0.9).w,
-              height: (375 * 0.9).w,
+              width: 338.w,
+              height: 338.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppColors.lightBlueBackground.withValues(alpha: 0.6),
@@ -97,7 +89,7 @@ class SplashScreenState extends State<SplashScreen>
                       width: logoSize,
                       height: logoSize,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular((375 * 0.08).r),
+                        borderRadius: BorderRadius.circular(30.r),
                         boxShadow: [
                           BoxShadow(
                             color: AppColors.primary.withValues(alpha: 0.15),
@@ -113,7 +105,7 @@ class SplashScreenState extends State<SplashScreen>
                         ],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular((375 * 0.08).r),
+                        borderRadius: BorderRadius.circular(30.r),
                         child: Image.asset(
                           'assets/images/app_logo.png',
                           fit: BoxFit.cover,
@@ -121,29 +113,29 @@ class SplashScreenState extends State<SplashScreen>
                       ),
                     ),
 
-                    SizedBox(height: (812 * 0.035).h),
+                    SizedBox(height: 28.h),
 
                     // App Title
                     Text(
                       'Translator',
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.08).sp,
+                        fontSize: 30.sp,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5.sp,
+                        letterSpacing: -1.sp,
                         color: AppColors.textPrimary,
                       ),
                     ),
 
-                    SizedBox(height: (812 * 0.008).h),
+                    SizedBox(height: 7.h),
 
                     // Tagline
                     Text(
                       'AI-Powered Global Communication',
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.036).sp,
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textSecondary,
-                        letterSpacing: 0.2.sp,
+                        letterSpacing: 0.sp,
                       ),
                     ),
                   ],
@@ -154,7 +146,7 @@ class SplashScreenState extends State<SplashScreen>
 
           // Bottom Loading & Version Info
           Positioned(
-            bottom: (812 * 0.06).h,
+            bottom: 49.h,
             left: 0.w,
             right: 0.w,
             child: FadeTransition(
@@ -164,18 +156,18 @@ class SplashScreenState extends State<SplashScreen>
                 children: [
                   SizedBox(
                     width: 24.w,
-                    height: 24.h,
+                    height: 24.w,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2.5.w,
+                      strokeWidth: 3.w,
                       color: AppColors.primary,
                       backgroundColor: AppColors.primary.withValues(alpha: 0.15),
                     ),
                   ),
-                  SizedBox(height: (812 * 0.02).h),
+                  SizedBox(height: 16.h),
                   Text(
                     'Version 1.0.0 • On-Device & Cloud AI',
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.03).sp,
+                      fontSize: 11.sp,
                       color: AppColors.textMuted,
                       fontWeight: FontWeight.w500,
                     ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
-import 'package:translator_app/view/ai/ai_tools_screen.dart';
+import 'package:translator_app/core/router/app_routes.dart';
 import 'package:translator_app/view/components/custom_button.dart';
 import 'package:translator_app/view/components/custom_chip.dart';
 import 'package:translator_app/view/components/language_selector.dart';
@@ -17,12 +18,12 @@ class HomeTranslateView extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<TranslationViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
-        vertical: (812 * 0.015).h,
+        vertical: 12.h,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -36,12 +37,12 @@ class HomeTranslateView extends StatelessWidget {
             onSwap: vm.swapLanguages,
           ),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // 2. Source Translation Input Card
           _buildTranslationInputCard(context, vm),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // 3. Action Buttons (Translate & Clear)
           Row(
@@ -52,19 +53,19 @@ class HomeTranslateView extends StatelessWidget {
                   child: CustomButton(
                     text: 'Clear',
                     variant: ButtonVariant.outlined,
-                    height: (812 * 0.055).h,
+                    height: 45.h,
                     leadingIcon: Icons.clear_all_rounded,
                     onPressed: vm.clear,
                   ),
                 ),
-                SizedBox(width: (375 * 0.03).w),
+                SizedBox(width: 11.w),
               ],
               Expanded(
                 flex: 2,
                 child: CustomButton(
                   text: vm.isLoading ? 'Translating...' : 'Translate',
                   variant: ButtonVariant.filled,
-                  height: (812 * 0.055).h,
+                  height: 45.h,
                   leadingIcon: Icons.translate_rounded,
                   isLoading: vm.isLoading,
                   onPressed: vm.sourceText.trim().isNotEmpty
@@ -75,7 +76,7 @@ class HomeTranslateView extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // 4. Translation Output Card
           if (vm.translatedText.isNotEmpty || vm.isLoading) ...[
@@ -103,7 +104,7 @@ class HomeTranslateView extends StatelessWidget {
           ),
         ],
       ),
-      padding: EdgeInsets.all((375 * 0.045).w),
+      padding: EdgeInsets.all(17.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -114,9 +115,9 @@ class HomeTranslateView extends StatelessWidget {
               Text(
                 vm.sourceLanguage.name.toUpperCase(),
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.032).sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 0.8.sp,
+                  letterSpacing: 1.sp,
                   color: AppColors.textSecondary,
                 ),
               ),
@@ -138,15 +139,15 @@ class HomeTranslateView extends StatelessWidget {
             maxLines: 5,
             minLines: 3,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.042).sp,
+              fontSize: 16.sp,
               color: AppColors.textPrimary,
-              height: 1.4.h,
+              height: 1.h,
             ),
             decoration: InputDecoration(
               hintText: 'Enter text to translate...',
               hintStyle: GoogleFonts.outfit(
                 color: AppColors.textMuted,
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
               ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
@@ -182,7 +183,7 @@ class HomeTranslateView extends StatelessWidget {
                       Text(
                         'Paste',
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.034).sp,
+                          fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primary,
                         ),
@@ -225,7 +226,7 @@ class HomeTranslateView extends StatelessWidget {
                   child: Icon(
                     vm.isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
                     color: AppColors.textWhite,
-                    size: (375 * 0.055).w,
+                    size: 21.w,
                   ),
                 ),
               ),
@@ -241,11 +242,11 @@ class HomeTranslateView extends StatelessWidget {
     TranslationViewModel vm,
   ) {
     return Container(
-      margin: EdgeInsets.only(top: (812 * 0.01).h),
+      margin: EdgeInsets.only(top: 8.h),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 1.5.w),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 2.w),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
@@ -254,7 +255,7 @@ class HomeTranslateView extends StatelessWidget {
           ),
         ],
       ),
-      padding: EdgeInsets.all((375 * 0.045).w),
+      padding: EdgeInsets.all(17.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -265,7 +266,7 @@ class HomeTranslateView extends StatelessWidget {
                 children: [
                   Container(
                     width: 8.w,
-                    height: 8.h,
+                    height: 8.w,
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       shape: BoxShape.circle,
@@ -275,9 +276,9 @@ class HomeTranslateView extends StatelessWidget {
                   Text(
                     vm.targetLanguage.name.toUpperCase(),
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.032).sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 0.8.sp,
+                      letterSpacing: 1.sp,
                       color: AppColors.primary,
                     ),
                   ),
@@ -313,10 +314,10 @@ class HomeTranslateView extends StatelessWidget {
           Text(
             vm.translatedText,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.045).sp,
+              fontSize: 17.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
-              height: 1.4.h,
+              height: 1.h,
             ),
           ),
 
@@ -343,12 +344,7 @@ class HomeTranslateView extends StatelessWidget {
                             targetLang: vm.targetLanguage,
                             initialTab: 0,
                           );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AIToolsScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.ai);
                     },
                   ),
                   SizedBox(width: 8.w),
@@ -367,12 +363,7 @@ class HomeTranslateView extends StatelessWidget {
                             targetLang: vm.targetLanguage,
                             initialTab: 2,
                           );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AIToolsScreen(),
-                        ),
-                      );
+                      context.push(AppRoutes.ai);
                     },
                   ),
                 ],

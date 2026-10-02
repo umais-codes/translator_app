@@ -83,7 +83,7 @@ class LanguagePickerModal extends StatelessWidget {
     final filteredLanguages = vm.filteredLanguages;
 
     return Container(
-      height: (812 * 0.75).h,
+      height: 609.h,
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
@@ -96,23 +96,23 @@ class LanguagePickerModal extends StatelessWidget {
         ],
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: (375 * 0.05).w,
-        vertical: (812 * 0.015).h,
+        horizontal: 19.w,
+        vertical: 12.h,
       ),
       child: Column(
         children: [
           // Drag handle
           Center(
             child: Container(
-              width: 44.w,
-              height: 5.h,
+              width: 40.w,
+              height: 4.h,
               decoration: BoxDecoration(
                 color: AppColors.border,
-                borderRadius: BorderRadius.circular(3.r),
+                borderRadius: BorderRadius.circular(2.r),
               ),
             ),
           ),
-          SizedBox(height: (812 * 0.02).h),
+          SizedBox(height: 16.h),
 
           // Header
           Row(
@@ -121,7 +121,7 @@ class LanguagePickerModal extends StatelessWidget {
               Text(
                 title,
                 style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.048).sp,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
@@ -132,7 +132,7 @@ class LanguagePickerModal extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: (812 * 0.012).h),
+          SizedBox(height: 10.h),
 
           // Search Field with Clear Button
           Container(
@@ -145,13 +145,13 @@ class LanguagePickerModal extends StatelessWidget {
               onChanged: vm.filter,
               style: GoogleFonts.outfit(
                 color: AppColors.textPrimary,
-                fontSize: (375 * 0.04).sp,
+                fontSize: 15.sp,
               ),
               decoration: InputDecoration(
                 hintText: 'Search by language or country...',
                 hintStyle: GoogleFonts.outfit(
                   color: AppColors.textMuted,
-                  fontSize: (375 * 0.038).sp,
+                  fontSize: 14.sp,
                 ),
                 prefixIcon: Icon(Icons.search_rounded, color: AppColors.primary),
                 suffixIcon: vm.searchQuery.isNotEmpty
@@ -168,7 +168,7 @@ class LanguagePickerModal extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // Languages Count
           Align(
@@ -176,13 +176,13 @@ class LanguagePickerModal extends StatelessWidget {
             child: Text(
               '${filteredLanguages.length} Languages available',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.032).sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
               ),
             ),
           ),
-          SizedBox(height: (812 * 0.01).h),
+          SizedBox(height: 8.h),
 
           // Language List
           Expanded(
@@ -204,8 +204,8 @@ class LanguagePickerModal extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14.r),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal: (375 * 0.025).w,
-                      vertical: (812 * 0.014).h,
+                      horizontal: 9.w,
+                      vertical: 11.h,
                     ),
                     decoration: BoxDecoration(
                       color: isSelected ? AppColors.lightBlueBackground : AppColors.transparent,
@@ -215,8 +215,8 @@ class LanguagePickerModal extends StatelessWidget {
                       children: [
                         // Flag Avatar Circle
                         Container(
-                          width: (375 * 0.1).w,
-                          height: (375 * 0.1).w,
+                          width: 38.w,
+                          height: 38.w,
                           decoration: BoxDecoration(
                             color: isSelected ? AppColors.surface : AppColors.inputBackground,
                             shape: BoxShape.circle,
@@ -227,7 +227,7 @@ class LanguagePickerModal extends StatelessWidget {
                           child: Center(
                             child: Text(
                               lang.flag,
-                              style: TextStyle(fontSize: (375 * 0.05).sp),
+                              style: TextStyle(fontSize: 19.sp),
                             ),
                           ),
                         ),
@@ -241,7 +241,7 @@ class LanguagePickerModal extends StatelessWidget {
                               Text(
                                 lang.name,
                                 style: GoogleFonts.outfit(
-                                  fontSize: (375 * 0.04).sp,
+                                  fontSize: 15.sp,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                   color: isSelected ? AppColors.primary : AppColors.textPrimary,
                                 ),
@@ -250,7 +250,7 @@ class LanguagePickerModal extends StatelessWidget {
                               Text(
                                 lang.nativeName,
                                 style: GoogleFonts.outfit(
-                                  fontSize: (375 * 0.032).sp,
+                                  fontSize: 12.sp,
                                   color: AppColors.textSecondary,
                                 ),
                               ),

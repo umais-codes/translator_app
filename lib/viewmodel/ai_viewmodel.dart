@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/core/config/ai_config.dart';
+import 'package:translator_app/core/router/app_routes.dart';
 import 'package:translator_app/data/models/ai_models.dart';
 import 'package:translator_app/data/repositories/ai_repository.dart';
 import 'package:translator_app/data/services/speech_preferences.dart';
 import 'package:translator_app/viewmodel/lang_model.dart';
-import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
 
 class AIViewModel extends ChangeNotifier {
@@ -22,6 +23,43 @@ class AIViewModel extends ChangeNotifier {
 
   AIViewModel(this._repository) {
     _selectedLanguage = LanguageModel.supportedLanguages[0]; // English
+    for (final controller in _inputControllers) {
+      controller.addListener(_onInputChanged);
+    }
+  }
+
+  List<TextEditingController> get _inputControllers => [
+        _toneInputController,
+        _grammarInputController,
+        _nuanceSourceController,
+        _nuanceTargetController,
+      ];
+
+  void _onInputChanged() {
+    notifyListeners();
+  }
+
+  Future<void> pasteInto(TextEditingController controller) async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text?.trim() ?? '';
+    if (text.isEmpty) return;
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
+  void clearInput(TextEditingController controller) {
+    _errorMessage = null;
+    if (identical(controller, _toneInputController)) {
+      _toneResult = null;
+    } else if (identical(controller, _grammarInputController)) {
+      _grammarResult = null;
+    } else if (identical(controller, _nuanceSourceController) ||
+        identical(controller, _nuanceTargetController)) {
+      _nuanceResult = null;
+    }
+    controller.clear();
   }
 
   int _selectedTabIndex = 0;
@@ -281,17 +319,18 @@ class AIViewModel extends ChangeNotifier {
     if (newText.trim().isEmpty) return;
 
     final translationVm = context.read<TranslationViewModel>();
-    final navVm = context.read<MainNavViewModel>();
 
     translationVm.setSourceText(newText);
     translationVm.translateText();
 
-    Navigator.of(context).pop();
-    navVm.setIndex(0); // Switch back to Home Translator tab
+    context.go(AppRoutes.translate);
   }
 
   @override
   void dispose() {
+    for (final controller in _inputControllers) {
+      controller.removeListener(_onInputChanged);
+    }
     _toneInputController.dispose();
     _grammarInputController.dispose();
     _nuanceSourceController.dispose();

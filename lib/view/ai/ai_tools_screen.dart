@@ -17,7 +17,7 @@ class AIToolsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<AIViewModel>();
 
-    final horizontalPadding = (375 * 0.045).w;
+    final horizontalPadding = 17.w;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
@@ -36,7 +36,7 @@ class AIToolsScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
                   horizontal: horizontalPadding,
-                  vertical: (812 * 0.015).h,
+                  vertical: 12.h,
                 ),
                 child: _buildCurrentTabContent(
                   context,
@@ -64,8 +64,8 @@ class AIToolsScreen extends StatelessWidget {
     return Container(
       color: AppColors.surface,
       padding: EdgeInsets.symmetric(
-        horizontal: (375 * 0.04).w,
-        vertical: (812 * 0.01).h,
+        horizontal: 15.w,
+        vertical: 8.h,
       ),
       child: Row(
         children: List.generate(tabs.length, (index) {
@@ -77,15 +77,15 @@ class AIToolsScreen extends StatelessWidget {
               onTap: () => vm.setSelectedTab(index),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: EdgeInsets.symmetric(vertical: (812 * 0.01).h),
+                padding: EdgeInsets.symmetric(vertical: 8.h),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary.withValues(alpha: 0.1)
                       : AppColors.transparent,
-                  borderRadius: BorderRadius.circular((375 * 0.03).r),
+                  borderRadius: BorderRadius.circular(11.r),
                   border: Border.all(
                     color: isSelected ? AppColors.primary : AppColors.transparent,
-                    width: 1.5.w,
+                    width: 2.w,
                   ),
                 ),
                 child: Column(
@@ -93,17 +93,17 @@ class AIToolsScreen extends StatelessWidget {
                   children: [
                     Icon(
                       item['icon'] as IconData,
-                      size: (375 * 0.05).w,
+                      size: 19.w,
                       color: isSelected
                           ? AppColors.primary
                           : AppColors.textMuted,
                     ),
-                    SizedBox(height: (812 * 0.004).h),
+                    SizedBox(height: 3.h),
                     Text(
                       item['label'] as String,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.029).sp,
+                        fontSize: 11.sp,
                         fontWeight: isSelected
                             ? FontWeight.bold
                             : FontWeight.w500,
@@ -154,29 +154,29 @@ class AIToolsScreen extends StatelessWidget {
       children: [
         // Input Box
         _buildInputCard(
+          vm: vm,
           controller: vm.toneInputController,
-          hintText:
-              'Enter phrase to rephrase with AI (e.g. Can you send the report?)...',
-          title: 'ORIGINAL TEXT',
+          hintText: 'Enter a phrase to rephrase, such as “Can you send the report?”',
+          title: 'Original text',
         ),
 
-        SizedBox(height: (812 * 0.02).h),
+        SizedBox(height: 16.h),
 
         // Section Title: Tone Options
         Text(
           'Select Target Tone',
           style: GoogleFonts.outfit(
-            fontSize: (375 * 0.038).sp,
+            fontSize: 14.sp,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
         ),
-        SizedBox(height: (812 * 0.01).h),
+        SizedBox(height: 8.h),
 
         // Tone Pills Wrap
         Wrap(
-          spacing: (375 * 0.02).w,
-          runSpacing: (812 * 0.01).h,
+          spacing: 8.w,
+          runSpacing: 8.h,
           children: AIToneOption.values.map((tone) {
             final isSelected = vm.selectedTone == tone;
             return CustomChip(
@@ -187,25 +187,25 @@ class AIToolsScreen extends StatelessWidget {
           }).toList(),
         ),
 
-        SizedBox(height: (812 * 0.02).h),
+        SizedBox(height: 16.h),
 
         // Section: Length Preference
         Text(
           'Length Preference',
           style: GoogleFonts.outfit(
-            fontSize: (375 * 0.038).sp,
+            fontSize: 14.sp,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
         ),
-        SizedBox(height: (812 * 0.008).h),
+        SizedBox(height: 7.h),
 
         Row(
           children: AILengthOption.values.map((len) {
             final isSelected = vm.selectedLength == len;
             return Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: (375 * 0.01).w),
+                padding: EdgeInsets.symmetric(horizontal: 4.w),
                 child: CustomChip(
                   label: len.label,
                   isSelected: isSelected,
@@ -218,7 +218,7 @@ class AIToolsScreen extends StatelessWidget {
           }).toList(),
         ),
 
-        SizedBox(height: (812 * 0.022).h),
+        SizedBox(height: 18.h),
 
         // Error message if any
         if (vm.errorMessage != null)
@@ -234,7 +234,7 @@ class AIToolsScreen extends StatelessWidget {
 
         // Result Card
         if (vm.toneResult != null) ...[
-          SizedBox(height: (812 * 0.025).h),
+          SizedBox(height: 20.h),
           _buildToneResultCard(
             context,
             vm,
@@ -251,10 +251,10 @@ class AIToolsScreen extends StatelessWidget {
     AIToneResponse result,
   ) {
     return Container(
-      padding: EdgeInsets.all((375 * 0.045).w),
+      padding: EdgeInsets.all(17.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular((375 * 0.045).r),
+        borderRadius: BorderRadius.circular(17.r),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
@@ -295,7 +295,7 @@ class AIToolsScreen extends StatelessWidget {
                           '${result.tone.label.toUpperCase()} REPHRASING',
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.028).sp,
+                            fontSize: 11.sp,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -313,7 +313,7 @@ class AIToolsScreen extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       Icons.volume_up_rounded,
-                      size: (375 * 0.05).w,
+                      size: 19.w,
                       color: AppColors.primary,
                     ),
                     padding: EdgeInsets.zero,
@@ -324,11 +324,11 @@ class AIToolsScreen extends StatelessWidget {
                       vm.selectedLanguage.code,
                     ),
                   ),
-                  SizedBox(width: (375 * 0.03).w),
+                  SizedBox(width: 11.w),
                   IconButton(
                     icon: Icon(
                       Icons.copy_rounded,
-                      size: (375 * 0.045).w,
+                      size: 17.w,
                       color: AppColors.textSecondary,
                     ),
                     padding: EdgeInsets.zero,
@@ -345,25 +345,25 @@ class AIToolsScreen extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: (812 * 0.012).h),
+          SizedBox(height: 10.h),
 
           // Primary Result Text
           SelectableText(
             result.rephrasedText,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.042).sp,
+              fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
-              height: 1.4.h,
+              height: 1.h,
             ),
           ),
 
           if (result.toneNotes != null) ...[
-            SizedBox(height: (812 * 0.01).h),
+            SizedBox(height: 8.h),
             Text(
               result.toneNotes!,
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.032).sp,
+                fontSize: 12.sp,
                 color: AppColors.textSecondary,
                 fontStyle: FontStyle.italic,
               ),
@@ -372,23 +372,23 @@ class AIToolsScreen extends StatelessWidget {
 
           // Alternative variations
           if (result.alternatives.isNotEmpty) ...[
-            SizedBox(height: (812 * 0.018).h),
+            SizedBox(height: 15.h),
             Text(
               'Alternative Variations:',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.032).sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textSecondary,
               ),
             ),
-            SizedBox(height: (812 * 0.008).h),
+            SizedBox(height: 7.h),
             ...result.alternatives.map(
               (alt) => Container(
-                margin: EdgeInsets.only(bottom: (812 * 0.008).h),
-                padding: EdgeInsets.all((375 * 0.03).w),
+                margin: EdgeInsets.only(bottom: 7.h),
+                padding: EdgeInsets.all(11.w),
                 decoration: BoxDecoration(
                   color: AppColors.inputBackground,
-                  borderRadius: BorderRadius.circular((375 * 0.03).r),
+                  borderRadius: BorderRadius.circular(11.r),
                 ),
                 child: Row(
                   children: [
@@ -396,7 +396,7 @@ class AIToolsScreen extends StatelessWidget {
                       child: Text(
                         alt,
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.035).sp,
+                          fontSize: 13.sp,
                           color: AppColors.textPrimary,
                         ),
                       ),
@@ -414,7 +414,7 @@ class AIToolsScreen extends StatelessWidget {
             ),
           ],
 
-          SizedBox(height: (812 * 0.018).h),
+          SizedBox(height: 15.h),
 
           // "Replace in Translator" CTA
           CustomButton(
@@ -446,7 +446,7 @@ class AIToolsScreen extends StatelessWidget {
             Text(
               'Target Language',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.035).sp,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
@@ -463,15 +463,16 @@ class AIToolsScreen extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: (812 * 0.012).h),
+        SizedBox(height: 10.h),
 
         _buildInputCard(
+          vm: vm,
           controller: vm.grammarInputController,
-          hintText: 'Enter sentence to check (e.g. I has completed my work)...',
-          title: 'TEXT TO CHECK',
+          hintText: 'Enter a sentence to check, such as “I has completed my work”',
+          title: 'Text to check',
         ),
 
-        SizedBox(height: (812 * 0.02).h),
+        SizedBox(height: 16.h),
 
         if (vm.errorMessage != null)
           _buildErrorBanner(vm.errorMessage!),
@@ -484,7 +485,7 @@ class AIToolsScreen extends StatelessWidget {
         ),
 
         if (vm.grammarResult != null) ...[
-          SizedBox(height: (812 * 0.025).h),
+          SizedBox(height: 20.h),
           _buildGrammarResultCard(
             context,
             vm,
@@ -511,10 +512,10 @@ class AIToolsScreen extends StatelessWidget {
         : Icons.check_circle_outline_rounded;
 
     return Container(
-      padding: EdgeInsets.all((375 * 0.045).w),
+      padding: EdgeInsets.all(17.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular((375 * 0.045).r),
+        borderRadius: BorderRadius.circular(17.r),
         border: Border.all(color: statusColor.withValues(alpha: 0.4)),
         boxShadow: [
           BoxShadow(
@@ -551,7 +552,7 @@ class AIToolsScreen extends StatelessWidget {
                           statusText.toUpperCase(),
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.outfit(
-                            fontSize: (375 * 0.028).sp,
+                            fontSize: 11.sp,
                             fontWeight: FontWeight.bold,
                             color: statusColor,
                           ),
@@ -569,7 +570,7 @@ class AIToolsScreen extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       Icons.volume_up_rounded,
-                      size: (375 * 0.05).w,
+                      size: 19.w,
                       color: AppColors.textSecondary,
                     ),
                     padding: EdgeInsets.zero,
@@ -584,7 +585,7 @@ class AIToolsScreen extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       Icons.copy_rounded,
-                      size: (375 * 0.045).w,
+                      size: 17.w,
                       color: AppColors.textSecondary,
                     ),
                     padding: EdgeInsets.zero,
@@ -601,14 +602,14 @@ class AIToolsScreen extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // Corrected Text Card
           Container(
-            padding: EdgeInsets.all((375 * 0.035).w),
+            padding: EdgeInsets.all(13.w),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular((375 * 0.03).r),
+              borderRadius: BorderRadius.circular(11.r),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -616,7 +617,7 @@ class AIToolsScreen extends StatelessWidget {
                 Text(
                   'CORRECTED SENTENCE',
                   style: GoogleFonts.outfit(
-                    fontSize: (375 * 0.028).sp,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
@@ -625,7 +626,7 @@ class AIToolsScreen extends StatelessWidget {
                 SelectableText(
                   result.correctedText,
                   style: GoogleFonts.outfit(
-                    fontSize: (375 * 0.04).sp,
+                    fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
@@ -634,46 +635,46 @@ class AIToolsScreen extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // Explanation
           Text(
             'Explanation:',
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.034).sp,
+              fontSize: 13.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: (812 * 0.006).h),
+          SizedBox(height: 5.h),
           if (result.isBasicCheck) ...[
             Text(
               'Basic on-device check. A model service is not configured, so this only fixes common spelling and simple grammar patterns.',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.032).sp,
+                fontSize: 12.sp,
                 color: AppColors.warning,
-                height: 1.4.h,
+                height: 1.h,
               ),
             ),
-            SizedBox(height: (812 * 0.008).h),
+            SizedBox(height: 7.h),
           ],
           Text(
             result.explanation,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.035).sp,
+              fontSize: 13.sp,
               color: AppColors.textSecondary,
-              height: 1.4.h,
+              height: 1.h,
             ),
           ),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // Grammar Rule Badge
           Container(
-            padding: EdgeInsets.all((375 * 0.03).w),
+            padding: EdgeInsets.all(11.w),
             decoration: BoxDecoration(
               color: AppColors.inputBackground,
-              borderRadius: BorderRadius.circular((375 * 0.03).r),
+              borderRadius: BorderRadius.circular(11.r),
             ),
             child: Row(
               children: [
@@ -683,7 +684,7 @@ class AIToolsScreen extends StatelessWidget {
                   child: Text(
                     'Rule: ${result.grammarRule}',
                     style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.032).sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
@@ -695,19 +696,19 @@ class AIToolsScreen extends StatelessWidget {
 
           // Examples
           if (result.examples.isNotEmpty) ...[
-            SizedBox(height: (812 * 0.015).h),
+            SizedBox(height: 12.h),
             Text(
               'Examples & Usage:',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.032).sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textSecondary,
               ),
             ),
-            SizedBox(height: (812 * 0.006).h),
+            SizedBox(height: 5.h),
             ...result.examples.map(
               (ex) => Padding(
-                padding: EdgeInsets.symmetric(vertical: (812 * 0.003).h),
+                padding: EdgeInsets.symmetric(vertical: 2.h),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -722,7 +723,7 @@ class AIToolsScreen extends StatelessWidget {
                       child: Text(
                         ex,
                         style: GoogleFonts.outfit(
-                          fontSize: (375 * 0.032).sp,
+                          fontSize: 12.sp,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -733,7 +734,7 @@ class AIToolsScreen extends StatelessWidget {
             ),
           ],
 
-          SizedBox(height: (812 * 0.02).h),
+          SizedBox(height: 16.h),
 
           CustomButton(
             text: 'Use in Translator',
@@ -760,12 +761,12 @@ class AIToolsScreen extends StatelessWidget {
         // Language Pairing Selector Bar
         Container(
           padding: EdgeInsets.symmetric(
-            horizontal: (375 * 0.03).w,
-            vertical: (812 * 0.008).h,
+            horizontal: 11.w,
+            vertical: 7.h,
           ),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular((375 * 0.03).r),
+            borderRadius: BorderRadius.circular(11.r),
             border: Border.all(color: AppColors.border),
           ),
           child: Row(
@@ -784,7 +785,7 @@ class AIToolsScreen extends StatelessWidget {
                         '${vm.nuanceSourceLang.flag} ${vm.nuanceSourceLang.name}',
                         style: GoogleFonts.outfit(
                           fontWeight: FontWeight.w600,
-                          fontSize: (375 * 0.034).sp,
+                          fontSize: 13.sp,
                           color: AppColors.textPrimary,
                         ),
                       ),
@@ -813,7 +814,7 @@ class AIToolsScreen extends StatelessWidget {
                         '${vm.nuanceTargetLang.flag} ${vm.nuanceTargetLang.name}',
                         style: GoogleFonts.outfit(
                           fontWeight: FontWeight.w600,
-                          fontSize: (375 * 0.034).sp,
+                          fontSize: 13.sp,
                           color: AppColors.textPrimary,
                         ),
                       ),
@@ -827,23 +828,25 @@ class AIToolsScreen extends StatelessWidget {
           ),
         ),
 
-        SizedBox(height: (812 * 0.015).h),
+        SizedBox(height: 12.h),
 
         _buildInputCard(
+          vm: vm,
           controller: vm.nuanceSourceController,
-          hintText: 'Original phrase (e.g. I miss you)...',
-          title: 'ORIGINAL PHRASE (${vm.nuanceSourceLang.name.toUpperCase()})',
+          hintText: 'Original phrase, such as “I miss you”',
+          title: 'Original phrase · ${vm.nuanceSourceLang.name}',
         ),
 
-        SizedBox(height: (812 * 0.015).h),
+        SizedBox(height: 12.h),
 
         _buildInputCard(
+          vm: vm,
           controller: vm.nuanceTargetController,
-          hintText: 'Translated phrase (e.g. Te extraño)...',
-          title: 'TRANSLATED PHRASE (${vm.nuanceTargetLang.name.toUpperCase()})',
+          hintText: 'Translated phrase, such as “Te extraño”',
+          title: 'Translated phrase · ${vm.nuanceTargetLang.name}',
         ),
 
-        SizedBox(height: (812 * 0.02).h),
+        SizedBox(height: 16.h),
 
         if (vm.errorMessage != null)
           _buildErrorBanner(vm.errorMessage!),
@@ -858,7 +861,7 @@ class AIToolsScreen extends StatelessWidget {
         ),
 
         if (vm.nuanceResult != null) ...[
-          SizedBox(height: (812 * 0.025).h),
+          SizedBox(height: 20.h),
           _buildNuanceResultCard(
             context,
             vm,
@@ -875,10 +878,10 @@ class AIToolsScreen extends StatelessWidget {
     AINuanceResponse result,
   ) {
     return Container(
-      padding: EdgeInsets.all((375 * 0.045).w),
+      padding: EdgeInsets.all(17.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular((375 * 0.045).r),
+        borderRadius: BorderRadius.circular(17.r),
         border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
@@ -908,7 +911,7 @@ class AIToolsScreen extends StatelessWidget {
                     Text(
                       'LINGUISTIC & CULTURAL INSIGHTS',
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.028).sp,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.info,
                       ),
@@ -919,7 +922,7 @@ class AIToolsScreen extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.copy_rounded,
-                  size: (375 * 0.045).w,
+                  size: 17.w,
                   color: AppColors.textSecondary,
                 ),
                 padding: EdgeInsets.zero,
@@ -934,56 +937,56 @@ class AIToolsScreen extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // Why this wording was chosen
           Text(
             'Why This Wording:',
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.034).sp,
+              fontSize: 13.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: (812 * 0.004).h),
+          SizedBox(height: 3.h),
           Text(
             result.whyChosen,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.035).sp,
+              fontSize: 13.sp,
               color: AppColors.textSecondary,
-              height: 1.4.h,
+              height: 1.h,
             ),
           ),
 
-          SizedBox(height: (812 * 0.015).h),
+          SizedBox(height: 12.h),
 
           // Context of Use
           Text(
             'Context of Use:',
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.034).sp,
+              fontSize: 13.sp,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: (812 * 0.004).h),
+          SizedBox(height: 3.h),
           Text(
             result.contextOfUse,
             style: GoogleFonts.outfit(
-              fontSize: (375 * 0.035).sp,
+              fontSize: 13.sp,
               color: AppColors.textSecondary,
-              height: 1.4.h,
+              height: 1.h,
             ),
           ),
 
           // Cultural Etiquette
           if (result.culturalEtiquette != null) ...[
-            SizedBox(height: (812 * 0.015).h),
+            SizedBox(height: 12.h),
             Container(
-              padding: EdgeInsets.all((375 * 0.03).w),
+              padding: EdgeInsets.all(11.w),
               decoration: BoxDecoration(
                 color: AppColors.warning.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular((375 * 0.03).r),
+                borderRadius: BorderRadius.circular(11.r),
                 border: Border.all(
                   color: AppColors.warning.withValues(alpha: 0.2),
                 ),
@@ -1001,9 +1004,9 @@ class AIToolsScreen extends StatelessWidget {
                     child: Text(
                       result.culturalEtiquette!,
                       style: GoogleFonts.outfit(
-                        fontSize: (375 * 0.032).sp,
+                        fontSize: 12.sp,
                         color: AppColors.textPrimary,
-                        height: 1.3.h,
+                        height: 1.h,
                       ),
                     ),
                   ),
@@ -1014,23 +1017,23 @@ class AIToolsScreen extends StatelessWidget {
 
           // Alternatives
           if (result.alternatives.isNotEmpty) ...[
-            SizedBox(height: (812 * 0.015).h),
+            SizedBox(height: 12.h),
             Text(
               'Regional & Stylistic Alternatives:',
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.032).sp,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textSecondary,
               ),
             ),
-            SizedBox(height: (812 * 0.006).h),
+            SizedBox(height: 5.h),
             ...result.alternatives.map(
               (alt) => Padding(
-                padding: EdgeInsets.symmetric(vertical: (812 * 0.003).h),
+                padding: EdgeInsets.symmetric(vertical: 2.h),
                 child: Text(
                   '• $alt',
                   style: GoogleFonts.outfit(
-                    fontSize: (375 * 0.032).sp,
+                    fontSize: 12.sp,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -1042,17 +1045,19 @@ class AIToolsScreen extends StatelessWidget {
     );
   }
 
-  // --- REUSABLE INPUT CARD ---
   Widget _buildInputCard({
+    required AIViewModel vm,
     required TextEditingController controller,
     required String hintText,
     required String title,
   }) {
+    final hasText = controller.text.isNotEmpty;
+
     return Container(
-      padding: EdgeInsets.all((375 * 0.04).w),
+      padding: EdgeInsets.all(17.w),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular((375 * 0.045).r),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
@@ -1063,54 +1068,115 @@ class AIToolsScreen extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: GoogleFonts.outfit(
-                  fontSize: (375 * 0.03).sp,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.7.sp,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              if (controller.text.isNotEmpty)
-                GestureDetector(
-                  onTap: () => controller.clear(),
-                  child: Text(
-                    'Clear',
-                    style: GoogleFonts.outfit(
-                      fontSize: (375 * 0.03).sp,
-                      color: AppColors.error,
-                      fontWeight: FontWeight.w600,
-                    ),
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
                   ),
                 ),
+              ),
+              Text(
+                '${controller.text.length}',
+                style: GoogleFonts.outfit(
+                  fontSize: 12.sp,
+                  color: AppColors.textMuted,
+                ),
+              ),
             ],
           ),
-          SizedBox(height: (812 * 0.008).h),
-          TextField(
-            controller: controller,
-            maxLines: 3,
-            minLines: 2,
-            style: GoogleFonts.outfit(
-              fontSize: (375 * 0.04).sp,
-              color: AppColors.textPrimary,
+          SizedBox(height: 10.h),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+            decoration: BoxDecoration(
+              color: AppColors.inputBackground,
+              borderRadius: BorderRadius.circular(14.r),
             ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: GoogleFonts.outfit(
-                color: AppColors.textMuted,
-                fontSize: (375 * 0.036).sp,
+            child: TextField(
+              controller: controller,
+              minLines: 3,
+              maxLines: 6,
+              style: GoogleFonts.outfit(
+                fontSize: 16.sp,
+                color: AppColors.textPrimary,
+                height: 1.35,
               ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: GoogleFonts.outfit(
+                  color: AppColors.textMuted,
+                  fontSize: 14.sp,
+                  height: 1.35,
+                ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                isCollapsed: true,
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ),
+          SizedBox(height: 12.h),
+          Row(
+            children: [
+              _fieldAction(
+                icon: Icons.content_paste_rounded,
+                label: 'Paste',
+                onTap: () => vm.pasteInto(controller),
+              ),
+              if (hasText) ...[
+                SizedBox(width: 8.w),
+                _fieldAction(
+                  icon: Icons.close_rounded,
+                  label: 'Clear',
+                  color: AppColors.error,
+                  onTap: () => vm.clearInput(controller),
+                ),
+              ],
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _fieldAction({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    final tint = color ?? AppColors.primary;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: tint.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16.w, color: tint),
+            SizedBox(width: 6.w),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: tint,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1118,10 +1184,10 @@ class AIToolsScreen extends StatelessWidget {
   Widget _buildErrorBanner(String message) {
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.all((375 * 0.03).w),
+      padding: EdgeInsets.all(11.w),
       decoration: BoxDecoration(
         color: AppColors.error.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular((375 * 0.03).r),
+        borderRadius: BorderRadius.circular(11.r),
         border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -1132,7 +1198,7 @@ class AIToolsScreen extends StatelessWidget {
             child: Text(
               message,
               style: GoogleFonts.outfit(
-                fontSize: (375 * 0.032).sp,
+                fontSize: 12.sp,
                 color: AppColors.error,
               ),
             ),
@@ -1157,10 +1223,10 @@ class AIToolsScreen extends StatelessWidget {
       builder: (ctx) {
         return SafeArea(
           child: Container(
-            height: (812 * 0.55).h,
+            height: 447.h,
             padding: EdgeInsets.symmetric(
-              horizontal: (375 * 0.04).w,
-              vertical: (812 * 0.02).h,
+              horizontal: 15.w,
+              vertical: 16.h,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1175,7 +1241,7 @@ class AIToolsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: (812 * 0.015).h),
+                SizedBox(height: 16.h),
                 Text(
                   'Select Language',
                   style: GoogleFonts.outfit(
@@ -1184,7 +1250,7 @@ class AIToolsScreen extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: (812 * 0.012).h),
+                SizedBox(height: 10.h),
                 Expanded(
                   child: ListView.separated(
                     itemCount: LanguageModel.supportedLanguages.length,

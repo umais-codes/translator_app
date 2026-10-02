@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:translator_app/apptheme/app_theme.dart';
+import 'package:translator_app/core/router/app_router.dart';
 import 'package:translator_app/data/models/translation_repository.dart';
 import 'package:translator_app/data/repositories/ai_repository.dart';
 import 'package:translator_app/data/repositories/translation_history_repository.dart';
-import 'package:translator_app/view/splash_screen.dart';
 import 'package:translator_app/viewmodel/ai_viewmodel.dart';
 import 'package:translator_app/viewmodel/camera_viewmodel.dart';
 import 'package:translator_app/viewmodel/conversation_viewmodel.dart';
 import 'package:translator_app/viewmodel/dictionary_viewmodel.dart';
 import 'package:translator_app/viewmodel/file_translate_viewmodel.dart';
-import 'package:translator_app/viewmodel/main_nav_viewmodel.dart';
 import 'package:translator_app/viewmodel/settings_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_history_viewmodel.dart';
 import 'package:translator_app/viewmodel/translation_viewmodel.dart';
@@ -26,7 +25,6 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => MainNavViewModel()),
         ChangeNotifierProvider(
           create: (_) => TranslationViewModel(
             translationRepository,
@@ -74,15 +72,14 @@ class MyApp extends StatelessWidget {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (context, child) {
-        return MaterialApp(
+      builder: (context, _) {
+        return MaterialApp.router(
           title: 'Translator App',
           theme: AppTheme.getTheme(primaryColor: settingsVm.primaryColor),
           debugShowCheckedModeBanner: false,
-          home: child,
+          routerConfig: AppRouter.router,
         );
       },
-      child: const SplashScreen(),
     );
   }
 }
